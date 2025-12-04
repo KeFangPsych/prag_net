@@ -1,2 +1,1 @@
-# psy1903
-Course work for psy1903
+# prag_net project
