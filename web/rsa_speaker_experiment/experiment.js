@@ -189,7 +189,7 @@ const comp1_trial = {
             <h2>Comprehension Check 1: Understanding the Display</h2>
             <p>Look at this trial result display:</p>
             <div class="stimulus-container">
-                <img src="stimuli_emoji/obs_0_0_4_1_0.png" alt="Trial display" class="stimulus-image">
+                <img src="stimuli_emoji/obs_0_0_4_1_0.png" alt="Trial display" class="stimulus-image" style="max-width: 280px;">
             </div>
             <div class="question-box">
                 <p><strong>Question 1:</strong> How many patients are shown in this trial?</p>
@@ -375,7 +375,7 @@ const comp3_trial = {
             <p class="progress-indicator">Question ${experimentState.comp3_index + 1} of 4</p>
             <h3>Is this statement TRUE or FALSE?</h3>
             <div class="stimulus-container">
-                <img src="${imgPath}" class="stimulus-image">
+                <img src="${imgPath}" class="stimulus-image" style="max-width: 280px;">
             </div>
             <div class="definition-box" style="text-align: center; font-size: 1.3em;">"${item.statement}"</div>
             <div style="margin-top: 30px;">
@@ -499,7 +499,7 @@ const comp4_trial = {
         shuffled.forEach((opt, i) => {
             const imgPath = Stimuli.getImagePath(opt.obs);
             html += `<div class="image-option" data-idx="${i}" id="opt-${i}">
-                <img src="${imgPath}" style="max-width: 180px;">
+                <img src="${imgPath}" style="max-width: 150px;">
                 <div class="image-option-label">Option ${String.fromCharCode(65 + i)}</div>
             </div>`;
         });
@@ -642,12 +642,24 @@ function createBlock(blockIdx) {
                 const obs = experimentState.currentSequence[r];
                 const s = CONFIG.scenarios[experimentState.currentScenario];
                 const imgPath = Stimuli.getImagePath(obs);
+                
+                // Goal reminder based on scenario
+                let goalReminder = '';
+                if (experimentState.currentScenario === 'informative') {
+                    goalReminder = '<p class="goal-reminder" style="color: #2196F3;"><strong>Goal:</strong> Be as <em>informative</em> and accurate as possible.</p>';
+                } else if (experimentState.currentScenario === 'pers_plus') {
+                    goalReminder = '<p class="goal-reminder" style="color: #4CAF50;"><strong>Goal:</strong> Make the treatment seem as <em>effective</em> as possible (while being truthful).</p>';
+                } else if (experimentState.currentScenario === 'pers_minus') {
+                    goalReminder = '<p class="goal-reminder" style="color: #f44336;"><strong>Goal:</strong> Make the treatment seem as <em>ineffective</em> as possible (while being truthful).</p>';
+                }
+                
                 return `<div class="trial-container">
                     <div class="trial-header">
                         <span class="round-indicator" style="background:${s.color};">Round ${r+1} of 15 | ${s.role}</span>
                     </div>
+                    ${goalReminder}
                     <div class="stimulus-section">
-                        <img src="${imgPath}" class="stimulus-image">
+                        <img src="${imgPath}" class="stimulus-image" style="max-width: 320px;">
                     </div>
                     <div class="response-section">
                         <p class="instruction-text">Describe these results:</p>
@@ -690,6 +702,10 @@ function createBlock(blockIdx) {
                 const msg = document.getElementById('val-msg');
                 const btn = document.getElementById('send-btn');
                 
+                // Track all attempts
+                const attempts = [];
+                let falseAttemptCount = 0;
+                
                 const check = () => {
                     if (!q1.value || !pred.value || !q2.value) {
                         btn.disabled = true;
@@ -697,13 +713,29 @@ function createBlock(blockIdx) {
                         msg.className = 'validation-message';
                         return;
                     }
-                    if (TruthChecker.isValidUtterance(obs, q1.value, pred.value, q2.value)) {
+                    
+                    const currentUtterance = {
+                        q1: q1.value,
+                        predicate: pred.value,
+                        q2: q2.value,
+                        utterance: `${q1.value} sessions are ${pred.value} for ${q2.value} patients.`,
+                        timestamp: Date.now()
+                    };
+                    
+                    const isTrue = TruthChecker.isValidUtterance(obs, q1.value, pred.value, q2.value);
+                    currentUtterance.isTrue = isTrue;
+                    
+                    // Record this attempt
+                    attempts.push(currentUtterance);
+                    
+                    if (isTrue) {
                         btn.disabled = false;
                         msg.textContent = '✓ TRUE statement. You can send it.';
                         msg.className = 'validation-message success';
                     } else {
                         btn.disabled = true;
-                        msg.textContent = '✗ FALSE statement. Choose a true description.';
+                        falseAttemptCount++;
+                        msg.textContent = `✗ FALSE statement. Please choose a true description. (Attempt ${falseAttemptCount})`;
                         msg.className = 'validation-message error';
                     }
                 };
@@ -722,7 +754,9 @@ function createBlock(blockIdx) {
                         q1: q1.value,
                         predicate: pred.value,
                         q2: q2.value,
-                        utterance: `${q1.value} sessions are ${pred.value} for ${q2.value} patients.`
+                        utterance: `${q1.value} sessions are ${pred.value} for ${q2.value} patients.`,
+                        false_attempt_count: falseAttemptCount,
+                        all_attempts: attempts
                     });
                 });
             }

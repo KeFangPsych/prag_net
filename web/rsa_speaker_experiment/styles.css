@@ -114,7 +114,7 @@ body {
 }
 
 .stimulus-image {
-    max-width: 450px;
+    max-width: 320px;
     width: 100%;
     border: 2px solid #ddd;
     border-radius: 8px;
@@ -125,6 +125,16 @@ body {
     font-size: 0.9em;
     color: #666;
     margin-top: 10px;
+}
+
+/* Goal reminder */
+.goal-reminder {
+    text-align: center;
+    font-size: 1.1em;
+    margin: 10px 0 15px 0;
+    padding: 10px 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
 }
 
 /* Trial display */
