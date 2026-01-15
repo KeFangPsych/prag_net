@@ -129,12 +129,11 @@ body {
 
 /* Goal reminder */
 .goal-reminder {
-    text-align: center;
-    font-size: 1.1em;
-    margin: 10px 0 15px 0;
-    padding: 10px 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
+    text-align: left;
+    font-size: 1em;
+    margin: 15px 0;
+    padding: 12px 15px;
+    border-radius: 4px;
 }
 
 /* Trial display */
@@ -176,23 +175,25 @@ body {
 
 /* Utterance builder */
 .utterance-builder {
-    display: flex;
-    flex-wrap: wrap;
+    display: inline-flex;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    font-size: 1.1em;
+    gap: 4px;
+    font-size: 1em;
     margin-bottom: 20px;
+    width: 100%;
+    text-align: center;
 }
 
 .utterance-select {
-    padding: 10px 15px;
-    font-size: 1em;
+    padding: 8px 6px;
+    font-size: 0.95em;
     border: 2px solid #ddd;
     border-radius: 6px;
     background: white;
     cursor: pointer;
-    min-width: 120px;
+    min-width: 85px;
 }
 
 .utterance-select:focus {
@@ -206,6 +207,7 @@ body {
 
 .utterance-text {
     color: #555;
+    white-space: nowrap;
 }
 
 /* Validation message */

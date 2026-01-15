@@ -646,24 +646,24 @@ function createBlock(blockIdx) {
                 // Goal reminder based on scenario
                 let goalReminder = '';
                 if (experimentState.currentScenario === 'informative') {
-                    goalReminder = '<p class="goal-reminder" style="color: #2196F3;"><strong>Goal:</strong> Be as <em>informative</em> and accurate as possible.</p>';
+                    goalReminder = '<p class="goal-reminder" style="background: #e3f2fd; border-left: 4px solid #2196F3;"><strong>Goal:</strong> Be as <em>informative</em> and accurate as possible.</p>';
                 } else if (experimentState.currentScenario === 'pers_plus') {
-                    goalReminder = '<p class="goal-reminder" style="color: #4CAF50;"><strong>Goal:</strong> Make the treatment seem as <em>effective</em> as possible (while being truthful).</p>';
+                    goalReminder = '<p class="goal-reminder" style="background: #e8f5e9; border-left: 4px solid #4CAF50;"><strong>Goal:</strong> Make the treatment seem as <em>effective</em> as possible (while being truthful).</p>';
                 } else if (experimentState.currentScenario === 'pers_minus') {
-                    goalReminder = '<p class="goal-reminder" style="color: #f44336;"><strong>Goal:</strong> Make the treatment seem as <em>ineffective</em> as possible (while being truthful).</p>';
+                    goalReminder = '<p class="goal-reminder" style="background: #ffebee; border-left: 4px solid #f44336;"><strong>Goal:</strong> Make the treatment seem as <em>ineffective</em> as possible (while being truthful).</p>';
                 }
                 
                 return `<div class="trial-container">
                     <div class="trial-header">
                         <span class="round-indicator" style="background:${s.color};">Round ${r+1} of 15 | ${s.role}</span>
                     </div>
-                    ${goalReminder}
                     <div class="stimulus-section">
                         <img src="${imgPath}" class="stimulus-image" style="max-width: 320px;">
                     </div>
                     <div class="response-section">
-                        <p class="instruction-text">Describe these results:</p>
-                        <div class="utterance-builder">
+                        <p class="instruction-text">Describe these results to your listener:</p>
+                        ${goalReminder}
+                        <div class="utterance-builder" style="white-space: nowrap;">
                             <select id="sel-q1" class="utterance-select">
                                 <option value="">Select…</option>
                                 <option value="No">No</option>
@@ -671,13 +671,13 @@ function createBlock(blockIdx) {
                                 <option value="Most">Most</option>
                                 <option value="All">All</option>
                             </select>
-                            <span class="utterance-text">sessions are</span>
+                            <span class="utterance-text"> sessions are </span>
                             <select id="sel-pred" class="utterance-select">
                                 <option value="">Select…</option>
                                 <option value="Effective">Effective</option>
                                 <option value="Ineffective">Ineffective</option>
                             </select>
-                            <span class="utterance-text">for</span>
+                            <span class="utterance-text"> for </span>
                             <select id="sel-q2" class="utterance-select">
                                 <option value="">Select…</option>
                                 <option value="No">No</option>
@@ -685,10 +685,10 @@ function createBlock(blockIdx) {
                                 <option value="Most">Most</option>
                                 <option value="All">All</option>
                             </select>
-                            <span class="utterance-text">patients.</span>
+                            <span class="utterance-text"> patients.</span>
                         </div>
                         <div id="val-msg" class="validation-message"></div>
-                        <button id="send-btn" class="jspsych-btn submit-btn" disabled>Send Description</button>
+                        <button id="send-btn" class="jspsych-btn submit-btn">Send Description</button>
                     </div>
                 </div>`;
             },
@@ -702,62 +702,49 @@ function createBlock(blockIdx) {
                 const msg = document.getElementById('val-msg');
                 const btn = document.getElementById('send-btn');
                 
-                // Track all attempts
-                const attempts = [];
+                // Track false attempts (only when submit is clicked with false statement)
                 let falseAttemptCount = 0;
+                const falseAttempts = [];
                 
-                const check = () => {
+                btn.addEventListener('click', () => {
+                    // Check if all fields are filled
                     if (!q1.value || !pred.value || !q2.value) {
-                        btn.disabled = true;
-                        msg.textContent = '';
-                        msg.className = 'validation-message';
+                        msg.textContent = 'Please complete all selections before submitting.';
+                        msg.className = 'validation-message error';
                         return;
                     }
                     
-                    const currentUtterance = {
-                        q1: q1.value,
-                        predicate: pred.value,
-                        q2: q2.value,
-                        utterance: `${q1.value} sessions are ${pred.value} for ${q2.value} patients.`,
-                        timestamp: Date.now()
-                    };
-                    
+                    const utterance = `${q1.value} sessions are ${pred.value} for ${q2.value} patients.`;
                     const isTrue = TruthChecker.isValidUtterance(obs, q1.value, pred.value, q2.value);
-                    currentUtterance.isTrue = isTrue;
-                    
-                    // Record this attempt
-                    attempts.push(currentUtterance);
                     
                     if (isTrue) {
-                        btn.disabled = false;
-                        msg.textContent = '✓ TRUE statement. You can send it.';
-                        msg.className = 'validation-message success';
+                        // Success - submit the trial
+                        jsPsych.finishTrial({
+                            task: 'speaker',
+                            scenario: experimentState.currentScenario,
+                            seq_idx: experimentState.currentSeqIdx,
+                            round: r + 1,
+                            observation: obs,
+                            q1: q1.value,
+                            predicate: pred.value,
+                            q2: q2.value,
+                            utterance: utterance,
+                            false_attempt_count: falseAttemptCount,
+                            false_attempts: falseAttempts
+                        });
                     } else {
-                        btn.disabled = true;
+                        // False attempt - record and show error
                         falseAttemptCount++;
-                        msg.textContent = `✗ FALSE statement. Please choose a true description. (Attempt ${falseAttemptCount})`;
+                        falseAttempts.push({
+                            q1: q1.value,
+                            predicate: pred.value,
+                            q2: q2.value,
+                            utterance: utterance,
+                            timestamp: Date.now()
+                        });
+                        msg.textContent = '✗ This statement is FALSE. Please choose a true description and try again.';
                         msg.className = 'validation-message error';
                     }
-                };
-                
-                q1.addEventListener('change', check);
-                pred.addEventListener('change', check);
-                q2.addEventListener('change', check);
-                
-                btn.addEventListener('click', () => {
-                    jsPsych.finishTrial({
-                        task: 'speaker',
-                        scenario: experimentState.currentScenario,
-                        seq_idx: experimentState.currentSeqIdx,
-                        round: r + 1,
-                        observation: obs,
-                        q1: q1.value,
-                        predicate: pred.value,
-                        q2: q2.value,
-                        utterance: `${q1.value} sessions are ${pred.value} for ${q2.value} patients.`,
-                        false_attempt_count: falseAttemptCount,
-                        all_attempts: attempts
-                    });
                 });
             }
         });
