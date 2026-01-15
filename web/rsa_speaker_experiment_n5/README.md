@@ -42,31 +42,32 @@ Then open `http://localhost:8000` in your browser.
 
 ### 1. Welcome & Consent
 - Welcome page (press SPACE to continue)
-- Informed consent (click "I Consent" to proceed)
+- Stanford IRB-approved informed consent (click "I Consent" to proceed)
 
 ### 2. Instructions (3 pages, with back/forward navigation)
-1. Cover story and data representation (5 patients, 1 session each)
+1. Cover story: effectiveness as underlying probability, 5 patients × 1 session
 2. Description structure: "The treatment was [Predicate] for [Quantifier] patients."
 3. Truth/false judgment rules with worked examples
 
-### 3. Comprehension Tests (3 modules)
+### 3. Comprehension Tests (3 modules, no retry - just feedback)
 
 **Module 1**: Quantifier definitions
 - "Some" = at least one (could be all)
 - "Most" = more than half (could be all)
-- Review instruction pages 2-3 on failure
+- Immediate feedback after each question
 
-**Module 2**: True/False judgments (2 items, randomized)
+**Module 2**: True/False judgments (2 items, randomized order)
 - effective_3: "The treatment was Ineffective for Some patients." – TRUE
 - effective_1: "The treatment was Ineffective for All patients." – FALSE
-- Resume from current position after review
+- Explanatory feedback with optional review button
 
 **Module 3**: Match description to trials (multiple selection)
 - "The treatment was Ineffective for Most patients."
 - Correct: effective_2 and effective_0
 - Incorrect: effective_3
+- Detailed explanation for each option
 
-### 4. Main Speaker Task (3 blocks × 10 rounds)
+### 4. Main Speaker Task (3 blocks × 10 rounds + attention checks)
 
 Three within-subject conditions (randomized order):
 
@@ -78,17 +79,19 @@ Three within-subject conditions (randomized order):
 
 Each block:
 1. Waiting screen (5-10s, simulating listener matching)
-2. Scenario instruction with role description
+2. Scenario instruction with "YOUR ROLE:" label
 3. 10 rounds of trial descriptions
    - View trial outcome image
-   - Select description using dropdowns
-   - Only TRUE statements can be submitted
+   - Select from list of TRUE descriptions (no dropdowns)
    - Wait for "listener response" (3-5s)
-4. Block completion message
+4. **Attention check** (randomly placed between rounds 5-9)
+   - Must select specific required description
+   - 2 cumulative failures = experiment termination
+5. Block completion message
 
 ### 5. Feedback & Debrief
 - Open feedback text box
-- Debrief explaining simulated listeners
+- Debrief explaining simulated listeners and bonus payment
 
 ## Files
 
@@ -103,49 +106,28 @@ experiment_n5m1/
 ├── generate_stimuli.py  # Python script to generate images
 ├── README.md            # This file
 └── stimuli_emoji_n5m1/  # Generated stimulus images (6 PNGs)
-    ├── effective_0.png
-    ├── effective_1.png
-    └── ...
 ```
 
-## Trial Sequences
+## Key Features
 
-Each condition has 2 possible sequences of 10 trials. Participants are randomly assigned to one sequence per condition.
-
-### Informative Sequences
-Moderate effectiveness values, balanced outcomes
-
-### Persuade+ Sequences  
-Lower effectiveness values (more failures visible)
-- Speaker's goal: Make treatment seem effective
-
-### Persuade- Sequences
-Higher effectiveness values (more successes visible)
-- Speaker's goal: Make treatment seem ineffective
-
-## Utterance Truth Table
-
-| Effective Patients | True Utterances |
-|-------------------|-----------------|
-| 0 | Effective for No; Ineffective for All, Most, Some |
-| 1 | Effective for Some; Ineffective for Most, Some |
-| 2 | Effective for Some; Ineffective for Most, Some |
-| 3 | Effective for Most, Some; Ineffective for Some |
-| 4 | Effective for Most, Some; Ineffective for Some |
-| 5 | Effective for All, Most, Some; Ineffective for No |
+- **Progress bar**: Updates throughout experiment
+- **Attention checks**: One per block, 2 failures = termination
+- **No retry on comprehension**: Just explanatory feedback
+- **Radio-button selection**: Choose from true descriptions instead of dropdowns
+- **Detailed feedback**: Explains why each option is correct/incorrect
 
 ## Data Output
 
 The experiment saves:
-- Comprehension check responses and accuracy
+- Comprehension check responses and correctness
 - For each trial:
   - Scenario/condition
   - Round number
   - Number of effective patients
   - Selected predicate and quantifier
   - Full utterance string
-  - Response time
-  - False attempt count and details
+- Attention check passes/failures
+- Open-ended feedback
 
 ## Dependencies
 
@@ -158,11 +140,3 @@ The experiment saves:
   - instructions
   - preload
   - call-function
-
-## Browser Compatibility
-
-Tested on:
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
