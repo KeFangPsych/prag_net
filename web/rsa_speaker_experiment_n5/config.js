@@ -6,7 +6,7 @@
 // DATAPIPE CONFIGURATION - UPDATE THIS WITH YOUR EXPERIMENT ID
 // ============================================================================
 const DATAPIPE_CONFIG = {
-  experiment_id: "YOUR_EXPERIMENT_ID_HERE", // Replace with your DataPipe experiment ID
+  experiment_id: "lDXBSBtc67aZ", // Replace with your DataPipe experiment ID
   // Set to true when ready to collect real data
   enabled: true,
 };
