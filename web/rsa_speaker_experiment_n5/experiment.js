@@ -134,8 +134,7 @@ const welcome = {
     stimulus: `
         <div class="welcome-container">
             <h1>Welcome to the Clinical Trial Communication Study</h1>
-            <p class="subtitle">In this study, you will learn about clinical trial results and 
-            practice describing them to different audiences.</p>
+            <p class="subtitle">In this study, you will play roles with different goals that describe clinical trial results to audiences.</p>
             <p>This study takes approximately <strong>15-20 minutes</strong> to complete.</p>
             <p class="press-space">Press <strong>SPACE</strong> to continue</p>
         </div>
@@ -167,7 +166,7 @@ const consent = {
             </div>
             
             <div class="consent-section">
-                <p><strong>PAYMENTS:</strong> You will receive payment in the amount advertised on Prolific. If you do not complete this study, you will receive prorated payment based on the time that you have spent. Additionally, you may be eligible for bonus payments as described in the instructions.</p>
+                <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>$9</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>$1 per block</strong> (up to $3 total) based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent. <strong>Please note:</strong> This study includes attention checks throughout. Failing attention checks may result in early termination of the study and forfeiture of compensation.</p>
             </div>
             
             <div class="consent-section">
@@ -586,18 +585,28 @@ const comp3_feedback = {
             html += `<h2 style="color: #f44336;">✗ Incorrect</h2>`;
         }
         
-        html += `<p>The statement was: "${item.statement}"</p>
-            <p>"Ineffective for Most patients" means more than half (3, 4, or 5) patients had <em>ineffective</em> treatment.</p>
-            <div class="feedback-explanation">`;
+        html += `<h3>The question was:</h3>
+            <div class="definition-box" style="text-align: center; font-size: 1.1em;">"${item.statement}"</div>
+            <p style="text-align: center; margin: 15px 0;">"Ineffective for Most patients" means more than half (3, 4, or 5) patients had <em>ineffective</em> treatment.</p>
+            
+            <div class="checkbox-options" style="pointer-events: none;">`;
         
         experimentState.comp3_options.forEach((opt, i) => {
+            const imgPath = Stimuli.getImagePath(opt.numEffective);
             const numIneffective = 5 - opt.numEffective;
             const isCorrect = opt.correct;
-            const cssClass = isCorrect ? 'correct' : 'incorrect';
-            const symbol = isCorrect ? '✓' : '✗';
-            html += `<div class="feedback-item ${cssClass}">
-                <strong>${symbol} Option ${String.fromCharCode(65 + i)} (${opt.numEffective} effective, ${numIneffective} ineffective):</strong> 
-                ${isCorrect ? 'CORRECT' : 'INCORRECT'} — ${numIneffective} ineffective is ${numIneffective > 2.5 ? 'more than' : 'not more than'} half of 5.
+            const borderColor = isCorrect ? '#4CAF50' : '#f44336';
+            const bgColor = isCorrect ? '#e8f5e9' : '#ffebee';
+            
+            html += `<div class="checkbox-option" style="border-color: ${borderColor}; background: ${bgColor};">
+                <img src="${imgPath}" style="max-width: 160px;">
+                <div class="checkbox-label">
+                    <span style="color: ${borderColor}; font-weight: bold;">${isCorrect ? '✓' : '✗'}</span>
+                    <span>Option ${String.fromCharCode(65 + i)}</span>
+                </div>
+                <p style="font-size: 0.85em; margin: 5px 0 0 0; color: #666;">
+                    ${numIneffective} ineffective ${numIneffective > 2.5 ? '> 2.5 ✓' : '≤ 2.5 ✗'}
+                </p>
             </div>`;
         });
         
@@ -629,6 +638,12 @@ const speakerIntro = {
         <p>Now you will describe clinical trial results to <strong>three different listeners</strong>.</p>
         <p>Each listener is curious about the treatment's effectiveness, but you will have a <strong>different communication goal</strong> for each one.</p>
         <p>For each listener, you will describe <strong>10 trial results</strong>.</p>
+        
+        <div class="definition-box" style="margin: 20px 0;">
+            <strong>💰 Bonus Structure:</strong> After each description, the listener will respond based on what you told them. 
+            Your bonus (up to <strong>${PAYMENT.block_bonus_max} per block</strong>) depends on whether the listener's response matches your communication goal!
+        </div>
+        
         <p><strong>Important:</strong> You can only send descriptions that are <strong>TRUE</strong>!</p>
     </div>`,
     choices: ['Begin Speaker Task'],
@@ -643,8 +658,8 @@ const speakerIntro = {
 function createBlock(blockIdx) {
     const timeline = [];
     
-    // Randomly choose which round (5-9) will have attention check
-    const attentionCheckRound = Math.floor(Math.random() * 5) + 5; // 5, 6, 7, 8, or 9
+    // Randomly choose after which round (5-9) to insert attention check
+    const attentionCheckAfterRound = Math.floor(Math.random() * 5) + 5; // 5, 6, 7, 8, or 9
     
     // Initialize block
     timeline.push({
@@ -655,7 +670,9 @@ function createBlock(blockIdx) {
             const seqs = CONFIG.trial_sequences[key];
             experimentState.currentSeqIdx = Math.floor(Math.random() * seqs.length);
             experimentState.currentSequence = seqs[experimentState.currentSeqIdx];
-            experimentState.attentionCheckRound = attentionCheckRound;
+            experimentState.attentionCheckAfterRound = attentionCheckAfterRound;
+            // Counterbalance: randomly choose whether to show descriptions in original or reverse order
+            experimentState.reverseDescriptionOrder = Math.random() < 0.5;
         }
     });
     
@@ -672,17 +689,65 @@ function createBlock(blockIdx) {
         on_finish: updateProgress
     });
     
-    // Scenario introduction
+    // Scenario introduction with listener mockup
     timeline.push({
         type: jsPsychHtmlButtonResponse,
         stimulus: function() {
             const s = CONFIG.scenarios[experimentState.currentScenario];
+            const isInformative = (experimentState.currentScenario === 'informative');
+            const isPositive = (experimentState.currentScenario === 'pers_plus');
+            
+            // Generate listener mockup based on scenario type
+            let listenerMockup = '';
+            if (isInformative) {
+                listenerMockup = `
+                    <div class="listener-mockup">
+                        <p style="font-weight: bold; margin-bottom: 10px;">What the listener will see:</p>
+                        <div class="mockup-box">
+                            <p style="margin: 0 0 10px 0;">The speaker said: <em>"The treatment was Effective for Most patients."</em></p>
+                            <p style="margin: 0 0 10px 0;">Which trial outcome do you think the speaker observed?</p>
+                            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                                <div class="mockup-option">😃😃😃🤒🤒</div>
+                                <div class="mockup-option">😃😃🤒🤒🤒</div>
+                                <div class="mockup-option">😃😃😃😃🤒</div>
+                            </div>
+                        </div>
+                    </div>`;
+            } else {
+                listenerMockup = `
+                    <div class="listener-mockup">
+                        <p style="font-weight: bold; margin-bottom: 10px;">What the listener will see:</p>
+                        <div class="mockup-box">
+                            <p style="margin: 0 0 10px 0;">The speaker said: <em>"The treatment was Effective for Some patients."</em></p>
+                            <p style="margin: 0 0 10px 0;">How effective do you think this treatment is?</p>
+                            <div class="mockup-slider">
+                                <span>0%</span>
+                                <div class="slider-track">
+                                    <div class="slider-fill" style="width: 60%;"></div>
+                                    <div class="slider-thumb" style="left: 60%;"></div>
+                                </div>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #666; text-align: center;">
+                            ${isPositive ? 'Your bonus increases with higher ratings!' : 'Your bonus increases with lower ratings!'}
+                        </p>
+                    </div>`;
+            }
+            
             return `<div class="scenario-container">
                 <h2>Listener Matched!</h2>
                 <p style="font-size: 1.1em; margin: 20px 0;"><strong>YOUR ROLE:</strong></p>
                 <div class="role-badge" style="background:${s.color};">${s.role}</div>
                 <div class="scenario-description">${s.description}</div>
-                <p>You will describe <strong>10 trial results</strong> to this listener.</p>
+                
+                <div class="bonus-info" style="background: ${s.color}15; border: 1px solid ${s.color}; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <strong>💰 Your Bonus:</strong> ${s.bonusExplanation}
+                </div>
+                
+                ${listenerMockup}
+                
+                <p style="margin-top: 20px;">You will describe <strong>10 trial results</strong> to this listener.</p>
                 <p><strong>Remember:</strong> Only TRUE statements can be sent!</p>
             </div>`;
         },
@@ -690,7 +755,7 @@ function createBlock(blockIdx) {
         on_finish: updateProgress
     });
     
-    // 10 trials + 1 attention check (inserted at random position between round 5-9)
+    // 10 regular trials with 1 attention check inserted after a random round (5-9)
     for (let r = 0; r < CONFIG.n_rounds; r++) {
         // Regular trial
         timeline.push({
@@ -701,7 +766,12 @@ function createBlock(blockIdx) {
                 const imgPath = Stimuli.getImagePath(numEffective);
                 
                 // Get all true utterances for this observation
-                const trueUtterances = TruthChecker.getTrueUtterances(numEffective);
+                let trueUtterances = TruthChecker.getTrueUtterances(numEffective);
+                
+                // Counterbalance: reverse order if flag is set
+                if (experimentState.reverseDescriptionOrder) {
+                    trueUtterances = [...trueUtterances].reverse();
+                }
                 
                 let optionsHtml = '<div class="utterance-options">';
                 trueUtterances.forEach((u, i) => {
@@ -719,7 +789,7 @@ function createBlock(blockIdx) {
                     <div class="stimulus-section">
                         <img src="${imgPath}" class="stimulus-image" style="max-width: 400px;">
                     </div>
-                    <div class="response-section">
+                    <div class="response-section" style="min-width: 500px; max-width: 600px;">
                         <p class="instruction-text">Describe these results to your listener:</p>
                         <p class="goal-reminder" style="background: ${s.color}15; border-left: 4px solid ${s.color};">
                             <strong>Goal:</strong> ${s.goalReminder}
@@ -734,7 +804,10 @@ function createBlock(blockIdx) {
             data: { task: 'speaker', block: blockIdx, round: r + 1 },
             on_load: function() {
                 const numEffective = experimentState.currentSequence[r];
-                const trueUtterances = TruthChecker.getTrueUtterances(numEffective);
+                let trueUtterances = TruthChecker.getTrueUtterances(numEffective);
+                if (experimentState.reverseDescriptionOrder) {
+                    trueUtterances = [...trueUtterances].reverse();
+                }
                 const options = document.querySelectorAll('.utterance-option');
                 const btn = document.getElementById('send-btn');
                 let selectedIdx = -1;
@@ -760,7 +833,8 @@ function createBlock(blockIdx) {
                             num_effective: numEffective,
                             predicate: selected.predicate,
                             quantifier: selected.quantifier,
-                            utterance: selected.text
+                            utterance: selected.text,
+                            reverse_order: experimentState.reverseDescriptionOrder
                         });
                     }
                 });
@@ -768,21 +842,33 @@ function createBlock(blockIdx) {
             on_finish: updateProgress
         });
         
-        // Insert attention check after this round if it's the chosen round
-        if (r === attentionCheckRound - 1) {
-            timeline.push(createAttentionCheck(blockIdx, r + 1));
-        }
-        
-        // Listener wait (except after last round)
+        // Listener wait after each regular trial (except after last round)
         if (r < CONFIG.n_rounds - 1) {
             timeline.push({
                 type: jsPsychHtmlKeyboardResponse,
                 stimulus: `<div class="waiting-container">
-                    <h2>Listener reading your description...</h2>
+                    <h2>Listener is responding based on your description...</h2>
                     <div class="spinner"></div>
+                    <p>Description sent!</p>
                 </div>`,
                 choices: "NO_KEYS",
                 trial_duration: () => randomInt(CONFIG.listener_response_min, CONFIG.listener_response_max)
+            });
+        }
+        
+        // Insert attention check after the specified round (no listener wait after attention check)
+        if (r + 1 === attentionCheckAfterRound) {
+            // Attention check trial
+            timeline.push(createAttentionCheck(blockIdx, r + 1));
+            
+            // Conditional warning after first failure
+            timeline.push({
+                timeline: [attentionWarning],
+                conditional_function: function() {
+                    const lastAttnCheck = jsPsych.data.get().filter({task: 'attention_check'}).last(1).values()[0];
+                    // Show warning only if they just failed AND it's their first failure
+                    return lastAttnCheck && !lastAttnCheck.attention_passed && experimentState.attentionFailures === 1;
+                }
             });
         }
     }
@@ -814,7 +900,11 @@ function createBlock(blockIdx) {
 function createAttentionCheck(blockIdx, afterRound) {
     // Random image for attention check
     const randomNumEffective = Math.floor(Math.random() * 6);
-    const requiredDescription = "The treatment was Ineffective for No patients.";
+    
+    // Get all true utterances for this image and pick one randomly
+    const trueUtterances = TruthChecker.getTrueUtterances(randomNumEffective);
+    const requiredUtterance = trueUtterances[Math.floor(Math.random() * trueUtterances.length)];
+    const requiredDescription = requiredUtterance.text;
     
     return {
         type: jsPsychHtmlButtonResponse,
@@ -822,25 +912,14 @@ function createAttentionCheck(blockIdx, afterRound) {
             const s = CONFIG.scenarios[experimentState.currentScenario];
             const imgPath = Stimuli.getImagePath(randomNumEffective);
             
-            // Get all true utterances plus the required one (even if false)
-            const trueUtterances = TruthChecker.getTrueUtterances(randomNumEffective);
-            
-            // Add the required description if not already in list
-            const requiredOption = {
-                predicate: 'Ineffective',
-                quantifier: 'No',
-                text: requiredDescription
-            };
-            
-            // Create options list with required option included
-            let allOptions = [...trueUtterances];
-            if (!trueUtterances.some(u => u.text === requiredDescription)) {
-                allOptions.push(requiredOption);
+            // Get utterances and apply counterbalancing
+            let displayUtterances = [...trueUtterances];
+            if (experimentState.reverseDescriptionOrder) {
+                displayUtterances = displayUtterances.reverse();
             }
-            allOptions = shuffleArray(allOptions);
             
             let optionsHtml = '<div class="utterance-options">';
-            allOptions.forEach((u, i) => {
+            displayUtterances.forEach((u, i) => {
                 optionsHtml += `<label class="utterance-option" data-idx="${i}" data-text="${u.text}">
                     <input type="radio" name="utterance" value="${i}">
                     ${u.text}
@@ -850,23 +929,30 @@ function createAttentionCheck(blockIdx, afterRound) {
             
             return `<div class="trial-container">
                 <div class="trial-header">
-                    <span class="round-indicator" style="background: #ff9800;">Attention Check</span>
+                    <span class="round-indicator" style="background:${s.color};">Round ${afterRound} of ${CONFIG.n_rounds} | ${s.role}</span>
                 </div>
                 <div class="stimulus-section">
                     <img src="${imgPath}" class="stimulus-image" style="max-width: 400px;">
                 </div>
-                <div class="response-section">
-                    <div class="attention-warning">
-                        <strong>⚠️ ATTENTION CHECK</strong><br>
-                        Please select this specific description: <strong>"${requiredDescription}"</strong>
-                    </div>
+                <div class="response-section" style="min-width: 500px; max-width: 600px;">
+                    <p class="instruction-text">Describe these results to your listener:</p>
+                    <p class="goal-reminder" style="background: ${s.color}15; border-left: 4px solid ${s.color};">
+                        <strong>⚠️ Attention Check:</strong> Please select exactly this description: <strong>"${requiredDescription}"</strong>
+                    </p>
+                    <p style="text-align: center; font-weight: 500;">Select one of the following TRUE descriptions:</p>
                     ${optionsHtml}
                     <button id="send-btn" class="jspsych-btn submit-btn" disabled>Send Description</button>
                 </div>
             </div>`;
         },
         choices: [],
-        data: { task: 'attention_check', block: blockIdx, after_round: afterRound },
+        data: { 
+            task: 'attention_check', 
+            block: blockIdx, 
+            round: afterRound,
+            num_effective: randomNumEffective,
+            required_description: requiredDescription 
+        },
         on_load: function() {
             const options = document.querySelectorAll('.utterance-option');
             const btn = document.getElementById('send-btn');
@@ -890,28 +976,44 @@ function createAttentionCheck(blockIdx, afterRound) {
                 jsPsych.finishTrial({
                     task: 'attention_check',
                     block: blockIdx,
+                    round: afterRound,
+                    num_effective: randomNumEffective,
                     required_description: requiredDescription,
                     selected_description: selectedText,
                     attention_passed: passed,
-                    total_failures: experimentState.attentionFailures
+                    total_failures: experimentState.attentionFailures,
+                    reverse_order: experimentState.reverseDescriptionOrder
                 });
             });
         },
         on_finish: function(data) {
             updateProgress();
-            // Check if we need to terminate
+            // Check if we need to terminate (2 out of 3 failures)
             if (experimentState.attentionFailures >= 2) {
                 jsPsych.endExperiment(`
                     <div class="debrief-container">
                         <h2>Study Ended</h2>
                         <p>Unfortunately, the study has ended because attention checks were not passed.</p>
-                        <p>Thank you for your time. You will receive prorated payment for the time spent.</p>
+                        <p>Thank you for your time.</p>
                     </div>
                 `);
             }
         }
     };
 }
+
+// Warning shown after first attention check failure
+const attentionWarning = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `<div class="comprehension-container">
+        <h2 style="color: #f44336;">⚠️ Attention Check Failed</h2>
+        <p>You did not select the requested description in the attention check.</p>
+        <p style="font-weight: bold; margin-top: 20px;">Please pay close attention to the instructions. 
+        One more failed attention check will result in termination of the study and forfeiture of compensation.</p>
+    </div>`,
+    choices: ['I understand, continue'],
+    data: { task: 'attention_warning' }
+};
 
 // ============================================================================
 // 6. FEEDBACK & DEBRIEF

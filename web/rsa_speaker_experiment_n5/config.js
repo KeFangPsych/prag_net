@@ -2,11 +2,21 @@
  * config.js - Experiment configuration for N=5 patients, M=1 session
  */
 
+// Payment configuration (defined separately so they can be referenced in CONFIG)
+const PAYMENT = {
+    base: "$9",
+    block_bonus_max: "$1"
+};
+
 const CONFIG = {
     // Experiment parameters
     n_patients: 5,
     m_trials: 1,
     n_rounds: 10,
+    
+    // Payment configuration (reference the constants)
+    base_payment: PAYMENT.base,
+    block_bonus_max: PAYMENT.block_bonus_max,
     
     // Timing (in ms)
     pairing_wait_min: 5000,
@@ -85,27 +95,36 @@ const CONFIG = {
             role: "Neutral Clinical Scientist",
             description: `You are a <strong>neutral clinical scientist</strong> reporting the trial results 
                 to a medical professional. Your goal is to <strong>accurately and informatively</strong> 
-                describe the treatment outcomes. The listener wants to understand the true effectiveness 
-                of the treatment based on your descriptions.`,
+                describe the treatment outcomes so that the listener can identify the true data.`,
             goalReminder: "Be as <em>informative</em> and accurate as possible.",
+            bonusExplanation: `After receiving your description, the listener will try to identify which trial outcome 
+                you observed. You will receive a <strong>bonus up to ${PAYMENT.block_bonus_max}</strong> proportional to how many 
+                trials the listener correctly identifies.`,
+            listenerTask: "identify the true trial outcome",
             color: "#2196F3"
         },
         pers_plus: {
             role: "Treatment Company Representative",
             description: `You are a <strong>sales representative from the company that developed this treatment</strong>. 
-                Your goal is to <strong>present the treatment in a favorable light</strong> to potential investors. 
-                You want the listener to believe the treatment is as effective as possible, while still 
-                making true statements.`,
+                Your goal is to <strong>present the treatment in a favorable light</strong> to potential investors 
+                while still making true statements.`,
             goalReminder: "Make the treatment seem as <em>effective</em> as possible (while being truthful).",
+            bonusExplanation: `After receiving your description, the listener will report how effective they believe 
+                the treatment is. You will receive a <strong>bonus up to ${PAYMENT.block_bonus_max}</strong> proportional to how HIGH the listener's 
+                effectiveness rating is.`,
+            listenerTask: "rate the treatment's effectiveness",
             color: "#4CAF50"
         },
         pers_minus: {
             role: "Competitor Company Representative",
             description: `You are a <strong>sales representative from a competitor company</strong>. 
-                Your goal is to <strong>downplay the treatment's effectiveness</strong> to potential investors. 
-                You want the listener to believe the treatment is as ineffective as possible, while still 
-                making true statements.`,
+                Your goal is to <strong>downplay the treatment's effectiveness</strong> to potential investors 
+                while still making true statements.`,
             goalReminder: "Make the treatment seem as <em>ineffective</em> as possible (while being truthful).",
+            bonusExplanation: `After receiving your description, the listener will report how effective they believe 
+                the treatment is. You will receive a <strong>bonus up to ${PAYMENT.block_bonus_max}</strong> proportional to how LOW the listener's 
+                effectiveness rating is.`,
+            listenerTask: "rate the treatment's effectiveness",
             color: "#f44336"
         }
     }

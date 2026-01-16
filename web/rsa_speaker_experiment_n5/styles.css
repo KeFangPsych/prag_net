@@ -187,12 +187,81 @@ body {
     padding: 25px;
     border-radius: 8px;
     border: 1px solid #ddd;
+    min-width: 500px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .instruction-text {
     font-weight: 500;
     margin-bottom: 20px;
     text-align: center;
+}
+
+/* Listener mockup styles */
+.listener-mockup {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.mockup-box {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+.mockup-option {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1.2em;
+    cursor: default;
+}
+
+.mockup-slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+.slider-track {
+    width: 200px;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    position: relative;
+}
+
+.slider-fill {
+    height: 100%;
+    background: #2196F3;
+    border-radius: 4px;
+}
+
+.slider-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background: #2196F3;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.bonus-info {
+    text-align: left;
+    line-height: 1.6;
 }
 
 /* Utterance builder */
@@ -350,7 +419,7 @@ body {
 
 /* Scenario introduction */
 .scenario-container {
-    max-width: 700px;
+    max-width: 750px;
     margin: 0 auto;
     padding: 30px;
     text-align: center;
@@ -594,14 +663,14 @@ body {
     display: none;
 }
 
-/* Attention check styling */
-.attention-warning {
-    background: #fff3e0;
-    border: 2px solid #ff9800;
-    padding: 15px;
-    border-radius: 8px;
+/* Goal reminder - fixed width styling */
+.goal-reminder {
+    text-align: left;
+    font-size: 1em;
     margin: 15px 0;
-    text-align: center;
+    padding: 12px 15px;
+    border-radius: 4px;
+    min-height: 50px;
 }
 
 /* Comprehension feedback */
