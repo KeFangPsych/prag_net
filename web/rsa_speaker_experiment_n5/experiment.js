@@ -166,7 +166,7 @@ const consent = {
             </div>
             
             <div class="consent-section">
-                <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>$9</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>$1 per block</strong> (up to $3 total) based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent. <strong>Please note:</strong> This study includes attention checks throughout. Failing attention checks may result in early termination of the study and forfeiture of compensation.</p>
+                <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>${CONFIG.base_payment}</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>${CONFIG.block_bonus_max} per block</strong> (up to $3 total) based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent. <strong>Please note:</strong> This study includes attention checks throughout. Failing attention checks may result in early termination of the study and forfeiture of compensation.</p>
             </div>
             
             <div class="consent-section">
@@ -526,7 +526,7 @@ const comp3_trial = {
         });
         
         html += `</div>
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 20px; text-align: center;">
                 <button id="comp3-submit" class="jspsych-btn">Submit Answer</button>
             </div>
         </div>`;
@@ -676,20 +676,7 @@ function createBlock(blockIdx) {
         }
     });
     
-    // Pairing wait screen
-    timeline.push({
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<div class="waiting-container">
-            <h2>Finding a listener...</h2>
-            <div class="spinner"></div>
-            <p>Please wait while we pair you with another participant.</p>
-        </div>`,
-        choices: "NO_KEYS",
-        trial_duration: () => randomInt(CONFIG.pairing_wait_min, CONFIG.pairing_wait_max),
-        on_finish: updateProgress
-    });
-    
-    // Scenario introduction with listener mockup
+    // Scenario introduction with listener mockup (BEFORE pairing)
     timeline.push({
         type: jsPsychHtmlButtonResponse,
         stimulus: function() {
@@ -702,21 +689,31 @@ function createBlock(blockIdx) {
             if (isInformative) {
                 listenerMockup = `
                     <div class="listener-mockup">
-                        <p style="font-weight: bold; margin-bottom: 10px;">What the listener will see:</p>
+                        <p style="font-weight: bold; margin-bottom: 10px;">How your bonus works:</p>
                         <div class="mockup-box">
-                            <p style="margin: 0 0 10px 0;">The speaker said: <em>"The treatment was Effective for Most patients."</em></p>
-                            <p style="margin: 0 0 10px 0;">Which trial outcome do you think the speaker observed?</p>
+                            <p style="margin: 0 0 15px 0; color: #666; font-size: 0.95em;"><strong>1. You see the trial outcome:</strong></p>
+                            <div style="text-align: center; margin-bottom: 15px;">
+                                <span style="font-size: 1.5em;">😃😃😃🤒🤒</span>
+                                <p style="margin: 5px 0 0 0; font-size: 0.85em; color: #888;">(3 effective, 2 ineffective)</p>
+                            </div>
+                            <p style="margin: 0 0 10px 0; color: #666; font-size: 0.95em;"><strong>2. You send a description:</strong></p>
+                            <p style="margin: 0 0 15px 0; text-align: center;"><em>"The treatment was Effective for Most patients."</em></p>
+                            <p style="margin: 0 0 10px 0; color: #666; font-size: 0.95em;"><strong>3. The listener tries to identify what you saw:</strong></p>
                             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                                <div class="mockup-option">😃😃😃🤒🤒</div>
+                                <div class="mockup-option" style="border: 2px solid #4CAF50; background: #e8f5e9;">😃😃😃🤒🤒 ✓</div>
                                 <div class="mockup-option">😃😃🤒🤒🤒</div>
                                 <div class="mockup-option">😃😃😃😃🤒</div>
                             </div>
+                            <p style="margin: 15px 0 0 0; text-align: center; color: #4CAF50; font-weight: bold;">
+                                If the listener picks correctly → You earn bonus!
+                            </p>
                         </div>
                     </div>`;
             } else {
+                const bonusDirection = isPositive ? 'Your bonus increases with higher ratings' : 'Your bonus increases with lower ratings';
                 listenerMockup = `
                     <div class="listener-mockup">
-                        <p style="font-weight: bold; margin-bottom: 10px;">What the listener will see:</p>
+                        <p style="font-weight: bold; margin-bottom: 10px;">What the listener will see <span style="font-weight: normal; color: #666;">(${bonusDirection})</span>:</p>
                         <div class="mockup-box">
                             <p style="margin: 0 0 10px 0;">The speaker said: <em>"The treatment was Effective for Some patients."</em></p>
                             <p style="margin: 0 0 10px 0;">How effective do you think this treatment is?</p>
@@ -729,14 +726,11 @@ function createBlock(blockIdx) {
                                 <span>100%</span>
                             </div>
                         </div>
-                        <p style="margin-top: 10px; font-size: 0.9em; color: #666; text-align: center;">
-                            ${isPositive ? 'Your bonus increases with higher ratings!' : 'Your bonus increases with lower ratings!'}
-                        </p>
                     </div>`;
             }
             
             return `<div class="scenario-container">
-                <h2>Listener Matched!</h2>
+                <h2>Your Next Role</h2>
                 <p style="font-size: 1.1em; margin: 20px 0;"><strong>YOUR ROLE:</strong></p>
                 <div class="role-badge" style="background:${s.color};">${s.role}</div>
                 <div class="scenario-description">${s.description}</div>
@@ -749,6 +743,35 @@ function createBlock(blockIdx) {
                 
                 <p style="margin-top: 20px;">You will describe <strong>10 trial results</strong> to this listener.</p>
                 <p><strong>Remember:</strong> Only TRUE statements can be sent!</p>
+            </div>`;
+        },
+        choices: ['Find a Listener'],
+        on_finish: updateProgress
+    });
+    
+    // Pairing wait screen (AFTER reading instructions)
+    timeline.push({
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `<div class="waiting-container">
+            <h2>Finding a listener...</h2>
+            <div class="spinner"></div>
+            <p>Please wait while we pair you with another participant.</p>
+        </div>`,
+        choices: "NO_KEYS",
+        trial_duration: () => randomInt(CONFIG.pairing_wait_min, CONFIG.pairing_wait_max),
+        on_finish: updateProgress
+    });
+    
+    // Listener matched confirmation
+    timeline.push({
+        type: jsPsychHtmlButtonResponse,
+        stimulus: function() {
+            const s = CONFIG.scenarios[experimentState.currentScenario];
+            return `<div class="scenario-container">
+                <h2 style="color: #4CAF50;">✓ Listener Matched!</h2>
+                <p>You are now connected with a listener.</p>
+                <div class="role-badge" style="background:${s.color};">${s.role}</div>
+                <p style="margin-top: 20px;"><strong>Goal:</strong> ${s.goalReminder}</p>
             </div>`;
         },
         choices: ['Start Communication'],
@@ -796,7 +819,9 @@ function createBlock(blockIdx) {
                         </p>
                         <p style="text-align: center; font-weight: 500;">Select one of the following TRUE descriptions:</p>
                         ${optionsHtml}
-                        <button id="send-btn" class="jspsych-btn submit-btn" disabled>Send Description</button>
+                        <div style="text-align: center;">
+                            <button id="send-btn" class="jspsych-btn submit-btn" disabled>Send Description</button>
+                        </div>
                     </div>
                 </div>`;
             },
@@ -941,7 +966,9 @@ function createAttentionCheck(blockIdx, afterRound) {
                     </p>
                     <p style="text-align: center; font-weight: 500;">Select one of the following TRUE descriptions:</p>
                     ${optionsHtml}
-                    <button id="send-btn" class="jspsych-btn submit-btn" disabled>Send Description</button>
+                    <div style="text-align: center;">
+                        <button id="send-btn" class="jspsych-btn submit-btn" disabled>Send Description</button>
+                    </div>
                 </div>
             </div>`;
         },
