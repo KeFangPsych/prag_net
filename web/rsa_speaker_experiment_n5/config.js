@@ -30,8 +30,13 @@ const CONFIG = {
   // Timing (in ms)
   pairing_wait_min: 5000,
   pairing_wait_max: 10000,
-  listener_response_min: 2000,
-  listener_response_max: 3000,
+  listener_response_min: 1500,
+  listener_response_max: 2500,
+  
+  // Inactivity timeout settings (in ms)
+  inactivity_warning_1: 30000,  // First warning at 30 seconds
+  inactivity_warning_2: 60000,  // Second warning at 60 seconds  
+  inactivity_timeout: 90000,    // Terminate at 90 seconds (1.5 minutes)
 
   // Quantifier and predicate definitions
   quantifiers: ["No", "Some", "Most", "All"],
