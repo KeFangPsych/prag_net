@@ -3,14 +3,48 @@
  * Updated version with all requested changes
  */
 
+// ============================================================================
+// SUBJECT ID AND PROLIFIC INTEGRATION
+// ============================================================================
+
+// Get URL parameters (for Prolific integration)
+const urlParams = new URLSearchParams(window.location.search);
+const prolificPID = urlParams.get('PROLIFIC_PID') || null;
+const studyID = urlParams.get('STUDY_ID') || null;
+const sessionID = urlParams.get('SESSION_ID') || null;
+
+// Generate subject ID: use Prolific ID if available, otherwise generate random
+function generateSubjectId() {
+    if (prolificPID) {
+        return prolificPID;
+    }
+    // Generate random ID for testing
+    return 'test_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now();
+}
+
+const subjectId = generateSubjectId();
+
 // Initialize jsPsych
 const jsPsych = initJsPsych({
     show_progress_bar: true,
     auto_update_progress_bar: false,
     on_finish: function() {
-        const data = jsPsych.data.get().json();
-        console.log('Experiment complete. Data:', data);
+        // Redirect to Prolific completion page if running on Prolific
+        if (prolificPID) {
+            // Replace with your actual Prolific completion URL
+            window.location.href = "https://app.prolific.com/submissions/complete?cc=YOUR_COMPLETION_CODE";
+        }
     }
+});
+
+// Add subject info to all trials
+jsPsych.data.addProperties({
+    subject_id: subjectId,
+    prolific_pid: prolificPID,
+    study_id: studyID,
+    session_id: sessionID,
+    experiment_version: '1.0.0',
+    start_time: new Date().toISOString()
 });
 
 // Experiment state
@@ -25,11 +59,13 @@ const experimentState = {
     attentionFailures: 0,
     attentionCheckRound: -1,
     totalTrials: 0,
-    completedTrials: 0
+    completedTrials: 0,
+    roleCompOptions: []
 };
 
 // Calculate total trials for progress bar
-const TOTAL_PROGRESS_STEPS = 55;
+// Added role comprehension checks (3 checks + 3 feedbacks)
+const TOTAL_PROGRESS_STEPS = 65;
 
 function updateProgress() {
     experimentState.completedTrials++;
@@ -745,11 +781,139 @@ function createBlock(blockIdx) {
                 <p><strong>Remember:</strong> Only TRUE statements can be sent!</p>
             </div>`;
         },
+        choices: ['Continue'],
+        on_finish: updateProgress
+    });
+    
+    // Role comprehension check
+    timeline.push({
+        type: jsPsychHtmlButtonResponse,
+        stimulus: function() {
+            const scenario = experimentState.currentScenario;
+            const s = CONFIG.scenarios[scenario];
+            
+            let question = '';
+            let options = [];
+            let correctIndex = 0;
+            
+            if (scenario === 'informative') {
+                question = 'How do you maximize your bonus in this role?';
+                options = [
+                    'Help the listener correctly identify which trial outcome I observed',
+                    'Make the listener think the treatment is highly effective',
+                    'Make the listener think the treatment is ineffective'
+                ];
+                correctIndex = 0;
+            } else if (scenario === 'pers_plus') {
+                question = 'How do you maximize your bonus in this role?';
+                options = [
+                    'Help the listener correctly identify which trial outcome I observed',
+                    'Make the listener rate the treatment as highly effective',
+                    'Make the listener rate the treatment as ineffective'
+                ];
+                correctIndex = 1;
+            } else { // pers_minus
+                question = 'How do you maximize your bonus in this role?';
+                options = [
+                    'Help the listener correctly identify which trial outcome I observed',
+                    'Make the listener rate the treatment as highly effective',
+                    'Make the listener rate the treatment as ineffective'
+                ];
+                correctIndex = 2;
+            }
+            
+            // Shuffle options but track correct answer
+            const shuffledOptions = options.map((opt, idx) => ({ text: opt, isCorrect: idx === correctIndex }));
+            const shuffled = shuffleArray(shuffledOptions);
+            experimentState.roleCompOptions = shuffled;
+            
+            let optionsHtml = '<div class="utterance-options">';
+            shuffled.forEach((opt, i) => {
+                optionsHtml += `<label class="utterance-option" data-idx="${i}">
+                    <input type="radio" name="role-comp" value="${i}">
+                    ${opt.text}
+                </label>`;
+            });
+            optionsHtml += '</div>';
+            
+            return `<div class="comprehension-container">
+                <h2>Quick Check</h2>
+                <p style="margin-bottom: 5px;">You are about to play as:</p>
+                <div class="role-badge" style="background:${s.color}; margin: 10px 0;">${s.role}</div>
+                <p style="margin-top: 20px; font-weight: bold;">${question}</p>
+                ${optionsHtml}
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="role-comp-btn" class="jspsych-btn" disabled>Submit</button>
+                </div>
+            </div>`;
+        },
+        choices: [],
+        data: { task: 'role_comprehension', block: blockIdx },
+        on_load: function() {
+            const options = document.querySelectorAll('.utterance-option');
+            const btn = document.getElementById('role-comp-btn');
+            let selectedIdx = -1;
+            
+            options.forEach((opt, i) => {
+                opt.addEventListener('click', () => {
+                    options.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    opt.querySelector('input').checked = true;
+                    selectedIdx = i;
+                    btn.disabled = false;
+                });
+            });
+            
+            btn.addEventListener('click', () => {
+                const isCorrect = experimentState.roleCompOptions[selectedIdx].isCorrect;
+                jsPsych.finishTrial({
+                    task: 'role_comprehension',
+                    block: blockIdx,
+                    scenario: experimentState.currentScenario,
+                    selected_option: experimentState.roleCompOptions[selectedIdx].text,
+                    role_comp_correct: isCorrect
+                });
+            });
+        },
+        on_finish: updateProgress
+    });
+    
+    // Feedback for role comprehension
+    timeline.push({
+        type: jsPsychHtmlButtonResponse,
+        stimulus: function() {
+            const data = jsPsych.data.get().filter({task: 'role_comprehension', block: blockIdx}).last(1).values()[0];
+            const s = CONFIG.scenarios[experimentState.currentScenario];
+            
+            let correctAnswer = '';
+            if (experimentState.currentScenario === 'informative') {
+                correctAnswer = 'Help the listener correctly identify which trial outcome you observed';
+            } else if (experimentState.currentScenario === 'pers_plus') {
+                correctAnswer = 'Make the listener rate the treatment as highly effective';
+            } else {
+                correctAnswer = 'Make the listener rate the treatment as ineffective';
+            }
+            
+            if (data.role_comp_correct) {
+                return `<div class="comprehension-container">
+                    <h2 style="color: #4CAF50;">✓ Correct!</h2>
+                    <p>As a <strong>${s.role}</strong>, your goal is to:</p>
+                    <p style="font-weight: bold; color: ${s.color};">${correctAnswer}</p>
+                </div>`;
+            } else {
+                return `<div class="comprehension-container">
+                    <h2 style="color: #f44336;">✗ Not quite</h2>
+                    <p>As a <strong>${s.role}</strong>, your goal is to:</p>
+                    <p style="font-weight: bold; color: ${s.color};">${correctAnswer}</p>
+                    <p style="margin-top: 15px; color: #666;">Remember this goal as you describe the trial results!</p>
+                </div>`;
+            }
+        },
         choices: ['Find a Listener'],
         on_finish: updateProgress
     });
     
-    // Pairing wait screen (AFTER reading instructions)
+    // Pairing wait screen (AFTER reading instructions and comprehension check)
     timeline.push({
         type: jsPsychHtmlKeyboardResponse,
         stimulus: `<div class="waiting-container">
@@ -1064,18 +1228,26 @@ const feedback = {
 
 const debrief = {
     type: jsPsychHtmlButtonResponse,
-    stimulus: `<div class="debrief-container">
-        <h2>Thank You!</h2>
-        <h3>Debriefing</h3>
-        <p>Thank you for participating in this study!</p>
-        <p>We want to let you know that the "listeners" in this study were <strong>simulated</strong> — 
-        there was no real-time matching with other participants.</p>
-        <p>However, your responses are still extremely valuable for our research on how people 
-        communicate information under different goals.</p>
-        <p><strong>You will receive the full compensation and bonus as described.</strong></p>
-        <p style="margin-top: 30px;">If you have any questions about this research, please contact the research team.</p>
-    </div>`,
-    choices: ['Complete Study'],
+    stimulus: function() {
+        const isProlific = prolificPID !== null;
+        return `<div class="debrief-container">
+            <h2>Thank You!</h2>
+            <h3>Debriefing</h3>
+            <p>Thank you for participating in this study!</p>
+            <p>We want to let you know that the "listeners" in this study were <strong>simulated</strong> — 
+            there was no real-time matching with other participants.</p>
+            <p>However, your responses are still extremely valuable for our research on how people 
+            communicate information under different goals.</p>
+            <p><strong>You will receive the full compensation and bonus as described.</strong></p>
+            ${isProlific ? 
+                '<p style="margin-top: 30px; color: #4CAF50; font-weight: bold;">Click below to complete the study and return to Prolific.</p>' : 
+                '<p style="margin-top: 30px;">If you have any questions about this research, please contact the research team.</p>'
+            }
+        </div>`;
+    },
+    choices: function() {
+        return [prolificPID ? 'Complete & Return to Prolific' : 'Complete Study'];
+    },
     on_finish: updateProgress
 };
 
@@ -1121,8 +1293,21 @@ timeline.push(createBlock(0));
 timeline.push(createBlock(1));
 timeline.push(createBlock(2));
 
-// Feedback and debrief
+// Feedback
 timeline.push(feedback);
+
+// Save data to DataPipe (before debrief)
+if (DATAPIPE_CONFIG.enabled) {
+    timeline.push({
+        type: jsPsychPipe,
+        action: "save",
+        experiment_id: DATAPIPE_CONFIG.experiment_id,
+        filename: `${subjectId}.csv`,
+        data_string: () => jsPsych.data.get().csv()
+    });
+}
+
+// Debrief (final screen)
 timeline.push(debrief);
 
 // Run the experiment

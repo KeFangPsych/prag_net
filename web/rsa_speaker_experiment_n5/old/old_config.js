@@ -2,15 +2,6 @@
  * config.js - Experiment configuration for N=5 patients, M=1 session
  */
 
-// ============================================================================
-// DATAPIPE CONFIGURATION - UPDATE THIS WITH YOUR EXPERIMENT ID
-// ============================================================================
-const DATAPIPE_CONFIG = {
-  experiment_id: "YOUR_EXPERIMENT_ID_HERE", // Replace with your DataPipe experiment ID
-  // Set to true when ready to collect real data
-  enabled: true,
-};
-
 // Payment configuration (defined separately so they can be referenced in CONFIG)
 const PAYMENT = {
   base: "$9",
@@ -127,7 +118,7 @@ const CONFIG = {
       color: "#4CAF50",
     },
     pers_minus: {
-      role: "Competitor Company Sales Representative",
+      role: "Competitor Company Representative",
       description: `You are a <strong>sales representative from a competitor company</strong>. 
                 Your goal is to <strong>downplay the treatment's effectiveness</strong> to potential investors 
                 while still making true statements.`,
