@@ -32,11 +32,11 @@ const CONFIG = {
   pairing_wait_max: 10000,
   listener_response_min: 1500,
   listener_response_max: 2500,
-  
+
   // Inactivity timeout settings (in ms)
-  inactivity_warning_1: 30000,  // First warning at 30 seconds
-  inactivity_warning_2: 60000,  // Second warning at 60 seconds  
-  inactivity_timeout: 90000,    // Terminate at 90 seconds (1.5 minutes)
+  inactivity_warning_1: 30000, // First warning at 30 seconds
+  inactivity_warning_2: 60000, // Second warning at 60 seconds
+  inactivity_timeout: 90000, // Terminate at 90 seconds (1.5 minutes)
 
   // Quantifier and predicate definitions
   quantifiers: ["No", "Some", "Most", "All"],
@@ -46,16 +46,16 @@ const CONFIG = {
   // Each number represents number of effective patients (0-5)
   trial_sequences: {
     informative: [
-      [0, 2, 1, 2, 2, 1, 1, 2, 3, 1],
-      [3, 5, 4, 4, 4, 5, 4, 3, 2, 4],
+      [0, 2, 1, 2, 1, 2, 1, 2, 3, 1],
+      [4, 5, 3, 4, 5, 4, 3, 4, 2, 4],
     ],
     pers_minus: [
-      [5, 5, 2, 5, 3, 4, 3, 4, 4, 4],
-      [5, 5, 5, 5, 3, 4, 4, 4, 5, 5],
+      [5, 3, 5, 3, 2, 4, 3, 4, 3, 3],
+      [5, 3, 5, 4, 5, 4, 2, 4, 4, 3],
     ],
     pers_plus: [
-      [0, 0, 1, 0, 1, 1, 0, 0, 1, 0],
-      [2, 0, 0, 1, 0, 1, 1, 2, 1, 2],
+      [0, 1, 0, 3, 1, 0, 1, 2, 1, 1],
+      [0, 2, 1, 2, 1, 2, 1, 2, 3, 1],
     ],
   },
 
@@ -84,17 +84,23 @@ const CONFIG = {
     module2: [
       {
         numEffective: 3,
-        statement: "The treatment was Ineffective for Some patients.",
+        statement:
+          "The treatment was <b><u>ineffective</u></b> for <b><u>some</u></b> patients.",
+        statementPlain: "The treatment was ineffective for some patients.",
         correct: true,
       },
       {
         numEffective: 1,
-        statement: "The treatment was Ineffective for All patients.",
+        statement:
+          "The treatment was <b><u>ineffective</u></b> for <b><u>all</u></b> patients.",
+        statementPlain: "The treatment was ineffective for all patients.",
         correct: false,
       },
     ],
     module3: {
-      statement: "The treatment was Ineffective for Most patients.",
+      statement:
+        "The treatment was <b><u>ineffective</u></b> for <b><u>most</u></b> patients.",
+      statementPlain: "The treatment was ineffective for most patients.",
       options: [
         { numEffective: 2, correct: true },
         { numEffective: 0, correct: true },

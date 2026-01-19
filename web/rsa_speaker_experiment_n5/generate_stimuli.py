@@ -1,134 +1,111 @@
 """
 Stimuli Generator for RSA Human Experiment (N=5, M=1 Version)
-Generates a single row of 5 face icons: happy face (effective) and sick face (ineffective)
-Output folder: stimuli_emoji_n5m1/
+UPDATED: Generates ALL possible arrangements for each effectiveness level.
+Uses Twemoji images from CDN for consistent, high-quality emoji display.
 
-This version draws faces programmatically - no external downloads needed.
+For 5 patients with k effective:
+- k=0: 1 arrangement  (C(5,0) = 1)
+- k=1: 5 arrangements (C(5,1) = 5)
+- k=2: 10 arrangements (C(5,2) = 10)
+- k=3: 10 arrangements (C(5,3) = 10)
+- k=4: 5 arrangements (C(5,4) = 5)
+- k=5: 1 arrangement  (C(5,5) = 1)
+Total: 32 images
+
+Output folder: stimuli_emoji_n5m1/
+Naming: effective_{k}_v{variant}.png (e.g., effective_3_v0.png through effective_3_v9.png)
 """
-from PIL import Image, ImageDraw
+from PIL import Image
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List, Tuple
+from itertools import combinations
+import urllib.request
 
 # Configuration
 N_PATIENTS = 5
 
+# Emoji Unicode code points for Twemoji URLs
+EMOJI_CONFIG = {
+    "effective": {
+        "char": "😃",
+        "codepoint": "1f603",  # Smiling face with open mouth
+    },
+    "ineffective": {
+        "char": "🤒",
+        "codepoint": "1f912",  # Face with thermometer
+    }
+}
 
-def draw_happy_face(size: int = 72) -> Image.Image:
-    """Draw a happy/smiling face (for effective treatment)."""
-    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-    
-    # Yellow circle background
-    margin = 2
-    draw.ellipse([margin, margin, size-margin, size-margin], fill='#FFCC00', outline='#E6B800', width=2)
-    
-    # Eyes (happy curved eyes)
-    eye_y = size * 0.38
-    left_eye_x = size * 0.3
-    right_eye_x = size * 0.7
-    eye_size = size * 0.08
-    
-    # Draw arc eyes (happy squint)
-    draw.arc([left_eye_x - eye_size*1.5, eye_y - eye_size, 
-              left_eye_x + eye_size*1.5, eye_y + eye_size*1.5], 
-             start=200, end=340, fill='#664400', width=3)
-    draw.arc([right_eye_x - eye_size*1.5, eye_y - eye_size, 
-              right_eye_x + eye_size*1.5, eye_y + eye_size*1.5], 
-             start=200, end=340, fill='#664400', width=3)
-    
-    # Big smile
-    smile_y = size * 0.55
-    smile_width = size * 0.35
-    smile_height = size * 0.25
-    draw.arc([size/2 - smile_width, smile_y - smile_height/2,
-              size/2 + smile_width, smile_y + smile_height],
-             start=10, end=170, fill='#664400', width=3)
-    
-    return img
+TWEMOJI_URL = "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/{codepoint}.png"
 
 
-def draw_sick_face(size: int = 72) -> Image.Image:
-    """Draw a sick face with thermometer (for ineffective treatment)."""
-    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-    
-    # Pale yellow/greenish circle background
-    margin = 2
-    draw.ellipse([margin, margin, size-margin, size-margin], fill='#E8E4A0', outline='#C9C48A', width=2)
-    
-    # Sad/worried eyes (simple dots)
-    eye_y = size * 0.4
-    left_eye_x = size * 0.32
-    right_eye_x = size * 0.68
-    eye_radius = size * 0.06
-    
-    draw.ellipse([left_eye_x - eye_radius, eye_y - eye_radius,
-                  left_eye_x + eye_radius, eye_y + eye_radius], fill='#664400')
-    draw.ellipse([right_eye_x - eye_radius, eye_y - eye_radius,
-                  right_eye_x + eye_radius, eye_y + eye_radius], fill='#664400')
-    
-    # Worried eyebrows
-    brow_y = eye_y - size * 0.12
-    draw.line([left_eye_x - eye_radius*2, brow_y + 3, 
-               left_eye_x + eye_radius*2, brow_y - 2], fill='#664400', width=2)
-    draw.line([right_eye_x - eye_radius*2, brow_y - 2, 
-               right_eye_x + eye_radius*2, brow_y + 3], fill='#664400', width=2)
-    
-    # Thermometer (diagonal line from mouth)
-    therm_start_x = size * 0.45
-    therm_start_y = size * 0.6
-    therm_end_x = size * 0.75
-    therm_end_y = size * 0.85
-    
-    # Thermometer body (white with red tip)
-    draw.line([therm_start_x, therm_start_y, therm_end_x, therm_end_y], 
-              fill='#FFFFFF', width=6)
-    draw.line([therm_start_x, therm_start_y, therm_end_x, therm_end_y], 
-              fill='#CCCCCC', width=4)
-    # Red bulb at end
-    draw.ellipse([therm_end_x - 5, therm_end_y - 5, therm_end_x + 5, therm_end_y + 5], 
-                 fill='#FF4444')
-    
-    # Small frown
-    frown_y = size * 0.65
-    frown_width = size * 0.15
-    draw.arc([size/2 - frown_width - size*0.1, frown_y,
-              size/2 + frown_width - size*0.1, frown_y + size*0.15],
-             start=220, end=320, fill='#664400', width=2)
-    
-    return img
+def get_cache_dir() -> Path:
+    """Get or create the emoji cache directory."""
+    cache_dir = Path.home() / ".cache" / "rsa_stimuli" / "emoji"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    return cache_dir
 
 
-def create_emoji_images(size: int = 72) -> Dict[str, Image.Image]:
-    """Create all emoji images programmatically."""
-    print("Creating emoji images...")
+def download_emoji(codepoint: str, cache_dir: Path) -> Path:
+    """Download an emoji PNG from Twemoji CDN."""
+    cache_path = cache_dir / f"{codepoint}.png"
+    
+    if cache_path.exists():
+        return cache_path
+    
+    url = TWEMOJI_URL.format(codepoint=codepoint)
+    try:
+        urllib.request.urlretrieve(url, cache_path)
+        return cache_path
+    except Exception as e:
+        raise RuntimeError(f"Failed to download emoji {codepoint}: {e}\nURL: {url}")
+
+
+def load_emoji_images(size: int = 72) -> Dict[str, Image.Image]:
+    """Download and load all required emoji images."""
+    cache_dir = get_cache_dir()
     emojis = {}
     
-    print("  😃 (effective)...", end=" ")
-    emojis["effective"] = draw_happy_face(size)
-    print("✓")
-    
-    print("  🤒 (ineffective)...", end=" ")
-    emojis["ineffective"] = draw_sick_face(size)
-    print("✓")
+    print("Loading emoji images from Twemoji CDN...")
+    for name, config in EMOJI_CONFIG.items():
+        print(f"  {config['char']} ({name})...", end=" ")
+        png_path = download_emoji(config["codepoint"], cache_dir)
+        img = Image.open(png_path).convert("RGBA")
+        img = img.resize((size, size), Image.Resampling.LANCZOS)
+        emojis[name] = img
+        print("✓")
     
     return emojis
 
 
+def get_all_arrangements(num_effective: int) -> List[Tuple[int, ...]]:
+    """
+    Get all possible arrangements of effective/ineffective patients.
+    
+    Returns a list of tuples, where each tuple contains the positions (0-4)
+    of effective patients.
+    
+    Example for num_effective=2:
+    [(0,1), (0,2), (0,3), (0,4), (1,2), (1,3), (1,4), (2,3), (2,4), (3,4)]
+    """
+    return list(combinations(range(N_PATIENTS), num_effective))
+
+
 def create_stimuli_image(
-    num_effective: int,
+    effective_positions: Tuple[int, ...],
     emoji_images: Dict[str, Image.Image],
     emoji_size: int = 72,
     padding: int = 10,
     output_path: str = None
 ) -> Image.Image:
     """
-    Create a single row of 5 emojis.
+    Create a row of 5 emojis with specified positions being effective.
     
     Parameters
     ----------
-    num_effective : int
-        Number of effective (😃) emojis (0-5)
+    effective_positions : Tuple[int, ...]
+        Tuple of positions (0-4) that should show effective (happy) faces.
+        All other positions show ineffective (sick) faces.
     emoji_images : Dict[str, Image.Image]
         Pre-loaded emoji images
     emoji_size : int
@@ -150,9 +127,10 @@ def create_stimuli_image(
     # Create image with white background
     img = Image.new('RGBA', (width, height), color='#FFFFFF')
     
-    # Place emojis (effective on left, ineffective on right)
+    # Place emojis based on effective_positions
+    effective_set = set(effective_positions)
     for i in range(N_PATIENTS):
-        emoji_key = "effective" if i < num_effective else "ineffective"
+        emoji_key = "effective" if i in effective_set else "ineffective"
         emoji_img = emoji_images[emoji_key]
         
         x = padding + i * (emoji_size + padding)
@@ -170,48 +148,114 @@ def create_stimuli_image(
     return img_rgb
 
 
+def positions_to_visual(effective_positions: Tuple[int, ...]) -> str:
+    """Convert positions to emoji visual representation."""
+    result = []
+    effective_set = set(effective_positions)
+    for i in range(N_PATIENTS):
+        result.append("😃" if i in effective_set else "🤒")
+    return "".join(result)
+
+
 def generate_all_stimuli(output_dir: str = "stimuli_emoji_n5m1", emoji_size: int = 72) -> None:
-    """Generate stimuli images for all possible outcomes (0-5 effective)."""
+    """Generate stimuli images for all possible arrangements."""
     output_path = Path(output_dir)
     output_path.mkdir(exist_ok=True)
     
-    emoji_images = create_emoji_images(size=emoji_size)
+    emoji_images = load_emoji_images(size=emoji_size)
     
-    print(f"\nGenerating 6 stimuli images in '{output_dir}/'...")
-    print("-" * 50)
+    print(f"\nGenerating all arrangement stimuli in '{output_dir}/'...")
+    print("-" * 60)
+    
+    total_images = 0
+    arrangement_counts = {}
     
     for num_effective in range(N_PATIENTS + 1):
-        filename = output_path / f"effective_{num_effective}.png"
+        arrangements = get_all_arrangements(num_effective)
+        arrangement_counts[num_effective] = len(arrangements)
         
-        create_stimuli_image(
-            num_effective=num_effective,
-            emoji_images=emoji_images,
-            emoji_size=emoji_size,
-            output_path=str(filename)
-        )
+        print(f"\n{num_effective}/5 effective: {len(arrangements)} arrangement(s)")
         
-        visual = "😃" * num_effective + "🤒" * (N_PATIENTS - num_effective)
-        print(f"  {num_effective}/5 effective: {visual} → {filename.name}")
+        for variant_idx, positions in enumerate(arrangements):
+            filename = output_path / f"effective_{num_effective}_v{variant_idx}.png"
+            
+            create_stimuli_image(
+                effective_positions=positions,
+                emoji_images=emoji_images,
+                emoji_size=emoji_size,
+                output_path=str(filename)
+            )
+            
+            visual = positions_to_visual(positions)
+            positions_str = ",".join(map(str, positions)) if positions else "none"
+            print(f"  v{variant_idx}: {visual} (effective at positions: {positions_str}) → {filename.name}")
+            total_images += 1
     
-    print("-" * 50)
-    print(f"✓ Done! Generated 6 images.")
+    print("\n" + "-" * 60)
+    print(f"✓ Done! Generated {total_images} images.")
+    print("\nSummary of arrangements per effectiveness level:")
+    for k, count in arrangement_counts.items():
+        print(f"  {k} effective: {count} variants")
+
+
+def generate_arrangement_map() -> Dict[int, List[Tuple[int, ...]]]:
+    """
+    Generate a mapping from num_effective to all possible arrangements.
+    Useful for verification and JavaScript code generation.
+    """
+    return {k: get_all_arrangements(k) for k in range(N_PATIENTS + 1)}
+
+
+def print_javascript_config():
+    """Print JavaScript configuration for stimuli.js"""
+    print("\n" + "=" * 60)
+    print("JavaScript configuration for stimuli.js:")
+    print("=" * 60)
+    print("""
+// Arrangement data: maps numEffective to list of variant indices
+const ARRANGEMENT_COUNTS = {
+    0: 1,   // C(5,0) = 1
+    1: 5,   // C(5,1) = 5
+    2: 10,  // C(5,2) = 10
+    3: 10,  // C(5,3) = 10
+    4: 5,   // C(5,4) = 5
+    5: 1    // C(5,5) = 1
+};
+
+// Total: 32 images
+""")
+    
+    print("\n// Detailed arrangement mappings (positions of effective patients):")
+    print("const ARRANGEMENTS = {")
+    for k in range(N_PATIENTS + 1):
+        arrangements = get_all_arrangements(k)
+        arr_str = ", ".join([str(list(a)) for a in arrangements])
+        print(f"    {k}: [{arr_str}],")
+    print("};")
 
 
 def main():
     """Main entry point."""
     print("=" * 60)
-    print("  RSA Experiment Stimuli Generator")
+    print("  RSA Experiment Stimuli Generator (Randomized Arrangements)")
     print(f"  Configuration: {N_PATIENTS} patients, 1 session")
+    print("  Using Twemoji images from CDN")
     print("=" * 60)
     
-    print(f"\n  Face icons:")
-    print(f"    Effective:   😃 (happy yellow face)")
-    print(f"    Ineffective: 🤒 (pale face with thermometer)")
+    print(f"\n  Emojis:")
+    print(f"    Effective:   😃 (Twemoji: {EMOJI_CONFIG['effective']['codepoint']})")
+    print(f"    Ineffective: 🤒 (Twemoji: {EMOJI_CONFIG['ineffective']['codepoint']})")
+    
+    print(f"\n  For {N_PATIENTS} patients, generating ALL possible arrangements:")
+    print(f"    This creates C(5,k) images for each k effective patients")
     
     generate_all_stimuli(output_dir="stimuli_emoji_n5m1")
     
+    print_javascript_config()
+    
     print("\n" + "=" * 60)
-    print("  Done! Images created programmatically.")
+    print("  Cache location: " + str(get_cache_dir()))
+    print("  Done! Images created with Twemoji and randomized arrangements.")
     print("=" * 60)
 
 

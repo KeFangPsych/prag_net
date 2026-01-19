@@ -61,6 +61,8 @@ const experimentState = {
     totalTrials: 0,
     completedTrials: 0,
     roleCompOptions: [],
+    currentTrialUtterances: [],
+    currentStimulusInfo: null,
     // Inactivity timer state
     inactivityTimer: null,
     inactivityStartTime: null,
@@ -247,13 +249,13 @@ const instructionPages = [
         <p>The treatment has some chance of working for any given patient. The trial shows what happened for 5 patients, which gives evidence about how effective the treatment is overall.</p>
         <p>For each patient, the treatment can be:</p>
         <ul>
-            <li><strong>effective</strong> (😃) — the treatment worked</li>
-            <li><strong>ineffective</strong> (🤒) — the treatment did not work</li>
+            <li><strong>EFFECTIVE</strong> (😃) — the treatment worked</li>
+            <li><strong>INEFFECTIVE</strong> (🤒) — the treatment did not work</li>
         </ul>
         <p>Here's what a clinical trial looks like:</p>
         <div class="example-box">
             <div style="text-align: center;">
-                <img src="stimuli_emoji_n5m1/effective_2.png" alt="Example trial" class="stimulus-image" style="max-width: 400px;">
+                <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="Example trial" class="stimulus-image" style="max-width: 400px;">
             </div>
             <p style="margin-top: 15px; text-align: center;">The treatment worked for 2 patients (😃😃) and didn't work for 3 (🤒🤒🤒).</p>
         </div>
@@ -264,7 +266,7 @@ const instructionPages = [
         <h2>Descriptions</h2>
         <p>You will describe results using sentences like this:</p>
         <div class="definition-box" style="text-align: center; font-size: 1.1em; padding: 20px;">
-            "The treatment was <strong>[effective/ineffective]</strong> for <strong>[NO/SOME/MOST/ALL]</strong> patients."
+            "The treatment was <strong>[effective / ineffective]</strong> for <strong>[no / some / most / all]</strong> patients."
         </div>
         <p style="margin-top: 20px;">Here's what each word means:</p>
         <ul style="font-size: 1.05em; line-height: 1.8;">
@@ -281,18 +283,18 @@ const instructionPages = [
         <p>For any clinical trial, multiple descriptions can be true at the same time. Consider this one:</p>
 
         <div style="text-align: center; margin: 20px 0;">
-            <img src="stimuli_emoji_n5m1/effective_3.png" alt="Example" class="stimulus-image" style="max-width: 300px;">
+            <img src="stimuli_emoji_n5m1/effective_3_v0.png" alt="Example" class="stimulus-image" style="max-width: 300px;">
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
             <div style="background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 12px 16px; border-radius: 4px;">
-                <strong style="color: #2e7d32;">✓ TRUE:</strong> "The treatment was <strong>effective</strong> for <strong>SOME</strong> patients" <span style="color: #666;">(3 is at least 1)</span>
+                <strong style="color: #2e7d32;">✓ TRUE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients." <span style="color: #666;">(3 is at least 1)</span>
             </div>
             <div style="background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 12px 16px; border-radius: 4px;">
-                <strong style="color: #2e7d32;">✓ TRUE:</strong> "The treatment was <strong>effective</strong> for <strong>MOST</strong> patients" <span style="color: #666;">(3 is more than half)</span>
+                <strong style="color: #2e7d32;">✓ TRUE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>most</u></b> patients." <span style="color: #666;">(3 is more than half)</span>
             </div>
             <div style="background: #ffebee; border-left: 4px solid #f44336; padding: 12px 16px; border-radius: 4px;">
-                <strong style="color: #c62828;">✗ FALSE:</strong> "The treatment was <strong>effective</strong> for <strong>ALL</strong> patients" <span style="color: #666;">(only 3, not 5)</span>
+                <strong style="color: #c62828;">✗ FALSE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>all</u></b> patients." <span style="color: #666;">(only 3, not 5)</span>
             </div>
         </div>
     </div>`
@@ -421,14 +423,14 @@ const comp1_some_feedback = {
         if (data.comp1_some_correct) {
             return `<div class="comprehension-container">
                 <h2 style="color: #4CAF50;">✓ Correct!</h2>
-                <p>"SOME" means <strong>1 or more, including all 5</strong>.</p>
+                <p><strong>SOME</strong> means <strong>1 or more, including all 5</strong>.</p>
             </div>`;
         } else {
             return `<div class="comprehension-container">
                 <h2 style="color: #f44336;">✗ Incorrect</h2>
                 <p>You answered: "${jsPsych.data.get().filter({task: 'comp1_some'}).last(1).values()[0].response.some_def}"</p>
-                <p>But "SOME" actually means: <strong>1 or more, including all 5.</strong></p>
-                <p>"The treatment was effective for SOME patients" is true if 1, 2, 3, 4, or all 5 patients had effective treatment.</p>
+                <p>But <strong>SOME</strong> actually means: <strong>1 or more, including all 5.</strong></p>
+                <p>"The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients." is true if 1, 2, 3, 4, or all 5 patients had effective treatment.</p>
             </div>`;
         }
     },
@@ -460,14 +462,14 @@ const comp1_most_feedback = {
         if (data.comp1_most_correct) {
             return `<div class="comprehension-container">
                 <h2 style="color: #4CAF50;">✓ Correct!</h2>
-                <p>"MOST" means <strong>more than half, including all 5</strong>.</p>
+                <p><strong>MOST</strong> means <strong>more than half, including all 5</strong>.</p>
             </div>`;
         } else {
             return `<div class="comprehension-container">
                 <h2 style="color: #f44336;">✗ Incorrect</h2>
                 <p>You answered: "${jsPsych.data.get().filter({task: 'comp1_most'}).last(1).values()[0].response.most_def}"</p>
-                <p>But "MOST" actually means: <strong>more than half, including all 5.</strong></p>
-                <p>For 5 patients, "MOST patients" means 3, 4, or 5 patients.</p>
+                <p>But <strong>MOST</strong> actually means: <strong>more than half, including all 5.</strong></p>
+                <p>For 5 patients, <strong>MOST</strong> patients means 3, 4, or 5 patients.</p>
             </div>`;
         }
     },
@@ -495,7 +497,7 @@ const comp2_trial_1 = {
     type: jsPsychHtmlButtonResponse,
     stimulus: function() {
         const item = experimentState.comp2_items[0];
-        const imgPath = Stimuli.getImagePath(item.numEffective);
+        const imgPath = Stimuli.getImagePath(item.numEffective, 0); // Use variant 0 for comprehension
         return `<div class="comprehension-container">
             <h3>Is this statement TRUE or FALSE?</h3>
             <div class="stimulus-container">
@@ -544,10 +546,12 @@ const comp2_feedback_1 = {
         const numIneffective = 5 - item.numEffective;
         
         let explanation = '';
-        if (item.statement.includes('ineffective') && item.statement.includes('SOME')) {
-            explanation = `SOME means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
-        } else if (item.statement.includes('ineffective') && item.statement.includes('ALL')) {
-            explanation = `ALL means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
+        // Check using lowercase since statements now use lowercase
+        const statementLower = item.statement.toLowerCase();
+        if (statementLower.includes('ineffective') && statementLower.includes('some')) {
+            explanation = `<strong>SOME</strong> means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
+        } else if (statementLower.includes('ineffective') && statementLower.includes('all')) {
+            explanation = `<strong>ALL</strong> means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
         }
 
         if (data.comp2_correct) {
@@ -570,7 +574,7 @@ const comp2_trial_2 = {
     type: jsPsychHtmlButtonResponse,
     stimulus: function() {
         const item = experimentState.comp2_items[1];
-        const imgPath = Stimuli.getImagePath(item.numEffective);
+        const imgPath = Stimuli.getImagePath(item.numEffective, 0); // Use variant 0 for comprehension
         return `<div class="comprehension-container">
             <h3>Is this statement TRUE or FALSE?</h3>
             <div class="stimulus-container">
@@ -619,10 +623,12 @@ const comp2_feedback_2 = {
         const numIneffective = 5 - item.numEffective;
         
         let explanation = '';
-        if (item.statement.includes('ineffective') && item.statement.includes('SOME')) {
-            explanation = `SOME means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
-        } else if (item.statement.includes('ineffective') && item.statement.includes('ALL')) {
-            explanation = `ALL means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
+        // Check using lowercase since statements now use lowercase
+        const statementLower = item.statement.toLowerCase();
+        if (statementLower.includes('ineffective') && statementLower.includes('some')) {
+            explanation = `<strong>SOME</strong> means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
+        } else if (statementLower.includes('ineffective') && statementLower.includes('all')) {
+            explanation = `<strong>ALL</strong> means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
         }
 
         if (data.comp2_correct) {
@@ -657,7 +663,7 @@ const comp3_trial = {
             <div class="checkbox-options">`;
 
         shuffledOptions.forEach((opt, i) => {
-            const imgPath = Stimuli.getImagePath(opt.numEffective);
+            const imgPath = Stimuli.getImagePath(opt.numEffective, 0); // Use variant 0 for comprehension
             html += `<div class="checkbox-option" data-idx="${i}" id="opt-${i}">
                 <img src="${imgPath}" style="max-width: 180px;">
                 <div class="checkbox-label">
@@ -720,12 +726,12 @@ const comp3_feedback = {
         if (data.comp3_correct) {
             return `<div class="comprehension-container">
                 <h2 style="color: #4CAF50;">✓ Correct</h2>
-                <p>MOST means more than half. The treatment was ineffective for 3 or more patients in the correct answers.</p>
+                <p><strong>MOST</strong> means more than half. The treatment was ineffective for 3 or more patients in the correct answers.</p>
             </div>`;
         } else {
             return `<div class="comprehension-container">
                 <h2 style="color: #f44336;">✗ Incorrect</h2>
-                <p>MOST means more than half. Look for trials where the treatment was ineffective for 3, 4, or 5 patients.</p>
+                <p><strong>MOST</strong> means more than half. Look for trials where the treatment was ineffective for 3, 4, or 5 patients.</p>
             </div>`;
         }
     },
@@ -995,7 +1001,10 @@ function createBlock(blockIdx) {
             stimulus: function() {
                 const numEffective = experimentState.currentSequence[r];
                 const s = CONFIG.scenarios[experimentState.currentScenario];
-                const imgPath = Stimuli.getImagePath(numEffective);
+                
+                // Get random arrangement for this trial
+                const stimulusInfo = Stimuli.getRandomImage(numEffective);
+                experimentState.currentStimulusInfo = stimulusInfo;
                 
                 // Get all true utterances for this observation and shuffle
                 let trueUtterances = shuffleArray(TruthChecker.getTrueUtterances(numEffective));
@@ -1005,7 +1014,7 @@ function createBlock(blockIdx) {
                 trueUtterances.forEach((u, i) => {
                     optionsHtml += `<label class="utterance-option" data-idx="${i}">
                         <input type="radio" name="utterance" value="${i}">
-                        ${u.text}
+                        ${u.displayText}
                     </label>`;
                 });
                 optionsHtml += '</div>';
@@ -1018,7 +1027,7 @@ function createBlock(blockIdx) {
                         <span class="round-indicator" style="background:${s.color};">${roleIcon} Round ${r+1} of ${CONFIG.n_rounds} | ${s.role}</span>
                     </div>
                     <div class="stimulus-section">
-                        <img src="${imgPath}" class="stimulus-image" style="max-width: 400px;">
+                        <img src="${stimulusInfo.path}" class="stimulus-image" style="max-width: 400px;">
                     </div>
                     <div class="response-section" style="min-width: 500px; max-width: 600px;">
                         <p class="instruction-text">Describe these results to your listener:</p>
@@ -1041,6 +1050,7 @@ function createBlock(blockIdx) {
                 
                 // Use the same shuffled order that was displayed
                 const numEffective = experimentState.currentSequence[r];
+                const stimulusInfo = experimentState.currentStimulusInfo;
                 let trueUtterances = experimentState.currentTrialUtterances;
                 const options = document.querySelectorAll('.utterance-option');
                 const btn = document.getElementById('send-btn');
@@ -1071,10 +1081,11 @@ function createBlock(blockIdx) {
                             seq_idx: experimentState.currentSeqIdx,
                             round: r + 1,
                             num_effective: numEffective,
+                            stimulus_variant: stimulusInfo.variant,
+                            stimulus_positions: JSON.stringify(stimulusInfo.positions),
                             predicate: selected.predicate,
                             quantifier: selected.quantifier,
-                            utterance: selected.text,
-                            reverse_order: experimentState.reverseDescriptionOrder
+                            utterance: selected.text
                         });
                     }
                 });
@@ -1146,16 +1157,19 @@ function createAttentionCheck(blockIdx, afterRound) {
     // Random image for attention check
     const randomNumEffective = Math.floor(Math.random() * 6);
     
+    // Get random arrangement for this attention check
+    const stimulusInfo = Stimuli.getRandomImage(randomNumEffective);
+    
     // Get all true utterances for this image and pick one randomly
     const trueUtterances = TruthChecker.getTrueUtterances(randomNumEffective);
     const requiredUtterance = trueUtterances[Math.floor(Math.random() * trueUtterances.length)];
     const requiredDescription = requiredUtterance.text;
+    const requiredDisplayText = requiredUtterance.displayText;
     
     return {
         type: jsPsychHtmlButtonResponse,
         stimulus: function() {
             const s = CONFIG.scenarios[experimentState.currentScenario];
-            const imgPath = Stimuli.getImagePath(randomNumEffective);
             
             // Shuffle utterances for display
             let displayUtterances = shuffleArray([...trueUtterances]);
@@ -1164,7 +1178,7 @@ function createAttentionCheck(blockIdx, afterRound) {
             displayUtterances.forEach((u, i) => {
                 optionsHtml += `<label class="utterance-option" data-idx="${i}" data-text="${u.text}">
                     <input type="radio" name="utterance" value="${i}">
-                    ${u.text}
+                    ${u.displayText}
                 </label>`;
             });
             optionsHtml += '</div>';
@@ -1177,12 +1191,12 @@ function createAttentionCheck(blockIdx, afterRound) {
                     <span class="round-indicator" style="background:${s.color};">${roleIcon} Round ${afterRound} of ${CONFIG.n_rounds} | ${s.role}</span>
                 </div>
                 <div class="stimulus-section">
-                    <img src="${imgPath}" class="stimulus-image" style="max-width: 400px;">
+                    <img src="${stimulusInfo.path}" class="stimulus-image" style="max-width: 400px;">
                 </div>
                 <div class="response-section" style="min-width: 500px; max-width: 600px;">
                     <p class="instruction-text">Describe these results to your listener:</p>
                     <p class="goal-reminder" style="background: ${s.color}15; border-left: 4px solid ${s.color};">
-                        <strong>⚠️ Attention Check:</strong> Please select exactly this description: <strong>"${requiredDescription}"</strong>
+                        <strong>⚠️ Attention Check:</strong> Please select exactly this description: "${requiredDisplayText}"
                     </p>
                     <p style="text-align: center; font-weight: 500;">Select one of the following TRUE descriptions:</p>
                     ${optionsHtml}
@@ -1198,6 +1212,8 @@ function createAttentionCheck(blockIdx, afterRound) {
             block: blockIdx, 
             round: afterRound,
             num_effective: randomNumEffective,
+            stimulus_variant: stimulusInfo.variant,
+            stimulus_positions: JSON.stringify(stimulusInfo.positions),
             required_description: requiredDescription 
         },
         on_load: function() {
@@ -1234,11 +1250,12 @@ function createAttentionCheck(blockIdx, afterRound) {
                     block: blockIdx,
                     round: afterRound,
                     num_effective: randomNumEffective,
+                    stimulus_variant: stimulusInfo.variant,
+                    stimulus_positions: JSON.stringify(stimulusInfo.positions),
                     required_description: requiredDescription,
                     selected_description: selectedText,
                     attention_passed: passed,
-                    total_failures: experimentState.attentionFailures,
-                    reverse_order: experimentState.reverseDescriptionOrder
+                    total_failures: experimentState.attentionFailures
                 });
             });
         },

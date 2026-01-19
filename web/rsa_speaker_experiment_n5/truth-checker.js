@@ -50,12 +50,12 @@ const TruthChecker = {
     /**
      * Check utterance from string format
      * @param {number} numEffective - Number of effective patients
-     * @param {string} utterance - Full utterance string like "The treatment was Effective for Some patients."
+     * @param {string} utterance - Full utterance string like "The treatment was effective for some patients."
      * @returns {boolean}
      */
     checkUtteranceString(numEffective, utterance) {
         // Parse utterance: "The treatment was [Predicate] for [Quantifier] patients."
-        const match = utterance.match(/The treatment was (Effective|Ineffective) for (No|Some|Most|All) patients\.?/i);
+        const match = utterance.match(/The treatment was (effective|ineffective) for (no|some|most|all) patients\.?/i);
         
         if (!match) {
             console.error('Could not parse utterance:', utterance);
@@ -71,7 +71,7 @@ const TruthChecker = {
     /**
      * Get all true utterances for a given number of effective patients
      * @param {number} numEffective - Number of effective patients (0-5)
-     * @returns {Array} - Array of true utterance objects {predicate, quantifier, text}
+     * @returns {Array} - Array of true utterance objects {predicate, quantifier, text, displayText}
      */
     getTrueUtterances(numEffective) {
         const trueUtterances = [];
@@ -81,10 +81,15 @@ const TruthChecker = {
         for (const predicate of predicates) {
             for (const quantifier of quantifiers) {
                 if (this.checkUtterance(numEffective, predicate, quantifier)) {
+                    const predicateLower = predicate.toLowerCase();
+                    const quantifierLower = quantifier.toLowerCase();
                     trueUtterances.push({
                         predicate,
                         quantifier,
-                        text: `The treatment was ${predicate} for ${quantifier} patients.`
+                        // Plain text for data recording
+                        text: `The treatment was ${predicateLower} for ${quantifierLower} patients.`,
+                        // Styled HTML for display
+                        displayText: `The treatment was <b><u>${predicateLower}</u></b> for <b><u>${quantifierLower}</u></b> patients.`
                     });
                 }
             }
