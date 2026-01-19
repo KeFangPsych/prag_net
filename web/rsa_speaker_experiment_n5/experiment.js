@@ -9,65 +9,68 @@
 
 // Get URL parameters (for Prolific integration)
 const urlParams = new URLSearchParams(window.location.search);
-const prolificPID = urlParams.get('PROLIFIC_PID') || null;
-const studyID = urlParams.get('STUDY_ID') || null;
-const sessionID = urlParams.get('SESSION_ID') || null;
+const prolificPID = urlParams.get("PROLIFIC_PID") || null;
+const studyID = urlParams.get("STUDY_ID") || null;
+const sessionID = urlParams.get("SESSION_ID") || null;
 
 // Generate subject ID: use Prolific ID if available, otherwise generate random
 function generateSubjectId() {
-    if (prolificPID) {
-        return prolificPID;
-    }
-    // Generate random ID for testing
-    return 'test_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now();
+  if (prolificPID) {
+    return prolificPID;
+  }
+  // Generate random ID for testing
+  return (
+    "test_" + Math.random().toString(36).substring(2, 10) + "_" + Date.now()
+  );
 }
 
 const subjectId = generateSubjectId();
 
 // Initialize jsPsych
 const jsPsych = initJsPsych({
-    show_progress_bar: true,
-    auto_update_progress_bar: false,
-    on_finish: function() {
-        // Redirect to Prolific completion page if running on Prolific
-        if (prolificPID) {
-            // Replace with your actual Prolific completion URL
-            window.location.href = "https://app.prolific.com/submissions/complete?cc=YOUR_COMPLETION_CODE";
-        }
+  show_progress_bar: true,
+  auto_update_progress_bar: false,
+  on_finish: function () {
+    // Redirect to Prolific completion page if running on Prolific
+    if (prolificPID) {
+      // Replace with your actual Prolific completion URL
+      window.location.href =
+        "https://app.prolific.com/submissions/complete?cc=YOUR_COMPLETION_CODE";
     }
+  },
 });
 
 // Add subject info to all trials
 jsPsych.data.addProperties({
-    subject_id: subjectId,
-    prolific_pid: prolificPID,
-    study_id: studyID,
-    session_id: sessionID,
-    experiment_version: '1.0.0',
-    start_time: new Date().toISOString()
+  subject_id: subjectId,
+  prolific_pid: prolificPID,
+  study_id: studyID,
+  session_id: sessionID,
+  experiment_version: "1.0.0",
+  start_time: new Date().toISOString(),
 });
 
 // Experiment state
 const experimentState = {
-    comp2_index: 0,
-    comp2_items: [],
-    currentScenario: null,
-    currentSequence: [],
-    currentSeqIdx: 0,
-    blockOrder: [],
-    blockNum: 0,
-    attentionFailures: 0,
-    attentionCheckRound: -1,
-    totalTrials: 0,
-    completedTrials: 0,
-    roleCompOptions: [],
-    currentTrialUtterances: [],
-    currentStimulusInfo: null,
-    // Inactivity timer state
-    inactivityTimer: null,
-    inactivityStartTime: null,
-    warning1Shown: false,
-    warning2Shown: false
+  comp2_index: 0,
+  comp2_items: [],
+  currentScenario: null,
+  currentSequence: [],
+  currentSeqIdx: 0,
+  blockOrder: [],
+  blockNum: 0,
+  attentionFailures: 0,
+  attentionCheckRound: -1,
+  totalTrials: 0,
+  completedTrials: 0,
+  roleCompOptions: [],
+  currentTrialUtterances: [],
+  currentStimulusInfo: null,
+  // Inactivity timer state
+  inactivityTimer: null,
+  inactivityStartTime: null,
+  warning1Shown: false,
+  warning2Shown: false,
 };
 
 // Calculate total trials for progress bar
@@ -75,9 +78,12 @@ const experimentState = {
 const TOTAL_PROGRESS_STEPS = 65;
 
 function updateProgress() {
-    experimentState.completedTrials++;
-    const progress = Math.min(experimentState.completedTrials / TOTAL_PROGRESS_STEPS, 1);
-    jsPsych.setProgressBar(progress);
+  experimentState.completedTrials++;
+  const progress = Math.min(
+    experimentState.completedTrials / TOTAL_PROGRESS_STEPS,
+    1,
+  );
+  jsPsych.setProgressBar(progress);
 }
 
 // ============================================================================
@@ -85,12 +91,12 @@ function updateProgress() {
 // ============================================================================
 
 function showInactivityWarning(message, isUrgent = false) {
-    // Remove any existing warning
-    removeInactivityWarning();
-    
-    const overlay = document.createElement('div');
-    overlay.id = 'inactivity-warning-overlay';
-    overlay.style.cssText = `
+  // Remove any existing warning
+  removeInactivityWarning();
+
+  const overlay = document.createElement("div");
+  overlay.id = "inactivity-warning-overlay";
+  overlay.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
@@ -102,102 +108,110 @@ function showInactivityWarning(message, isUrgent = false) {
         align-items: center;
         z-index: 10000;
     `;
-    
-    const warningBox = document.createElement('div');
-    warningBox.style.cssText = `
+
+  const warningBox = document.createElement("div");
+  warningBox.style.cssText = `
         background: white;
         padding: 30px 50px;
         border-radius: 12px;
         text-align: center;
         max-width: 500px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        border: 4px solid ${isUrgent ? '#f44336' : '#ff9800'};
+        border: 4px solid ${isUrgent ? "#f44336" : "#ff9800"};
     `;
-    
-    warningBox.innerHTML = `
-        <h2 style="color: ${isUrgent ? '#f44336' : '#ff9800'}; margin-bottom: 15px;">
-            ⚠️ ${isUrgent ? 'Urgent: ' : ''}Listener Waiting!
+
+  warningBox.innerHTML = `
+        <h2 style="color: ${isUrgent ? "#f44336" : "#ff9800"}; margin-bottom: 15px;">
+            ⚠️ ${isUrgent ? "Urgent: " : ""}Listener Waiting!
         </h2>
         <p style="font-size: 1.1em; margin-bottom: 20px;">${message}</p>
-        <button id="dismiss-warning-btn" class="jspsych-btn" style="background: ${isUrgent ? '#f44336' : '#ff9800'}; color: white; padding: 12px 30px;">
+        <button id="dismiss-warning-btn" class="jspsych-btn" style="background: ${isUrgent ? "#f44336" : "#ff9800"}; color: white; padding: 12px 30px;">
             I'm here - Continue
         </button>
     `;
-    
-    overlay.appendChild(warningBox);
-    document.body.appendChild(overlay);
-    
-    document.getElementById('dismiss-warning-btn').addEventListener('click', () => {
-        removeInactivityWarning();
+
+  overlay.appendChild(warningBox);
+  document.body.appendChild(overlay);
+
+  document
+    .getElementById("dismiss-warning-btn")
+    .addEventListener("click", () => {
+      removeInactivityWarning();
     });
 }
 
 function removeInactivityWarning() {
-    const overlay = document.getElementById('inactivity-warning-overlay');
-    if (overlay) {
-        overlay.remove();
-    }
+  const overlay = document.getElementById("inactivity-warning-overlay");
+  if (overlay) {
+    overlay.remove();
+  }
 }
 
 function startInactivityTimer() {
-    clearInactivityTimer();
-    
-    experimentState.inactivityStartTime = Date.now();
-    experimentState.warning1Shown = false;
-    experimentState.warning2Shown = false;
-    
-    experimentState.inactivityTimer = setInterval(() => {
-        const elapsed = Date.now() - experimentState.inactivityStartTime;
-        
-        // First warning at 30 seconds
-        if (elapsed >= CONFIG.inactivity_warning_1 && !experimentState.warning1Shown) {
-            experimentState.warning1Shown = true;
-            showInactivityWarning(
-                'Your listener is waiting for your response.<br>Please select a description soon.',
-                false
-            );
-        }
-        
-        // Second warning at 60 seconds (urgent)
-        if (elapsed >= CONFIG.inactivity_warning_2 && !experimentState.warning2Shown) {
-            experimentState.warning2Shown = true;
-            showInactivityWarning(
-                'Your listener has been waiting for over a minute!<br><strong>Please respond within 30 seconds or the study will end.</strong>',
-                true
-            );
-        }
-        
-        // Timeout at 90 seconds - terminate experiment
-        if (elapsed >= CONFIG.inactivity_timeout) {
-            clearInactivityTimer();
-            removeInactivityWarning();
-            
-            saveDataAndEndExperiment(
-                'inactivity_timeout',
-                `<div class="debrief-container">
+  clearInactivityTimer();
+
+  experimentState.inactivityStartTime = Date.now();
+  experimentState.warning1Shown = false;
+  experimentState.warning2Shown = false;
+
+  experimentState.inactivityTimer = setInterval(() => {
+    const elapsed = Date.now() - experimentState.inactivityStartTime;
+
+    // First warning at 30 seconds
+    if (
+      elapsed >= CONFIG.inactivity_warning_1 &&
+      !experimentState.warning1Shown
+    ) {
+      experimentState.warning1Shown = true;
+      showInactivityWarning(
+        "Your listener is waiting for your response.<br>Please select a description soon.",
+        false,
+      );
+    }
+
+    // Second warning at 60 seconds (urgent)
+    if (
+      elapsed >= CONFIG.inactivity_warning_2 &&
+      !experimentState.warning2Shown
+    ) {
+      experimentState.warning2Shown = true;
+      showInactivityWarning(
+        "Your listener has been waiting for over a minute!<br><strong>Please respond within 30 seconds or the study will end.</strong>",
+        true,
+      );
+    }
+
+    // Timeout at 90 seconds - terminate experiment
+    if (elapsed >= CONFIG.inactivity_timeout) {
+      clearInactivityTimer();
+      removeInactivityWarning();
+
+      saveDataAndEndExperiment(
+        "inactivity_timeout",
+        `<div class="debrief-container">
                     <h2 style="color: #f44336;">Study Ended Due to Inactivity</h2>
                     <p>Unfortunately, the study has ended because no response was received within the time limit.</p>
                     <p>Your listener left because they were waiting too long.</p>
                     <p style="margin-top: 20px; color: #666;">Your partial data has been saved. If you believe this was an error, please contact the research team.</p>
-                </div>`
-            );
-        }
-    }, 1000);
+                </div>`,
+      );
+    }
+  }, 1000);
 }
 
 function clearInactivityTimer() {
-    if (experimentState.inactivityTimer) {
-        clearInterval(experimentState.inactivityTimer);
-        experimentState.inactivityTimer = null;
-    }
-    removeInactivityWarning();
+  if (experimentState.inactivityTimer) {
+    clearInterval(experimentState.inactivityTimer);
+    experimentState.inactivityTimer = null;
+  }
+  removeInactivityWarning();
 }
 
 function resetInactivityTimer() {
-    experimentState.inactivityStartTime = Date.now();
-    experimentState.warning1Shown = false;
-    experimentState.warning2Shown = false;
-    removeInactivityWarning();
+  experimentState.inactivityStartTime = Date.now();
+  experimentState.warning1Shown = false;
+  experimentState.warning2Shown = false;
+  removeInactivityWarning();
 }
 
 // ============================================================================
@@ -205,36 +219,36 @@ function resetInactivityTimer() {
 // ============================================================================
 
 async function saveDataAndEndExperiment(reason, message) {
-    // Add termination info to data
-    jsPsych.data.addProperties({
-        terminated_early: true,
-        termination_reason: reason,
-        termination_time: new Date().toISOString()
-    });
-    
-    // Try to save data to DataPipe before ending
-    if (DATAPIPE_CONFIG.enabled) {
-        try {
-            const response = await fetch("https://pipe.jspsych.org/api/data/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "*/*",
-                },
-                body: JSON.stringify({
-                    experimentID: DATAPIPE_CONFIG.experiment_id,
-                    filename: `${subjectId}.csv`,
-                    data: jsPsych.data.get().csv(),
-                }),
-            });
-            console.log("Data saved before early termination:", response.ok);
-        } catch (error) {
-            console.error("Failed to save data on early termination:", error);
-        }
+  // Add termination info to data
+  jsPsych.data.addProperties({
+    terminated_early: true,
+    termination_reason: reason,
+    termination_time: new Date().toISOString(),
+  });
+
+  // Try to save data to DataPipe before ending
+  if (DATAPIPE_CONFIG.enabled) {
+    try {
+      const response = await fetch("https://pipe.jspsych.org/api/data/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "*/*",
+        },
+        body: JSON.stringify({
+          experimentID: DATAPIPE_CONFIG.experiment_id,
+          filename: `${subjectId}.csv`,
+          data: jsPsych.data.get().csv(),
+        }),
+      });
+      console.log("Data saved before early termination:", response.ok);
+    } catch (error) {
+      console.error("Failed to save data on early termination:", error);
     }
-    
-    // End the experiment
-    jsPsych.endExperiment(message);
+  }
+
+  // End the experiment
+  jsPsych.endExperiment(message);
 }
 
 // ============================================================================
@@ -242,8 +256,8 @@ async function saveDataAndEndExperiment(reason, message) {
 // ============================================================================
 
 const instructionPages = [
-    // Page 1: Cover story and data representation
-    `<div class="instructions-container">
+  // Page 1: Cover story and data representation
+  `<div class="instructions-container">
         <h2>The Treatment</h2>
         <p>In this study, you will see results from a clinical trial testing a new medical treatment.</p>
         <p>The treatment has some chance of working for any given patient. The trial shows what happened for 5 patients, which gives evidence about how effective the treatment is overall.</p>
@@ -260,9 +274,9 @@ const instructionPages = [
             <p style="margin-top: 15px; text-align: center;">The treatment worked for 2 patients (😃😃) and didn't work for 3 (🤒🤒🤒).</p>
         </div>
     </div>`,
-    
-    // Page 2: Description structure
-    `<div class="instructions-container">
+
+  // Page 2: Description structure
+  `<div class="instructions-container">
         <h2>Descriptions</h2>
         <p>You will describe results using sentences like this:</p>
         <div class="definition-box" style="text-align: center; font-size: 1.1em; padding: 20px;">
@@ -276,9 +290,9 @@ const instructionPages = [
             <li><strong>ALL</strong> — 5 patients</li>
         </ul>
     </div>`,
-    
-    // Page 3: Truth conditions
-    `<div class="instructions-container">
+
+  // Page 3: Truth conditions
+  `<div class="instructions-container">
         <h2>Which Descriptions Are True?</h2>
         <p>For any clinical trial, multiple descriptions can be true at the same time. Consider this one:</p>
 
@@ -297,7 +311,7 @@ const instructionPages = [
                 <strong style="color: #c62828;">✗ FALSE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>all</u></b> patients." <span style="color: #666;">(only 3, not 5)</span>
             </div>
         </div>
-    </div>`
+    </div>`,
 ];
 
 // ============================================================================
@@ -305,8 +319,8 @@ const instructionPages = [
 // ============================================================================
 
 const welcome = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
         <div class="welcome-container">
             <h1>Welcome</h1>
             <p class="subtitle">This is a study about how we share information with others.</p>
@@ -314,8 +328,8 @@ const welcome = {
             <p class="press-space">Press <strong>SPACE</strong> to continue</p>
         </div>
     `,
-    choices: [' '],
-    on_finish: updateProgress
+  choices: [" "],
+  on_finish: updateProgress,
 };
 
 // ============================================================================
@@ -323,8 +337,8 @@ const welcome = {
 // ============================================================================
 
 const consent = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
         <div class="consent-container">
             <h2>Informed Consent</h2>
             
@@ -361,9 +375,10 @@ const consent = {
             </p>
         </div>
     `,
-    choices: ['I Consent'],
-    button_html: '<button class="jspsych-btn" style="background: #4CAF50; color: white;">%choice%</button>',
-    on_finish: updateProgress
+  choices: ["I Consent"],
+  button_html:
+    '<button class="jspsych-btn" style="background: #4CAF50; color: white;">%choice%</button>',
+  on_finish: updateProgress,
 };
 
 // ============================================================================
@@ -371,26 +386,30 @@ const consent = {
 // ============================================================================
 
 const instructions = {
-    type: jsPsychInstructions,
-    pages: instructionPages,
-    show_clickable_nav: true,
-    button_label_previous: 'Back',
-    button_label_next: 'Continue',
-    allow_backward: true,
-    on_load: function() {
-        // Change button text on last page
-        const checkLastPage = setInterval(() => {
-            const currentPage = document.querySelector('.jspsych-instructions-pagenum');
-            if (currentPage && currentPage.textContent.includes('3/3')) {
-                const nextBtn = document.querySelector('button[id="jspsych-instructions-next"]');
-                if (nextBtn && nextBtn.textContent === 'Continue') {
-                    nextBtn.textContent = 'I understood everything!';
-                    clearInterval(checkLastPage);
-                }
-            }
-        }, 100);
-    },
-    on_finish: updateProgress
+  type: jsPsychInstructions,
+  pages: instructionPages,
+  show_clickable_nav: true,
+  button_label_previous: "Back",
+  button_label_next: "Continue",
+  allow_backward: true,
+  on_load: function () {
+    // Change button text on last page
+    const checkLastPage = setInterval(() => {
+      const currentPage = document.querySelector(
+        ".jspsych-instructions-pagenum",
+      );
+      if (currentPage && currentPage.textContent.includes("3/3")) {
+        const nextBtn = document.querySelector(
+          'button[id="jspsych-instructions-next"]',
+        );
+        if (nextBtn && nextBtn.textContent === "Continue") {
+          nextBtn.textContent = "I understood everything!";
+          clearInterval(checkLastPage);
+        }
+      }
+    }, 100);
+  },
+  on_finish: updateProgress,
 };
 
 // ============================================================================
@@ -400,105 +419,126 @@ const instructions = {
 // --- Module 1: Quantifier Definitions (with immediate feedback, no retry) ---
 
 const comp1_some = {
-    type: jsPsychSurveyMultiChoice,
-    preamble: '<div class="comprehension-container"><h2>Quick Check</h2></div>',
-    questions: [{
-        prompt: '<strong>What does "SOME" mean in this study?</strong>',
-        name: 'some_def',
-        options: CONFIG.comprehension.module1.some.options,
-        required: true
-    }],
-    data: { task: 'comp1_some' },
-    on_finish: function(data) {
-        const selectedIndex = CONFIG.comprehension.module1.some.options.indexOf(data.response.some_def);
-        data.comp1_some_correct = (selectedIndex === CONFIG.comprehension.module1.some.correct);
-        updateProgress();
-    }
+  type: jsPsychSurveyMultiChoice,
+  preamble: '<div class="comprehension-container"><h2>Quick Check</h2></div>',
+  questions: [
+    {
+      prompt: '<strong>What does "SOME" mean in this study?</strong>',
+      name: "some_def",
+      options: CONFIG.comprehension.module1.some.options,
+      required: true,
+    },
+  ],
+  data: { task: "comp1_some" },
+  on_finish: function (data) {
+    const selectedIndex = CONFIG.comprehension.module1.some.options.indexOf(
+      data.response.some_def,
+    );
+    data.comp1_some_correct =
+      selectedIndex === CONFIG.comprehension.module1.some.correct;
+    updateProgress();
+  },
 };
 
 const comp1_some_feedback = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const data = jsPsych.data.get().filter({task: 'comp1_some'}).last(1).values()[0];
-        if (data.comp1_some_correct) {
-            return `<div class="comprehension-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const data = jsPsych.data
+      .get()
+      .filter({ task: "comp1_some" })
+      .last(1)
+      .values()[0];
+    if (data.comp1_some_correct) {
+      return `<div class="comprehension-container">
                 <h2 style="color: #4CAF50;">✓ Correct!</h2>
                 <p><strong>SOME</strong> means <strong>1 or more, including all 5</strong>.</p>
             </div>`;
-        } else {
-            return `<div class="comprehension-container">
+    } else {
+      return `<div class="comprehension-container">
                 <h2 style="color: #f44336;">✗ Incorrect</h2>
-                <p>You answered: "${jsPsych.data.get().filter({task: 'comp1_some'}).last(1).values()[0].response.some_def}"</p>
+                <p>You answered: "${jsPsych.data.get().filter({ task: "comp1_some" }).last(1).values()[0].response.some_def}"</p>
                 <p>But <strong>SOME</strong> actually means: <strong>1 or more, including all 5.</strong></p>
                 <p>"The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients." is true if 1, 2, 3, 4, or all 5 patients had effective treatment.</p>
             </div>`;
-        }
-    },
-    choices: ['Continue'],
-    on_finish: updateProgress
+    }
+  },
+  choices: ["Continue"],
+  on_finish: updateProgress,
 };
 
 const comp1_most = {
-    type: jsPsychSurveyMultiChoice,
-    preamble: '<div class="comprehension-container"><h2>Quick Check (continued)</h2></div>',
-    questions: [{
-        prompt: '<strong>What does "MOST" mean in this study?</strong>',
-        name: 'most_def',
-        options: CONFIG.comprehension.module1.most.options,
-        required: true
-    }],
-    data: { task: 'comp1_most' },
-    on_finish: function(data) {
-        const selectedIndex = CONFIG.comprehension.module1.most.options.indexOf(data.response.most_def);
-        data.comp1_most_correct = (selectedIndex === CONFIG.comprehension.module1.most.correct);
-        updateProgress();
-    }
+  type: jsPsychSurveyMultiChoice,
+  preamble:
+    '<div class="comprehension-container"><h2>Quick Check (continued)</h2></div>',
+  questions: [
+    {
+      prompt: '<strong>What does "MOST" mean in this study?</strong>',
+      name: "most_def",
+      options: CONFIG.comprehension.module1.most.options,
+      required: true,
+    },
+  ],
+  data: { task: "comp1_most" },
+  on_finish: function (data) {
+    const selectedIndex = CONFIG.comprehension.module1.most.options.indexOf(
+      data.response.most_def,
+    );
+    data.comp1_most_correct =
+      selectedIndex === CONFIG.comprehension.module1.most.correct;
+    updateProgress();
+  },
 };
 
 const comp1_most_feedback = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const data = jsPsych.data.get().filter({task: 'comp1_most'}).last(1).values()[0];
-        if (data.comp1_most_correct) {
-            return `<div class="comprehension-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const data = jsPsych.data
+      .get()
+      .filter({ task: "comp1_most" })
+      .last(1)
+      .values()[0];
+    if (data.comp1_most_correct) {
+      return `<div class="comprehension-container">
                 <h2 style="color: #4CAF50;">✓ Correct!</h2>
                 <p><strong>MOST</strong> means <strong>more than half, including all 5</strong>.</p>
             </div>`;
-        } else {
-            return `<div class="comprehension-container">
+    } else {
+      return `<div class="comprehension-container">
                 <h2 style="color: #f44336;">✗ Incorrect</h2>
-                <p>You answered: "${jsPsych.data.get().filter({task: 'comp1_most'}).last(1).values()[0].response.most_def}"</p>
+                <p>You answered: "${jsPsych.data.get().filter({ task: "comp1_most" }).last(1).values()[0].response.most_def}"</p>
                 <p>But <strong>MOST</strong> actually means: <strong>more than half, including all 5.</strong></p>
                 <p>For 5 patients, <strong>MOST</strong> patients means 3, 4, or 5 patients.</p>
             </div>`;
-        }
-    },
-    choices: ['Continue'],
-    on_finish: updateProgress
+    }
+  },
+  choices: ["Continue"],
+  on_finish: updateProgress,
 };
 
 // --- Module 2: True/False Judgments (with explanatory feedback, no retry) ---
 
 const comp2_welcome = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `<div class="comprehension-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `<div class="comprehension-container">
         <h2>Quick Check: True or False?</h2>
         <p>For each trial result shown, decide if the statement is <strong>TRUE</strong> or <strong>FALSE</strong>.</p>
     </div>`,
-    choices: ['Begin'],
-    on_finish: function() {
-        experimentState.comp2_items = shuffleArray([...CONFIG.comprehension.module2]);
-        experimentState.comp2_index = 0;
-        updateProgress();
-    }
+  choices: ["Begin"],
+  on_finish: function () {
+    experimentState.comp2_items = shuffleArray([
+      ...CONFIG.comprehension.module2,
+    ]);
+    experimentState.comp2_index = 0;
+    updateProgress();
+  },
 };
 
 const comp2_trial_1 = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const item = experimentState.comp2_items[0];
-        const imgPath = Stimuli.getImagePath(item.numEffective, 0); // Use variant 0 for comprehension
-        return `<div class="comprehension-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const item = experimentState.comp2_items[0];
+    const imgPath = Stimuli.getImagePath(item.numEffective, 0); // Use variant 0 for comprehension
+    return `<div class="comprehension-container">
             <h3>Is this statement TRUE or FALSE?</h3>
             <div class="stimulus-container">
                 <img src="${imgPath}" class="stimulus-image" style="max-width: 400px;">
@@ -509,73 +549,83 @@ const comp2_trial_1 = {
                 <button class="jspsych-btn tf-btn false-btn" id="btn-false">FALSE</button>
             </div>
         </div>`;
-    },
-    choices: [],
-    data: { task: 'comp2', item_index: 0 },
-    on_load: function() {
-        const item = experimentState.comp2_items[0];
-        
-        document.getElementById('btn-true').addEventListener('click', () => {
-            jsPsych.finishTrial({
-                task: 'comp2',
-                item_index: 0,
-                item: item,
-                response: true,
-                comp2_correct: (item.correct === true)
-            });
-        });
-        
-        document.getElementById('btn-false').addEventListener('click', () => {
-            jsPsych.finishTrial({
-                task: 'comp2',
-                item_index: 0,
-                item: item,
-                response: false,
-                comp2_correct: (item.correct === false)
-            });
-        });
-    },
-    on_finish: updateProgress
+  },
+  choices: [],
+  data: { task: "comp2", item_index: 0 },
+  on_load: function () {
+    const item = experimentState.comp2_items[0];
+
+    document.getElementById("btn-true").addEventListener("click", () => {
+      jsPsych.finishTrial({
+        task: "comp2",
+        item_index: 0,
+        item: item,
+        response: true,
+        comp2_correct: item.correct === true,
+      });
+    });
+
+    document.getElementById("btn-false").addEventListener("click", () => {
+      jsPsych.finishTrial({
+        task: "comp2",
+        item_index: 0,
+        item: item,
+        response: false,
+        comp2_correct: item.correct === false,
+      });
+    });
+  },
+  on_finish: updateProgress,
 };
 
 const comp2_feedback_1 = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const data = jsPsych.data.get().filter({task: 'comp2', item_index: 0}).last(1).values()[0];
-        const item = data.item;
-        const numIneffective = 5 - item.numEffective;
-        
-        let explanation = '';
-        // Check using lowercase since statements now use lowercase
-        const statementLower = item.statement.toLowerCase();
-        if (statementLower.includes('ineffective') && statementLower.includes('some')) {
-            explanation = `<strong>SOME</strong> means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
-        } else if (statementLower.includes('ineffective') && statementLower.includes('all')) {
-            explanation = `<strong>ALL</strong> means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
-        }
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const data = jsPsych.data
+      .get()
+      .filter({ task: "comp2", item_index: 0 })
+      .last(1)
+      .values()[0];
+    const item = data.item;
+    const numIneffective = 5 - item.numEffective;
 
-        if (data.comp2_correct) {
-            return `<div class="comprehension-container">
+    let explanation = "";
+    // Check using lowercase since statements now use lowercase
+    const statementLower = item.statement.toLowerCase();
+    if (
+      statementLower.includes("ineffective") &&
+      statementLower.includes("some")
+    ) {
+      explanation = `<strong>SOME</strong> means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? "" : "s"}.`;
+    } else if (
+      statementLower.includes("ineffective") &&
+      statementLower.includes("all")
+    ) {
+      explanation = `<strong>ALL</strong> means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? "" : "s"}.`;
+    }
+
+    if (data.comp2_correct) {
+      return `<div class="comprehension-container">
                 <h2 style="color: #4CAF50;">✓ Correct</h2>
                 <p>${explanation}</p>
             </div>`;
-        } else {
-            return `<div class="comprehension-container">
+    } else {
+      return `<div class="comprehension-container">
                 <h2 style="color: #f44336;">✗ Incorrect</h2>
-                <p>The answer is <strong>${item.correct ? 'TRUE' : 'FALSE'}</strong>. ${explanation}</p>
+                <p>The answer is <strong>${item.correct ? "TRUE" : "FALSE"}</strong>. ${explanation}</p>
             </div>`;
-        }
-    },
-    choices: ['Continue'],
-    on_finish: updateProgress
+    }
+  },
+  choices: ["Continue"],
+  on_finish: updateProgress,
 };
 
 const comp2_trial_2 = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const item = experimentState.comp2_items[1];
-        const imgPath = Stimuli.getImagePath(item.numEffective, 0); // Use variant 0 for comprehension
-        return `<div class="comprehension-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const item = experimentState.comp2_items[1];
+    const imgPath = Stimuli.getImagePath(item.numEffective, 0); // Use variant 0 for comprehension
+    return `<div class="comprehension-container">
             <h3>Is this statement TRUE or FALSE?</h3>
             <div class="stimulus-container">
                 <img src="${imgPath}" class="stimulus-image" style="max-width: 400px;">
@@ -586,157 +636,180 @@ const comp2_trial_2 = {
                 <button class="jspsych-btn tf-btn false-btn" id="btn-false">FALSE</button>
             </div>
         </div>`;
-    },
-    choices: [],
-    data: { task: 'comp2', item_index: 1 },
-    on_load: function() {
-        const item = experimentState.comp2_items[1];
-        
-        document.getElementById('btn-true').addEventListener('click', () => {
-            jsPsych.finishTrial({
-                task: 'comp2',
-                item_index: 1,
-                item: item,
-                response: true,
-                comp2_correct: (item.correct === true)
-            });
-        });
-        
-        document.getElementById('btn-false').addEventListener('click', () => {
-            jsPsych.finishTrial({
-                task: 'comp2',
-                item_index: 1,
-                item: item,
-                response: false,
-                comp2_correct: (item.correct === false)
-            });
-        });
-    },
-    on_finish: updateProgress
+  },
+  choices: [],
+  data: { task: "comp2", item_index: 1 },
+  on_load: function () {
+    const item = experimentState.comp2_items[1];
+
+    document.getElementById("btn-true").addEventListener("click", () => {
+      jsPsych.finishTrial({
+        task: "comp2",
+        item_index: 1,
+        item: item,
+        response: true,
+        comp2_correct: item.correct === true,
+      });
+    });
+
+    document.getElementById("btn-false").addEventListener("click", () => {
+      jsPsych.finishTrial({
+        task: "comp2",
+        item_index: 1,
+        item: item,
+        response: false,
+        comp2_correct: item.correct === false,
+      });
+    });
+  },
+  on_finish: updateProgress,
 };
 
 const comp2_feedback_2 = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const data = jsPsych.data.get().filter({task: 'comp2', item_index: 1}).last(1).values()[0];
-        const item = data.item;
-        const numIneffective = 5 - item.numEffective;
-        
-        let explanation = '';
-        // Check using lowercase since statements now use lowercase
-        const statementLower = item.statement.toLowerCase();
-        if (statementLower.includes('ineffective') && statementLower.includes('some')) {
-            explanation = `<strong>SOME</strong> means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
-        } else if (statementLower.includes('ineffective') && statementLower.includes('all')) {
-            explanation = `<strong>ALL</strong> means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? '' : 's'}.`;
-        }
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const data = jsPsych.data
+      .get()
+      .filter({ task: "comp2", item_index: 1 })
+      .last(1)
+      .values()[0];
+    const item = data.item;
+    const numIneffective = 5 - item.numEffective;
 
-        if (data.comp2_correct) {
-            return `<div class="comprehension-container">
+    let explanation = "";
+    // Check using lowercase since statements now use lowercase
+    const statementLower = item.statement.toLowerCase();
+    if (
+      statementLower.includes("ineffective") &&
+      statementLower.includes("some")
+    ) {
+      explanation = `<strong>SOME</strong> means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? "" : "s"}.`;
+    } else if (
+      statementLower.includes("ineffective") &&
+      statementLower.includes("all")
+    ) {
+      explanation = `<strong>ALL</strong> means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? "" : "s"}.`;
+    }
+
+    if (data.comp2_correct) {
+      return `<div class="comprehension-container">
                 <h2 style="color: #4CAF50;">✓ Correct</h2>
                 <p>${explanation}</p>
             </div>`;
-        } else {
-            return `<div class="comprehension-container">
+    } else {
+      return `<div class="comprehension-container">
                 <h2 style="color: #f44336;">✗ Incorrect</h2>
-                <p>The answer is <strong>${item.correct ? 'TRUE' : 'FALSE'}</strong>. ${explanation}</p>
+                <p>The answer is <strong>${item.correct ? "TRUE" : "FALSE"}</strong>. ${explanation}</p>
             </div>`;
-        }
-    },
-    choices: ['Continue'],
-    on_finish: updateProgress
+    }
+  },
+  choices: ["Continue"],
+  on_finish: updateProgress,
 };
 
 // --- Module 3: Multiple Choice (with explanatory feedback, no retry) ---
 
 const comp3_trial = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const item = CONFIG.comprehension.module3;
-        const shuffledOptions = shuffleArray(item.options.map((opt, idx) => ({...opt, origIdx: idx})));
-        experimentState.comp3_options = shuffledOptions;
-        
-        let html = `<div class="comprehension-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const item = CONFIG.comprehension.module3;
+    const shuffledOptions = shuffleArray(
+      item.options.map((opt, idx) => ({ ...opt, origIdx: idx })),
+    );
+    experimentState.comp3_options = shuffledOptions;
+
+    let html = `<div class="comprehension-container">
             <h3>Which clinical trials make this statement TRUE?</h3>
             <div class="definition-box" style="text-align: center; font-size: 1.2em;">"${item.statement}"</div>
             <p style="text-align: center; color: #666; margin-top: 20px;">Select all that apply:</p>
             <div class="checkbox-options">`;
 
-        shuffledOptions.forEach((opt, i) => {
-            const imgPath = Stimuli.getImagePath(opt.numEffective, 0); // Use variant 0 for comprehension
-            html += `<div class="checkbox-option" data-idx="${i}" id="opt-${i}">
+    shuffledOptions.forEach((opt, i) => {
+      const imgPath = Stimuli.getImagePath(opt.numEffective, 0); // Use variant 0 for comprehension
+      html += `<div class="checkbox-option" data-idx="${i}" id="opt-${i}">
                 <img src="${imgPath}" style="max-width: 180px;">
                 <div class="checkbox-label">
                     <span class="checkbox-marker"></span>
                 </div>
             </div>`;
-        });
-        
-        html += `</div>
+    });
+
+    html += `</div>
             <div style="margin-top: 20px; text-align: center;">
                 <button id="comp3-submit" class="jspsych-btn">Submit Answer</button>
             </div>
         </div>`;
-        return html;
-    },
-    choices: [],
-    data: { task: 'comp3' },
-    on_load: function() {
-        const selectedIndices = new Set();
-        const options = document.querySelectorAll('.checkbox-option');
-        const submitBtn = document.getElementById('comp3-submit');
-        
-        options.forEach((opt, i) => {
-            opt.addEventListener('click', () => {
-                if (selectedIndices.has(i)) {
-                    selectedIndices.delete(i);
-                    opt.classList.remove('selected');
-                } else {
-                    selectedIndices.add(i);
-                    opt.classList.add('selected');
-                }
-            });
-        });
-        
-        submitBtn.addEventListener('click', () => {
-            const selectedOptions = experimentState.comp3_options.filter((_, i) => selectedIndices.has(i));
-            const correctOptions = experimentState.comp3_options.filter(opt => opt.correct);
-            
-            const allCorrectSelected = correctOptions.every(opt => 
-                selectedIndices.has(experimentState.comp3_options.indexOf(opt))
-            );
-            const noIncorrectSelected = selectedOptions.every(opt => opt.correct);
-            const isCorrect = allCorrectSelected && noIncorrectSelected && selectedIndices.size > 0;
-            
-            jsPsych.finishTrial({
-                task: 'comp3',
-                selected: Array.from(selectedIndices).map(i => experimentState.comp3_options[i].numEffective),
-                comp3_correct: isCorrect
-            });
-        });
-    },
-    on_finish: updateProgress
+    return html;
+  },
+  choices: [],
+  data: { task: "comp3" },
+  on_load: function () {
+    const selectedIndices = new Set();
+    const options = document.querySelectorAll(".checkbox-option");
+    const submitBtn = document.getElementById("comp3-submit");
+
+    options.forEach((opt, i) => {
+      opt.addEventListener("click", () => {
+        if (selectedIndices.has(i)) {
+          selectedIndices.delete(i);
+          opt.classList.remove("selected");
+        } else {
+          selectedIndices.add(i);
+          opt.classList.add("selected");
+        }
+      });
+    });
+
+    submitBtn.addEventListener("click", () => {
+      const selectedOptions = experimentState.comp3_options.filter((_, i) =>
+        selectedIndices.has(i),
+      );
+      const correctOptions = experimentState.comp3_options.filter(
+        (opt) => opt.correct,
+      );
+
+      const allCorrectSelected = correctOptions.every((opt) =>
+        selectedIndices.has(experimentState.comp3_options.indexOf(opt)),
+      );
+      const noIncorrectSelected = selectedOptions.every((opt) => opt.correct);
+      const isCorrect =
+        allCorrectSelected && noIncorrectSelected && selectedIndices.size > 0;
+
+      jsPsych.finishTrial({
+        task: "comp3",
+        selected: Array.from(selectedIndices).map(
+          (i) => experimentState.comp3_options[i].numEffective,
+        ),
+        comp3_correct: isCorrect,
+      });
+    });
+  },
+  on_finish: updateProgress,
 };
 
 const comp3_feedback = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const data = jsPsych.data.get().filter({task: 'comp3'}).last(1).values()[0];
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const data = jsPsych.data
+      .get()
+      .filter({ task: "comp3" })
+      .last(1)
+      .values()[0];
 
-        if (data.comp3_correct) {
-            return `<div class="comprehension-container">
+    if (data.comp3_correct) {
+      return `<div class="comprehension-container">
                 <h2 style="color: #4CAF50;">✓ Correct</h2>
                 <p><strong>MOST</strong> means more than half. The treatment was ineffective for 3 or more patients in the correct answers.</p>
             </div>`;
-        } else {
-            return `<div class="comprehension-container">
+    } else {
+      return `<div class="comprehension-container">
                 <h2 style="color: #f44336;">✗ Incorrect</h2>
                 <p><strong>MOST</strong> means more than half. Look for trials where the treatment was ineffective for 3, 4, or 5 patients.</p>
             </div>`;
-        }
-    },
-    choices: ['Continue'],
-    on_finish: updateProgress
+    }
+  },
+  choices: ["Continue"],
+  on_finish: updateProgress,
 };
 
 // ============================================================================
@@ -744,8 +817,8 @@ const comp3_feedback = {
 // ============================================================================
 
 const speakerIntro = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `<div class="scenario-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `<div class="scenario-container">
         <h2>The Speaker Task</h2>
         <p>Now you will play three different roles. For each role, you will describe the clinical trials you see to a different listener.</p>
 
@@ -765,57 +838,61 @@ const speakerIntro = {
         <p>Your bonus (up to <strong>${PAYMENT.block_bonus_max} per role</strong>) depends on how well you achieve your goal.</p>
         <p style="margin-top: 20px;"><strong>Remember:</strong> You can only send descriptions that are TRUE.</p>
     </div>`,
-    choices: ['Continue'],
-    on_finish: function() {
-        experimentState.blockOrder = shuffleArray(['informative', 'pers_plus', 'pers_minus']);
-        experimentState.blockNum = 0;
-        experimentState.attentionFailures = 0;
-        updateProgress();
-    }
+  choices: ["Continue"],
+  on_finish: function () {
+    experimentState.blockOrder = shuffleArray([
+      "informative",
+      "pers_plus",
+      "pers_minus",
+    ]);
+    experimentState.blockNum = 0;
+    experimentState.attentionFailures = 0;
+    updateProgress();
+  },
 };
 
 function createBlock(blockIdx) {
-    const timeline = [];
-    
-    // Randomly choose after which round (5-9) to insert attention check
-    const attentionCheckAfterRound = Math.floor(Math.random() * 5) + 5; // 5, 6, 7, 8, or 9
-    
-    // Initialize block
-    timeline.push({
-        type: jsPsychCallFunction,
-        func: function() {
-            const key = experimentState.blockOrder[blockIdx];
-            experimentState.currentScenario = key;
-            const seqs = CONFIG.trial_sequences[key];
-            experimentState.currentSeqIdx = Math.floor(Math.random() * seqs.length);
-            experimentState.currentSequence = seqs[experimentState.currentSeqIdx];
-            experimentState.attentionCheckAfterRound = attentionCheckAfterRound;
-            // Counterbalance: randomly choose whether to show descriptions in original or reverse order
-            experimentState.reverseDescriptionOrder = Math.random() < 0.5;
-        }
-    });
-    
-    // Scenario introduction (simplified)
-    timeline.push({
-        type: jsPsychHtmlButtonResponse,
-        stimulus: function() {
-            const s = CONFIG.scenarios[experimentState.currentScenario];
-            const scenario = experimentState.currentScenario;
+  const timeline = [];
 
-            let goalText = '';
-            let icon = '';
-            if (scenario === 'informative') {
-                goalText = 'Help the listener identify the true outcome';
-                icon = '🔬';
-            } else if (scenario === 'pers_plus') {
-                goalText = 'Make the treatment seem as effective as possible';
-                icon = '👍';
-            } else {
-                goalText = 'Make the treatment seem as ineffective as possible';
-                icon = '👎';
-            }
+  // Randomly choose after which round (5-9) to insert attention check
+  const attentionCheckAfterRound = Math.floor(Math.random() * 5) + 5; // 5, 6, 7, 8, or 9
 
-            return `<div class="scenario-container">
+  // Initialize block
+  timeline.push({
+    type: jsPsychCallFunction,
+    func: function () {
+      const key = experimentState.blockOrder[blockIdx];
+      experimentState.currentScenario = key;
+      const seqs = CONFIG.trial_sequences[key];
+      experimentState.currentSeqIdx = Math.floor(Math.random() * seqs.length);
+      experimentState.currentSequence = seqs[experimentState.currentSeqIdx];
+      experimentState.attentionCheckAfterRound = attentionCheckAfterRound;
+      // Counterbalance: randomly choose whether to show descriptions in original or reverse order
+      experimentState.reverseDescriptionOrder = Math.random() < 0.5;
+    },
+  });
+
+  // Scenario introduction (simplified)
+  timeline.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+      const s = CONFIG.scenarios[experimentState.currentScenario];
+      const scenario = experimentState.currentScenario;
+
+      let goalText = "";
+      let icon = "";
+      if (scenario === "informative") {
+        goalText = "Help the listener identify the true outcome";
+        icon = "🔬";
+      } else if (scenario === "pers_plus") {
+        goalText = "Make the treatment seem as effective as possible";
+        icon = "👍";
+      } else {
+        goalText = "Make the treatment seem as ineffective as possible";
+        icon = "👎";
+      }
+
+      return `<div class="scenario-container">
                 <h2>Your Role</h2>
                 <div class="role-badge" style="background:${s.color};">${icon} ${s.role}</div>
                 <div style="background: ${s.color}20; border: 2px solid ${s.color}; border-radius: 8px; padding: 20px; margin: 25px 0;">
@@ -824,65 +901,73 @@ function createBlock(blockIdx) {
                 <p>You will describe <strong>10 clinical trials</strong> of the same treatment to this listener.</p>
                 <p>Your bonus depends on how well you achieve this goal.</p>
             </div>`;
-        },
-        choices: ['Continue'],
-        on_finish: updateProgress
-    });
-    
-    // Role comprehension check
-    timeline.push({
-        type: jsPsychHtmlButtonResponse,
-        stimulus: function() {
-            const scenario = experimentState.currentScenario;
-            const s = CONFIG.scenarios[scenario];
-            
-            let question = '';
-            let options = [];
-            let correctIndex = 0;
-            
-            if (scenario === 'informative') {
-                question = 'How do you maximize your bonus in this role?';
-                options = [
-                    'Help the listener correctly identify which trial outcome I observed',
-                    'Make the listener think the treatment is highly effective',
-                    'Make the listener think the treatment is ineffective'
-                ];
-                correctIndex = 0;
-            } else if (scenario === 'pers_plus') {
-                question = 'How do you maximize your bonus in this role?';
-                options = [
-                    'Help the listener correctly identify which trial outcome I observed',
-                    'Make the listener rate the treatment as highly effective',
-                    'Make the listener rate the treatment as ineffective'
-                ];
-                correctIndex = 1;
-            } else { // pers_minus
-                question = 'How do you maximize your bonus in this role?';
-                options = [
-                    'Help the listener correctly identify which trial outcome I observed',
-                    'Make the listener rate the treatment as highly effective',
-                    'Make the listener rate the treatment as ineffective'
-                ];
-                correctIndex = 2;
-            }
-            
-            // Shuffle options but track correct answer
-            const shuffledOptions = options.map((opt, idx) => ({ text: opt, isCorrect: idx === correctIndex }));
-            const shuffled = shuffleArray(shuffledOptions);
-            experimentState.roleCompOptions = shuffled;
-            
-            let optionsHtml = '<div class="utterance-options">';
-            shuffled.forEach((opt, i) => {
-                optionsHtml += `<label class="utterance-option" data-idx="${i}">
+    },
+    choices: ["Continue"],
+    on_finish: updateProgress,
+  });
+
+  // Role comprehension check
+  timeline.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+      const scenario = experimentState.currentScenario;
+      const s = CONFIG.scenarios[scenario];
+
+      let question = "";
+      let options = [];
+      let correctIndex = 0;
+
+      if (scenario === "informative") {
+        question = "How do you maximize your bonus in this role?";
+        options = [
+          "Help the listener correctly identify which trial outcome I observed",
+          "Make the listener think the treatment is highly effective",
+          "Make the listener think the treatment is ineffective",
+        ];
+        correctIndex = 0;
+      } else if (scenario === "pers_plus") {
+        question = "How do you maximize your bonus in this role?";
+        options = [
+          "Help the listener correctly identify which trial outcome I observed",
+          "Make the listener rate the treatment as highly effective",
+          "Make the listener rate the treatment as ineffective",
+        ];
+        correctIndex = 1;
+      } else {
+        // pers_minus
+        question = "How do you maximize your bonus in this role?";
+        options = [
+          "Help the listener correctly identify which trial outcome I observed",
+          "Make the listener rate the treatment as highly effective",
+          "Make the listener rate the treatment as ineffective",
+        ];
+        correctIndex = 2;
+      }
+
+      // Shuffle options but track correct answer
+      const shuffledOptions = options.map((opt, idx) => ({
+        text: opt,
+        isCorrect: idx === correctIndex,
+      }));
+      const shuffled = shuffleArray(shuffledOptions);
+      experimentState.roleCompOptions = shuffled;
+
+      let optionsHtml = '<div class="utterance-options">';
+      shuffled.forEach((opt, i) => {
+        optionsHtml += `<label class="utterance-option" data-idx="${i}">
                     <input type="radio" name="role-comp" value="${i}">
                     ${opt.text}
                 </label>`;
-            });
-            optionsHtml += '</div>';
-            
-            const icon = experimentState.currentScenario === 'informative' ? '🔬' :
-                         experimentState.currentScenario === 'pers_plus' ? '👍' : '👎';
-            return `<div class="comprehension-container">
+      });
+      optionsHtml += "</div>";
+
+      const icon =
+        experimentState.currentScenario === "informative"
+          ? "🔬"
+          : experimentState.currentScenario === "pers_plus"
+            ? "👍"
+            : "👎";
+      return `<div class="comprehension-container">
                 <h2>Quick Check</h2>
                 <p style="margin-bottom: 5px;">You are about to play as:</p>
                 <div class="role-badge" style="background:${s.color}; margin: 10px 0;">${icon} ${s.role}</div>
@@ -892,139 +977,161 @@ function createBlock(blockIdx) {
                     <button id="role-comp-btn" class="jspsych-btn" disabled>Submit</button>
                 </div>
             </div>`;
-        },
-        choices: [],
-        data: { task: 'role_comprehension', block: blockIdx },
-        on_load: function() {
-            const options = document.querySelectorAll('.utterance-option');
-            const btn = document.getElementById('role-comp-btn');
-            let selectedIdx = -1;
-            
-            options.forEach((opt, i) => {
-                opt.addEventListener('click', () => {
-                    options.forEach(o => o.classList.remove('selected'));
-                    opt.classList.add('selected');
-                    opt.querySelector('input').checked = true;
-                    selectedIdx = i;
-                    btn.disabled = false;
-                });
-            });
-            
-            btn.addEventListener('click', () => {
-                const isCorrect = experimentState.roleCompOptions[selectedIdx].isCorrect;
-                jsPsych.finishTrial({
-                    task: 'role_comprehension',
-                    block: blockIdx,
-                    scenario: experimentState.currentScenario,
-                    selected_option: experimentState.roleCompOptions[selectedIdx].text,
-                    role_comp_correct: isCorrect
-                });
-            });
-        },
-        on_finish: updateProgress
-    });
-    
-    // Feedback for role comprehension
-    timeline.push({
-        type: jsPsychHtmlButtonResponse,
-        stimulus: function() {
-            const data = jsPsych.data.get().filter({task: 'role_comprehension', block: blockIdx}).last(1).values()[0];
-            const s = CONFIG.scenarios[experimentState.currentScenario];
-            
-            let correctAnswer = '';
-            if (experimentState.currentScenario === 'informative') {
-                correctAnswer = 'Help the listener correctly identify which trial outcome you observed';
-            } else if (experimentState.currentScenario === 'pers_plus') {
-                correctAnswer = 'Make the listener rate the treatment as highly effective';
-            } else {
-                correctAnswer = 'Make the listener rate the treatment as ineffective';
-            }
-            
-            const icon = experimentState.currentScenario === 'informative' ? '🔬' :
-                         experimentState.currentScenario === 'pers_plus' ? '👍' : '👎';
+    },
+    choices: [],
+    data: { task: "role_comprehension", block: blockIdx },
+    on_load: function () {
+      const options = document.querySelectorAll(".utterance-option");
+      const btn = document.getElementById("role-comp-btn");
+      let selectedIdx = -1;
 
-            if (data.role_comp_correct) {
-                return `<div class="comprehension-container">
+      options.forEach((opt, i) => {
+        opt.addEventListener("click", () => {
+          options.forEach((o) => o.classList.remove("selected"));
+          opt.classList.add("selected");
+          opt.querySelector("input").checked = true;
+          selectedIdx = i;
+          btn.disabled = false;
+        });
+      });
+
+      btn.addEventListener("click", () => {
+        const isCorrect =
+          experimentState.roleCompOptions[selectedIdx].isCorrect;
+        jsPsych.finishTrial({
+          task: "role_comprehension",
+          block: blockIdx,
+          scenario: experimentState.currentScenario,
+          selected_option: experimentState.roleCompOptions[selectedIdx].text,
+          role_comp_correct: isCorrect,
+        });
+      });
+    },
+    on_finish: updateProgress,
+  });
+
+  // Feedback for role comprehension
+  timeline.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+      const data = jsPsych.data
+        .get()
+        .filter({ task: "role_comprehension", block: blockIdx })
+        .last(1)
+        .values()[0];
+      const s = CONFIG.scenarios[experimentState.currentScenario];
+
+      let correctAnswer = "";
+      if (experimentState.currentScenario === "informative") {
+        correctAnswer =
+          "Help the listener correctly identify which trial outcome you observed";
+      } else if (experimentState.currentScenario === "pers_plus") {
+        correctAnswer =
+          "Make the listener rate the treatment as highly effective";
+      } else {
+        correctAnswer = "Make the listener rate the treatment as ineffective";
+      }
+
+      const icon =
+        experimentState.currentScenario === "informative"
+          ? "🔬"
+          : experimentState.currentScenario === "pers_plus"
+            ? "👍"
+            : "👎";
+
+      if (data.role_comp_correct) {
+        return `<div class="comprehension-container">
                     <h2 style="color: #4CAF50;">✓ Correct</h2>
                     <p>As a <strong>${icon} ${s.role}</strong>, your goal is to:</p>
                     <p style="font-weight: bold; color: ${s.color};">${correctAnswer}</p>
                 </div>`;
-            } else {
-                return `<div class="comprehension-container">
+      } else {
+        return `<div class="comprehension-container">
                     <h2 style="color: #f44336;">✗ Not quite</h2>
                     <p>As a <strong>${icon} ${s.role}</strong>, your goal is to:</p>
                     <p style="font-weight: bold; color: ${s.color};">${correctAnswer}</p>
                     <p style="margin-top: 15px; color: #666;">Remember this goal as you describe the trial results.</p>
                 </div>`;
-            }
-        },
-        choices: ['Find a Listener'],
-        on_finish: updateProgress
-    });
-    
-    // Pairing wait screen (AFTER reading instructions and comprehension check)
-    timeline.push({
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<div class="waiting-container">
+      }
+    },
+    choices: ["Find a Listener"],
+    on_finish: updateProgress,
+  });
+
+  // Pairing wait screen (AFTER reading instructions and comprehension check)
+  timeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<div class="waiting-container">
             <h2>Finding a listener...</h2>
             <div class="spinner"></div>
             <p>Please wait while we pair you with another participant.</p>
         </div>`,
-        choices: "NO_KEYS",
-        trial_duration: () => randomInt(CONFIG.pairing_wait_min, CONFIG.pairing_wait_max),
-        on_finish: updateProgress
-    });
-    
-    // Listener matched confirmation
-    timeline.push({
-        type: jsPsychHtmlButtonResponse,
-        stimulus: function() {
-            const s = CONFIG.scenarios[experimentState.currentScenario];
-            const icon = experimentState.currentScenario === 'informative' ? '🔬' :
-                         experimentState.currentScenario === 'pers_plus' ? '👍' : '👎';
-            return `<div class="scenario-container">
+    choices: "NO_KEYS",
+    trial_duration: () =>
+      randomInt(CONFIG.pairing_wait_min, CONFIG.pairing_wait_max),
+    on_finish: updateProgress,
+  });
+
+  // Listener matched confirmation
+  timeline.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+      const s = CONFIG.scenarios[experimentState.currentScenario];
+      const icon =
+        experimentState.currentScenario === "informative"
+          ? "🔬"
+          : experimentState.currentScenario === "pers_plus"
+            ? "👍"
+            : "👎";
+      return `<div class="scenario-container">
                 <h2 style="color: #4CAF50;">✓ Listener Matched</h2>
                 <p>You are now connected with a listener.</p>
                 <div class="role-badge" style="background:${s.color};">${icon} ${s.role}</div>
                 <p style="margin-top: 20px;"><strong>Goal:</strong> ${s.goalReminder}</p>
             </div>`;
-        },
-        choices: ['Start Communication'],
-        on_finish: updateProgress
-    });
-    
-    // 10 regular trials with 1 attention check inserted after a random round (5-9)
-    for (let r = 0; r < CONFIG.n_rounds; r++) {
-        // Regular trial
-        timeline.push({
-            type: jsPsychHtmlButtonResponse,
-            stimulus: function() {
-                const numEffective = experimentState.currentSequence[r];
-                const s = CONFIG.scenarios[experimentState.currentScenario];
-                
-                // Get random arrangement for this trial
-                const stimulusInfo = Stimuli.getRandomImage(numEffective);
-                experimentState.currentStimulusInfo = stimulusInfo;
-                
-                // Get all true utterances for this observation and shuffle
-                let trueUtterances = shuffleArray(TruthChecker.getTrueUtterances(numEffective));
-                experimentState.currentTrialUtterances = trueUtterances;
+    },
+    choices: ["Start Communication"],
+    on_finish: updateProgress,
+  });
 
-                let optionsHtml = '<div class="utterance-options">';
-                trueUtterances.forEach((u, i) => {
-                    optionsHtml += `<label class="utterance-option" data-idx="${i}">
+  // 10 regular trials with 1 attention check inserted after a random round (5-9)
+  for (let r = 0; r < CONFIG.n_rounds; r++) {
+    // Regular trial
+    timeline.push({
+      type: jsPsychHtmlButtonResponse,
+      stimulus: function () {
+        const numEffective = experimentState.currentSequence[r];
+        const s = CONFIG.scenarios[experimentState.currentScenario];
+
+        // Get random arrangement for this trial
+        const stimulusInfo = Stimuli.getRandomImage(numEffective);
+        experimentState.currentStimulusInfo = stimulusInfo;
+
+        // Get all true utterances for this observation and shuffle
+        let trueUtterances = shuffleArray(
+          TruthChecker.getTrueUtterances(numEffective),
+        );
+        experimentState.currentTrialUtterances = trueUtterances;
+
+        let optionsHtml = '<div class="utterance-options">';
+        trueUtterances.forEach((u, i) => {
+          optionsHtml += `<label class="utterance-option" data-idx="${i}">
                         <input type="radio" name="utterance" value="${i}">
                         ${u.displayText}
                     </label>`;
-                });
-                optionsHtml += '</div>';
-                
-                const roleIcon = experimentState.currentScenario === 'informative' ? '🔬' :
-                                 experimentState.currentScenario === 'pers_plus' ? '👍' : '👎';
+        });
+        optionsHtml += "</div>";
 
-                return `<div class="trial-container">
+        const roleIcon =
+          experimentState.currentScenario === "informative"
+            ? "🔬"
+            : experimentState.currentScenario === "pers_plus"
+              ? "👍"
+              : "👎";
+
+        return `<div class="trial-container">
                     <div class="trial-header">
-                        <span class="round-indicator" style="background:${s.color};">${roleIcon} Round ${r+1} of ${CONFIG.n_rounds} | ${s.role}</span>
+                        <span class="round-indicator" style="background:${s.color};">${roleIcon} Round ${r + 1} of ${CONFIG.n_rounds} | ${s.role}</span>
                     </div>
                     <div class="stimulus-section">
                         <img src="${stimulusInfo.path}" class="stimulus-image" style="max-width: 400px;">
@@ -1041,152 +1148,171 @@ function createBlock(blockIdx) {
                         </div>
                     </div>
                 </div>`;
-            },
-            choices: [],
-            data: { task: 'speaker', block: blockIdx, round: r + 1 },
-            on_load: function() {
-                // Start inactivity timer
-                startInactivityTimer();
-                
-                // Use the same shuffled order that was displayed
-                const numEffective = experimentState.currentSequence[r];
-                const stimulusInfo = experimentState.currentStimulusInfo;
-                let trueUtterances = experimentState.currentTrialUtterances;
-                const options = document.querySelectorAll('.utterance-option');
-                const btn = document.getElementById('send-btn');
-                let selectedIdx = -1;
-                
-                options.forEach((opt, i) => {
-                    opt.addEventListener('click', () => {
-                        // Reset timer on any interaction
-                        resetInactivityTimer();
-                        
-                        options.forEach(o => o.classList.remove('selected'));
-                        opt.classList.add('selected');
-                        opt.querySelector('input').checked = true;
-                        selectedIdx = i;
-                        btn.disabled = false;
-                    });
-                });
-                
-                btn.addEventListener('click', () => {
-                    if (selectedIdx >= 0) {
-                        // Clear timer before finishing
-                        clearInactivityTimer();
-                        
-                        const selected = trueUtterances[selectedIdx];
-                        jsPsych.finishTrial({
-                            task: 'speaker',
-                            scenario: experimentState.currentScenario,
-                            seq_idx: experimentState.currentSeqIdx,
-                            round: r + 1,
-                            num_effective: numEffective,
-                            stimulus_variant: stimulusInfo.variant,
-                            stimulus_positions: JSON.stringify(stimulusInfo.positions),
-                            predicate: selected.predicate,
-                            quantifier: selected.quantifier,
-                            utterance: selected.text
-                        });
-                    }
-                });
-            },
-            on_finish: function() {
-                clearInactivityTimer();
-                updateProgress();
-            }
+      },
+      choices: [],
+      data: { task: "speaker", block: blockIdx, round: r + 1 },
+      on_load: function () {
+        // Start inactivity timer
+        startInactivityTimer();
+
+        // Use the same shuffled order that was displayed
+        const numEffective = experimentState.currentSequence[r];
+        const stimulusInfo = experimentState.currentStimulusInfo;
+        let trueUtterances = experimentState.currentTrialUtterances;
+        const options = document.querySelectorAll(".utterance-option");
+        const btn = document.getElementById("send-btn");
+        let selectedIdx = -1;
+
+        options.forEach((opt, i) => {
+          opt.addEventListener("click", () => {
+            // Reset timer on any interaction
+            resetInactivityTimer();
+
+            options.forEach((o) => o.classList.remove("selected"));
+            opt.classList.add("selected");
+            opt.querySelector("input").checked = true;
+            selectedIdx = i;
+            btn.disabled = false;
+          });
         });
-        
-        // Listener wait after each regular trial (except after last round)
-        if (r < CONFIG.n_rounds - 1) {
-            timeline.push({
-                type: jsPsychHtmlKeyboardResponse,
-                stimulus: `<div class="waiting-container">
+
+        btn.addEventListener("click", () => {
+          if (selectedIdx >= 0) {
+            // Clear timer before finishing
+            clearInactivityTimer();
+
+            const selected = trueUtterances[selectedIdx];
+            jsPsych.finishTrial({
+              task: "speaker",
+              scenario: experimentState.currentScenario,
+              seq_idx: experimentState.currentSeqIdx,
+              round: r + 1,
+              num_effective: numEffective,
+              stimulus_variant: stimulusInfo.variant,
+              stimulus_positions: JSON.stringify(stimulusInfo.positions),
+              predicate: selected.predicate,
+              quantifier: selected.quantifier,
+              utterance: selected.text,
+            });
+          }
+        });
+      },
+      on_finish: function () {
+        clearInactivityTimer();
+        updateProgress();
+      },
+    });
+
+    // Listener wait after each regular trial (except after last round)
+    if (r < CONFIG.n_rounds - 1) {
+      timeline.push({
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `<div class="waiting-container">
                     <h2>Listener is responding based on your description...</h2>
                     <div class="spinner"></div>
                     <p>Description sent!</p>
                 </div>`,
-                choices: "NO_KEYS",
-                trial_duration: () => randomInt(CONFIG.listener_response_min, CONFIG.listener_response_max)
-            });
-        }
-        
-        // Insert attention check after the specified round (no listener wait after attention check)
-        if (r + 1 === attentionCheckAfterRound) {
-            // Attention check trial
-            timeline.push(createAttentionCheck(blockIdx, r + 1));
-            
-            // Conditional warning after first failure
-            timeline.push({
-                timeline: [attentionWarning],
-                conditional_function: function() {
-                    const lastAttnCheck = jsPsych.data.get().filter({task: 'attention_check'}).last(1).values()[0];
-                    // Show warning only if they just failed AND it's their first failure
-                    return lastAttnCheck && !lastAttnCheck.attention_passed && experimentState.attentionFailures === 1;
-                }
-            });
-        }
+        choices: "NO_KEYS",
+        trial_duration: () =>
+          randomInt(CONFIG.listener_response_min, CONFIG.listener_response_max),
+      });
     }
-    
-    // Block completion
-    timeline.push({
-        type: jsPsychHtmlButtonResponse,
-        stimulus: function() {
-            const isLast = (blockIdx === 2);
-            const s = CONFIG.scenarios[experimentState.currentScenario];
-            const icon = experimentState.currentScenario === 'informative' ? '🔬' :
-                         experimentState.currentScenario === 'pers_plus' ? '👍' : '👎';
-            return `<div class="completion-container">
+
+    // Insert attention check after the specified round (no listener wait after attention check)
+    if (r + 1 === attentionCheckAfterRound) {
+      // Attention check trial
+      timeline.push(createAttentionCheck(blockIdx, r + 1));
+
+      // Conditional warning after first failure
+      timeline.push({
+        timeline: [attentionWarning],
+        conditional_function: function () {
+          const lastAttnCheck = jsPsych.data
+            .get()
+            .filter({ task: "attention_check" })
+            .last(1)
+            .values()[0];
+          // Show warning only if they just failed AND it's their first failure
+          return (
+            lastAttnCheck &&
+            !lastAttnCheck.attention_passed &&
+            experimentState.attentionFailures === 1
+          );
+        },
+      });
+    }
+  }
+
+  // Block completion
+  timeline.push({
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+      const isLast = blockIdx === 2;
+      const s = CONFIG.scenarios[experimentState.currentScenario];
+      const icon =
+        experimentState.currentScenario === "informative"
+          ? "🔬"
+          : experimentState.currentScenario === "pers_plus"
+            ? "👍"
+            : "👎";
+      return `<div class="completion-container">
                 <h2>Communication Complete</h2>
                 <p>You have finished describing all 10 trials to this listener as a <strong>${icon} ${s.role}</strong>.</p>
-                ${isLast ?
-                    '<p>You have completed all three roles.</p>' :
-                    '<p>Click below to be paired with a <strong>new listener</strong> for a <strong>different role</strong>.</p>'
+                ${
+                  isLast
+                    ? "<p>You have completed all three roles.</p>"
+                    : "<p>Click below to be paired with a <strong>new listener</strong> for a <strong>different role</strong>.</p>"
                 }
             </div>`;
-        },
-        choices: function() { 
-            return [blockIdx === 2 ? 'Continue to Feedback' : 'Find Next Listener']; 
-        },
-        on_finish: updateProgress
-    });
-    
-    return { timeline };
+    },
+    choices: function () {
+      return [blockIdx === 2 ? "Continue to Feedback" : "Find Next Listener"];
+    },
+    on_finish: updateProgress,
+  });
+
+  return { timeline };
 }
 
 function createAttentionCheck(blockIdx, afterRound) {
-    // Random image for attention check
-    const randomNumEffective = Math.floor(Math.random() * 6);
-    
-    // Get random arrangement for this attention check
-    const stimulusInfo = Stimuli.getRandomImage(randomNumEffective);
-    
-    // Get all true utterances for this image and pick one randomly
-    const trueUtterances = TruthChecker.getTrueUtterances(randomNumEffective);
-    const requiredUtterance = trueUtterances[Math.floor(Math.random() * trueUtterances.length)];
-    const requiredDescription = requiredUtterance.text;
-    const requiredDisplayText = requiredUtterance.displayText;
-    
-    return {
-        type: jsPsychHtmlButtonResponse,
-        stimulus: function() {
-            const s = CONFIG.scenarios[experimentState.currentScenario];
-            
-            // Shuffle utterances for display
-            let displayUtterances = shuffleArray([...trueUtterances]);
-            
-            let optionsHtml = '<div class="utterance-options">';
-            displayUtterances.forEach((u, i) => {
-                optionsHtml += `<label class="utterance-option" data-idx="${i}" data-text="${u.text}">
+  // Random image for attention check
+  const randomNumEffective = Math.floor(Math.random() * 6);
+
+  // Get random arrangement for this attention check
+  const stimulusInfo = Stimuli.getRandomImage(randomNumEffective);
+
+  // Get all true utterances for this image and pick one randomly
+  const trueUtterances = TruthChecker.getTrueUtterances(randomNumEffective);
+  const requiredUtterance =
+    trueUtterances[Math.floor(Math.random() * trueUtterances.length)];
+  const requiredDescription = requiredUtterance.text;
+  const requiredDisplayText = requiredUtterance.displayText;
+
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+      const s = CONFIG.scenarios[experimentState.currentScenario];
+
+      // Shuffle utterances for display
+      let displayUtterances = shuffleArray([...trueUtterances]);
+
+      let optionsHtml = '<div class="utterance-options">';
+      displayUtterances.forEach((u, i) => {
+        optionsHtml += `<label class="utterance-option" data-idx="${i}" data-text="${u.text}">
                     <input type="radio" name="utterance" value="${i}">
                     ${u.displayText}
                 </label>`;
-            });
-            optionsHtml += '</div>';
+      });
+      optionsHtml += "</div>";
 
-            const roleIcon = experimentState.currentScenario === 'informative' ? '🔬' :
-                             experimentState.currentScenario === 'pers_plus' ? '👍' : '👎';
+      const roleIcon =
+        experimentState.currentScenario === "informative"
+          ? "🔬"
+          : experimentState.currentScenario === "pers_plus"
+            ? "👍"
+            : "👎";
 
-            return `<div class="trial-container">
+      return `<div class="trial-container">
                 <div class="trial-header">
                     <span class="round-indicator" style="background:${s.color};">${roleIcon} Round ${afterRound} of ${CONFIG.n_rounds} | ${s.role}</span>
                 </div>
@@ -1205,89 +1331,89 @@ function createAttentionCheck(blockIdx, afterRound) {
                     </div>
                 </div>
             </div>`;
-        },
-        choices: [],
-        data: { 
-            task: 'attention_check', 
-            block: blockIdx, 
-            round: afterRound,
-            num_effective: randomNumEffective,
-            stimulus_variant: stimulusInfo.variant,
-            stimulus_positions: JSON.stringify(stimulusInfo.positions),
-            required_description: requiredDescription 
-        },
-        on_load: function() {
-            // Start inactivity timer for attention check too
-            startInactivityTimer();
-            
-            const options = document.querySelectorAll('.utterance-option');
-            const btn = document.getElementById('send-btn');
-            let selectedText = '';
-            
-            options.forEach((opt, i) => {
-                opt.addEventListener('click', () => {
-                    // Reset timer on interaction
-                    resetInactivityTimer();
-                    
-                    options.forEach(o => o.classList.remove('selected'));
-                    opt.classList.add('selected');
-                    opt.querySelector('input').checked = true;
-                    selectedText = opt.dataset.text;
-                    btn.disabled = false;
-                });
-            });
-            
-            btn.addEventListener('click', () => {
-                // Clear timer before finishing
-                clearInactivityTimer();
-                
-                const passed = (selectedText === requiredDescription);
-                if (!passed) {
-                    experimentState.attentionFailures++;
-                }
-                jsPsych.finishTrial({
-                    task: 'attention_check',
-                    block: blockIdx,
-                    round: afterRound,
-                    num_effective: randomNumEffective,
-                    stimulus_variant: stimulusInfo.variant,
-                    stimulus_positions: JSON.stringify(stimulusInfo.positions),
-                    required_description: requiredDescription,
-                    selected_description: selectedText,
-                    attention_passed: passed,
-                    total_failures: experimentState.attentionFailures
-                });
-            });
-        },
-        on_finish: function(data) {
-            clearInactivityTimer();
-            updateProgress();
-            // Check if we need to terminate (2 out of 3 failures)
-            if (experimentState.attentionFailures >= 2) {
-                saveDataAndEndExperiment(
-                    'attention_check_failure',
-                    `<div class="debrief-container">
+    },
+    choices: [],
+    data: {
+      task: "attention_check",
+      block: blockIdx,
+      round: afterRound,
+      num_effective: randomNumEffective,
+      stimulus_variant: stimulusInfo.variant,
+      stimulus_positions: JSON.stringify(stimulusInfo.positions),
+      required_description: requiredDescription,
+    },
+    on_load: function () {
+      // Start inactivity timer for attention check too
+      startInactivityTimer();
+
+      const options = document.querySelectorAll(".utterance-option");
+      const btn = document.getElementById("send-btn");
+      let selectedText = "";
+
+      options.forEach((opt, i) => {
+        opt.addEventListener("click", () => {
+          // Reset timer on interaction
+          resetInactivityTimer();
+
+          options.forEach((o) => o.classList.remove("selected"));
+          opt.classList.add("selected");
+          opt.querySelector("input").checked = true;
+          selectedText = opt.dataset.text;
+          btn.disabled = false;
+        });
+      });
+
+      btn.addEventListener("click", () => {
+        // Clear timer before finishing
+        clearInactivityTimer();
+
+        const passed = selectedText === requiredDescription;
+        if (!passed) {
+          experimentState.attentionFailures++;
+        }
+        jsPsych.finishTrial({
+          task: "attention_check",
+          block: blockIdx,
+          round: afterRound,
+          num_effective: randomNumEffective,
+          stimulus_variant: stimulusInfo.variant,
+          stimulus_positions: JSON.stringify(stimulusInfo.positions),
+          required_description: requiredDescription,
+          selected_description: selectedText,
+          attention_passed: passed,
+          total_failures: experimentState.attentionFailures,
+        });
+      });
+    },
+    on_finish: function (data) {
+      clearInactivityTimer();
+      updateProgress();
+      // Check if we need to terminate (2 out of 3 failures)
+      if (experimentState.attentionFailures >= 2) {
+        saveDataAndEndExperiment(
+          "attention_check_failure",
+          `<div class="debrief-container">
                         <h2 style="color: #f44336;">Study Ended</h2>
                         <p>Unfortunately, the study has ended because attention checks were not passed.</p>
-                        <p style="margin-top: 20px; color: #666;">Your partial data has been saved. Thank you for your time.</p>
-                    </div>`
-                );
-            }
-        }
-    };
+                        <p style="margin-top: 20px; color: #666;">Thank you for your time. If you believe this was an error, please contact the research team.</p>
+                    </div>`,
+        );
+      }
+    },
+  };
 }
 
 // Warning shown after first attention check failure
 const attentionWarning = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `<div class="comprehension-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `<div class="comprehension-container">
         <h2 style="color: #f44336;">⚠️ Attention Check Failed</h2>
         <p>You did not select the requested description in the attention check.</p>
         <p style="font-weight: bold; margin-top: 20px;">Please pay close attention to the instructions. 
         One more failed attention check will result in termination of the study and forfeiture of compensation.</p>
     </div>`,
-    choices: ['I understand, continue'],
-    data: { task: 'attention_warning' }
+  choices: ["I understand, continue"],
+  data: { task: "attention_warning" },
 };
 
 // ============================================================================
@@ -1295,26 +1421,28 @@ const attentionWarning = {
 // ============================================================================
 
 const feedback = {
-    type: jsPsychSurveyText,
-    preamble: `<div class="feedback-container">
+  type: jsPsychSurveyText,
+  preamble: `<div class="feedback-container">
         <h2>Feedback (Optional)</h2>
         <p>We would appreciate any feedback you have about this experiment.</p>
     </div>`,
-    questions: [{ 
-        prompt: 'Was anything confusing? Do you have any comments or concerns?', 
-        name: 'feedback', 
-        rows: 5, 
-        required: false 
-    }],
-    button_label: 'Continue',
-    on_finish: updateProgress
+  questions: [
+    {
+      prompt: "Was anything confusing? Do you have any comments or concerns?",
+      name: "feedback",
+      rows: 5,
+      required: false,
+    },
+  ],
+  button_label: "Continue",
+  on_finish: updateProgress,
 };
 
 const debrief = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function() {
-        const isProlific = prolificPID !== null;
-        return `<div class="debrief-container">
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const isProlific = prolificPID !== null;
+    return `<div class="debrief-container">
             <h2>Thank You!</h2>
             <h3>Debriefing</h3>
             <p>Thank you for participating in this study!</p>
@@ -1323,16 +1451,17 @@ const debrief = {
             <p>However, your responses are still extremely valuable for our research on how people 
             communicate information under different goals.</p>
             <p><strong>You will receive the full compensation and bonus as described.</strong></p>
-            ${isProlific ? 
-                '<p style="margin-top: 30px; color: #4CAF50; font-weight: bold;">Click below to complete the study and return to Prolific.</p>' : 
-                '<p style="margin-top: 30px;">If you have any questions about this research, please contact the research team.</p>'
+            ${
+              isProlific
+                ? '<p style="margin-top: 30px; color: #4CAF50; font-weight: bold;">Click below to complete the study and return to Prolific.</p>'
+                : '<p style="margin-top: 30px;">If you have any questions about this research, please contact the research team.</p>'
             }
         </div>`;
-    },
-    choices: function() {
-        return [prolificPID ? 'Complete & Return to Prolific' : 'Complete Study'];
-    },
-    on_finish: updateProgress
+  },
+  choices: function () {
+    return [prolificPID ? "Complete & Return to Prolific" : "Complete Study"];
+  },
+  on_finish: updateProgress,
 };
 
 // ============================================================================
@@ -1343,10 +1472,10 @@ const timeline = [];
 
 // Preload images
 timeline.push({
-    type: jsPsychPreload,
-    images: Stimuli.getAllImagePaths(),
-    show_progress_bar: true,
-    message: '<p>Loading experiment images...</p>'
+  type: jsPsychPreload,
+  images: Stimuli.getAllImagePaths(),
+  show_progress_bar: true,
+  message: "<p>Loading experiment images...</p>",
 });
 
 // Main experiment flow
@@ -1382,13 +1511,13 @@ timeline.push(feedback);
 
 // Save data to DataPipe (before debrief)
 if (DATAPIPE_CONFIG.enabled) {
-    timeline.push({
-        type: jsPsychPipe,
-        action: "save",
-        experiment_id: DATAPIPE_CONFIG.experiment_id,
-        filename: `${subjectId}.csv`,
-        data_string: () => jsPsych.data.get().csv()
-    });
+  timeline.push({
+    type: jsPsychPipe,
+    action: "save",
+    experiment_id: DATAPIPE_CONFIG.experiment_id,
+    filename: `${subjectId}.csv`,
+    data_string: () => jsPsych.data.get().csv(),
+  });
 }
 
 // Debrief (final screen)
