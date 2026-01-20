@@ -203,7 +203,7 @@ https://YOUR-USERNAME.github.io/rsa-speaker-experiment/
   ```
   In this study, you will play different roles describing clinical trial results 
   to other participants. You will see trial outcomes and choose descriptions to 
-  send to listeners. The study takes approximately 15-20 minutes to complete.
+  send to listeners. The study takes approximately 10-15 minutes to complete.
   ```
 
 **Study URL:**
@@ -225,7 +225,7 @@ Your study will have **two completion paths**:
 2. Select **"Yes"** to add custom screening completion path
 3. Configure:
    - **Number of screening slots:** Set to ~10-20% of your sample (e.g., 10 for N=50)
-   - **Screening reward:** $1-2 (fair compensation for partial time)
+   - **Screening reward:** $0.50-1 (fair compensation for partial time)
    
 4. You will now have **TWO completion codes**:
    - **Main completion code** (for full completion)
@@ -258,8 +258,8 @@ const PROLIFIC_SCREENING_CODE = "SCREEN123";   // ← Your screening code
 ### 5.5 Configure Study Settings
 
 **Timing:**
-- **Estimated completion time:** 18 minutes
-- **Maximum time allowed:** 45 minutes
+- **Estimated completion time:** 12 minutes
+- **Maximum time allowed:** 30 minutes
 
 **Prescreening (Recommended):**
 - **Approval rate:** ≥ 95%
@@ -270,7 +270,7 @@ const PROLIFIC_SCREENING_CODE = "SCREEN123";   // ← Your screening code
 
 **Payment:**
 - **Reward per participant:** Calculate based on your base payment
-- Example: $9 base for ~18 min = $30/hour rate
+- Example: $1.50 base + up to $1.50 bonus for ~12 min ≈ $15/hour rate
 
 ### 5.6 Save as Draft
 
@@ -366,14 +366,14 @@ Your experiment handles three completion scenarios:
 - Triggered after 2 failed attention checks
 - Data saved with `completion_status: 'terminated_attention_check'`
 - Shown termination message with "Return to Prolific" button
-- Redirected to screening URL → **Partial payment (e.g., $1-2)**
+- Redirected to screening URL → **Partial payment (e.g., $0.50-1)**
 - **Does NOT count toward your quota** (uses screening slots)
 
 ### Early Termination: Inactivity Timeout
 - Triggered after 90 seconds of no response
 - Data saved with `completion_status: 'terminated_inactivity'`
 - Shown termination message with "Return to Prolific" button
-- Redirected to screening URL → **Partial payment (e.g., $1-2)**
+- Redirected to screening URL → **Partial payment (e.g., $0.50-1)**
 - **Does NOT count toward your quota** (uses screening slots)
 
 ### Why Use Custom Screening?

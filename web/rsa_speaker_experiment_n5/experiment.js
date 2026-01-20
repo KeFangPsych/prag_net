@@ -38,8 +38,10 @@ const jsPsych = initJsPsych({
   show_progress_bar: true,
   auto_update_progress_bar: false,
   on_finish: function () {
-    // Redirect to Prolific completion page if running on Prolific
-    if (prolificPID) {
+    // Only redirect to completion code if:
+    // 1. Running on Prolific
+    // 2. NOT terminated early (early terminations have their own redirect button)
+    if (prolificPID && !experimentState.terminatedEarly) {
       window.location.href = `https://app.prolific.com/submissions/complete?cc=${PROLIFIC_COMPLETION_CODE}`;
     }
   },
@@ -76,6 +78,8 @@ const experimentState = {
   inactivityStartTime: null,
   warning1Shown: false,
   warning2Shown: false,
+  // Early termination flag (to prevent auto-redirect on early termination)
+  terminatedEarly: false,
 };
 
 // Calculate total trials for progress bar
@@ -256,6 +260,9 @@ function getTerminationMessage(reason) {
 }
 
 async function saveDataAndEndExperiment(reason, customMessage = null) {
+  // Mark as terminated early FIRST - this prevents on_finish from auto-redirecting
+  experimentState.terminatedEarly = true;
+
   // Add termination info to data
   // completion_status values: 'completed', 'terminated_attention_check', 'terminated_inactivity'
   let completionStatus = "terminated_unknown";
@@ -296,7 +303,7 @@ async function saveDataAndEndExperiment(reason, customMessage = null) {
   // Use custom message or generate appropriate message
   const message = customMessage || getTerminationMessage(reason);
 
-  // End the experiment
+  // End the experiment (on_finish will NOT auto-redirect because terminatedEarly is true)
   jsPsych.endExperiment(message);
 }
 
@@ -404,7 +411,7 @@ const consent = {
             </div>
             
             <div class="consent-section">
-                <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>${CONFIG.base_payment}</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>${CONFIG.block_bonus_max} per block</strong> (up to $3 total) based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent. <strong>Please note:</strong> This study includes attention checks throughout. Failing attention checks may result in early termination of the study and forfeiture of compensation.</p>
+                <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>${CONFIG.base_payment}</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>${CONFIG.block_bonus_max} per block</strong> (3 blocks total) based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent. <strong>Please note:</strong> This study includes attention checks throughout. Failing attention checks may result in early termination of the study and forfeiture of compensation.</p>
             </div>
             
             <div class="consent-section">
@@ -1465,7 +1472,7 @@ const attentionWarning = {
 const feedback = {
   type: jsPsychSurveyText,
   preamble: `<div class="feedback-container">
-        <h2>Feedback</h2>
+        <h2>Feedback (Optional)</h2>
         <p>We would appreciate any feedback you have about this experiment.</p>
     </div>`,
   questions: [

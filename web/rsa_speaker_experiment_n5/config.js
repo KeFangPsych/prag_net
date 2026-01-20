@@ -13,8 +13,8 @@ const DATAPIPE_CONFIG = {
 
 // Payment configuration (defined separately so they can be referenced in CONFIG)
 const PAYMENT = {
-  base: "$9",
-  block_bonus_max: "$1",
+  base: "$1.50",
+  block_bonus_max: "$0.50",
 };
 
 const CONFIG = {
@@ -46,16 +46,16 @@ const CONFIG = {
   // Each number represents number of effective patients (0-5)
   trial_sequences: {
     informative: [
-      [0, 2, 1, 2, 1, 2, 1, 2, 3, 1],
-      [4, 5, 3, 4, 5, 4, 3, 4, 2, 4],
+      [0, 2, 1, 2, 2, 1, 1, 2, 3, 1],
+      [3, 5, 4, 4, 4, 5, 4, 3, 2, 4],
     ],
     pers_minus: [
-      [5, 3, 5, 3, 2, 4, 3, 4, 3, 3],
-      [5, 3, 5, 4, 5, 4, 2, 4, 4, 3],
+      [5, 5, 2, 5, 3, 4, 3, 4, 4, 4],
+      [5, 5, 5, 5, 3, 4, 4, 4, 5, 5],
     ],
     pers_plus: [
-      [0, 1, 0, 3, 1, 0, 1, 2, 1, 1],
-      [0, 2, 1, 2, 1, 2, 1, 2, 3, 1],
+      [0, 0, 1, 0, 1, 1, 0, 0, 1, 0],
+      [2, 0, 0, 1, 0, 1, 1, 2, 1, 2],
     ],
   },
 
