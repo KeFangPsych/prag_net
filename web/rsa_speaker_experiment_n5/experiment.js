@@ -1465,7 +1465,7 @@ const attentionWarning = {
 const feedback = {
   type: jsPsychSurveyText,
   preamble: `<div class="feedback-container">
-        <h2>Feedback (Optional)</h2>
+        <h2>Feedback</h2>
         <p>We would appreciate any feedback you have about this experiment.</p>
     </div>`,
   questions: [
