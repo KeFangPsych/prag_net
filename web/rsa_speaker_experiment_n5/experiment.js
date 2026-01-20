@@ -373,7 +373,7 @@ const welcome = {
         <div class="welcome-container">
             <h1>Welcome</h1>
             <p class="subtitle">This is a study about how we share information with others.</p>
-            <p>This study takes approximately <strong>15-20 minutes</strong> to complete.</p>
+            <p>This study takes approximately <strong>10-15 minutes</strong> to complete.</p>
             <p class="press-space">Press <strong>SPACE</strong> to continue</p>
         </div>
     `,
