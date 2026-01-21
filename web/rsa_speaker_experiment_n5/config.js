@@ -117,7 +117,7 @@ const CONFIG = {
                 to a medical professional. Your goal is to <strong>accurately and informatively</strong> 
                 describe the treatment outcomes so that the listener can identify the true data.`,
       goalReminder:
-        "Be as <em>informative and accurate</em> as possible. You will get a bonus if the listener correctly identify which trial you saw.",
+        "Be as <strong>informative and accurate</strong> as possible. You will get a bonus if the listener <strong>correctly identify</strong> which trial you saw.",
       bonusExplanation: `After receiving your description, the listener will try to identify which trial outcome 
                 you observed. You will receive a <strong>bonus up to ${PAYMENT.block_bonus_max}</strong> proportional to how many 
                 trials the listener correctly identifies.`,
@@ -130,7 +130,7 @@ const CONFIG = {
                 Your goal is to <strong>present the treatment in a favorable light</strong> to potential investors 
                 while still making true statements.`,
       goalReminder:
-        "Make the treatment seem as <em>effective</em> as possible. The more effective it seems, the higher your bonus.",
+        "Make the treatment seem as <strong>effective</strong> as possible. The <strong>MORE effective</strong> it seems, the higher your bonus.",
       bonusExplanation: `After receiving your description, the listener will report how effective they believe 
                 the treatment is. You will receive a <strong>bonus up to ${PAYMENT.block_bonus_max}</strong> proportional to how <strong>HIGH</strong> the listener's 
                 effectiveness rating is.`,
@@ -143,7 +143,7 @@ const CONFIG = {
                 Your goal is to <strong>downplay the treatment's effectiveness</strong> to potential investors 
                 while still making true statements.`,
       goalReminder:
-        "Make the treatment seem as <em>ineffective</em> as possible. The less effective it seems, the higher your bonus.",
+        "Make the treatment seem as <strong>ineffective</strong> as possible. The <strong>LESS effective</strong> it seems, the higher your bonus.",
       bonusExplanation: `After receiving your description, the listener will report how effective they believe 
                 the treatment is. You will receive a <strong>bonus up to ${PAYMENT.block_bonus_max}</strong> proportional to how <strong>LOW</strong> the listener's 
                 effectiveness rating is.`,

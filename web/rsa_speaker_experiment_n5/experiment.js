@@ -1472,7 +1472,7 @@ const attentionWarning = {
 const feedback = {
   type: jsPsychSurveyText,
   preamble: `<div class="feedback-container">
-        <h2>Feedback (Optional)</h2>
+        <h2>Feedbacks</h2>
         <p>We would appreciate any feedback you have about this experiment.</p>
     </div>`,
   questions: [
@@ -1498,7 +1498,7 @@ const debrief = {
             <p>We want to let you know that the "listeners" in this study were <strong>simulated</strong> — 
             there was no real-time matching with other participants.</p>
             <p>However, your responses are still extremely valuable for our research on how people 
-            communicate information under different goals.</p>
+            communicate information under different goals, and potentially how to make people more resistent to biased framings.</p>
             <p><strong>You will receive the full compensation and bonus as described.</strong></p>
             ${
               isProlific
