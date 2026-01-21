@@ -239,21 +239,21 @@ function getTerminationMessage(reason) {
     return `<div class="debrief-container">
             <h2 style="color: #f44336;">Study Ended</h2>
             <p>Unfortunately, the study has ended because attention checks were not passed.</p>
-            <p style="margin-top: 15px; color: #666;">Your partial data has been saved. Thank you for your time.</p>
+            <p style="margin-top: 15px; color: #666;">Thank you for your time. If you believe this is an error, please contact the researcher.</p>
             ${prolificRedirect}
         </div>`;
   } else if (reason === "inactivity_timeout") {
     return `<div class="debrief-container">
             <h2 style="color: #f44336;">Study Ended Due to Inactivity</h2>
             <p>Unfortunately, the study has ended because no response was received within the time limit.</p>
-            <p style="margin-top: 15px; color: #666;">Your partial data has been saved.</p>
+            <p style="margin-top: 15px; color: #666;">Thank you for participation. If you believe this is an error, please contact the researcher.</p>
             ${prolificRedirect}
         </div>`;
   } else {
     return `<div class="debrief-container">
             <h2 style="color: #f44336;">Study Ended</h2>
             <p>The study has ended unexpectedly.</p>
-            <p style="margin-top: 15px; color: #666;">Your partial data has been saved.</p>
+            <p style="margin-top: 15px; color: #666;">Thank you for participation. If you believe this is an error, please contact the researcher.</p>
             ${prolificRedirect}
         </div>`;
   }
