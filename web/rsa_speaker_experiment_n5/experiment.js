@@ -938,13 +938,16 @@ function createBlock(blockIdx) {
       let goalText = "";
       let icon = "";
       if (scenario === "informative") {
-        goalText = "Help the listener identify the true outcome";
+        goalText =
+          "Help the listener <strong>identify the true outcome</strong>";
         icon = "🔬";
       } else if (scenario === "pers_plus") {
-        goalText = "Make the treatment seem as effective as possible";
+        goalText =
+          "Make the treatment seem as <strong>effective</strong> as possible";
         icon = "👍";
       } else {
-        goalText = "Make the treatment seem as ineffective as possible";
+        goalText =
+          "Make the treatment seem as <strong>ineffective</strong> as possible";
         icon = "👎";
       }
 
