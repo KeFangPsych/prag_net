@@ -117,7 +117,7 @@ const CONFIG = {
                 to a medical professional. Your goal is to <strong>accurately and informatively</strong> 
                 describe the treatment outcomes so that the listener can identify the true data.`,
       goalReminder:
-        "Be as <strong>informative and accurate</strong> as possible. You will get a bonus if the listener <strong>correctly identify</strong> which trial you saw.",
+        "Be as <strong>informative and accurate</strong> as possible. You get a bonus if the listener <strong>correctly identify</strong> which trial you saw.",
       bonusExplanation: `After receiving your description, the listener will try to identify which trial outcome 
                 you observed. You will receive a <strong>bonus up to ${PAYMENT.block_bonus_max}</strong> proportional to how many 
                 trials the listener correctly identifies.`,
