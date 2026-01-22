@@ -979,26 +979,26 @@ function createBlock(blockIdx) {
       if (scenario === "informative") {
         question = "How do you maximize your bonus in this role?";
         options = [
-          "Help the listener correctly identify which trial outcome I observed",
-          "Make the listener think the treatment is highly effective",
-          "Make the listener think the treatment is ineffective",
+          "Help the listener <strong>correctly identify</strong> which trial outcome I observed",
+          "Make the listener think the treatment is <strong>highly effective</strong>",
+          "Make the listener think the treatment is <strong>ineffective</strong>",
         ];
         correctIndex = 0;
       } else if (scenario === "pers_plus") {
         question = "How do you maximize your bonus in this role?";
         options = [
-          "Help the listener correctly identify which trial outcome I observed",
-          "Make the listener rate the treatment as highly effective",
-          "Make the listener rate the treatment as ineffective",
+          "Help the listener <strong>correctly identify</strong> which trial outcome I observed",
+          "Make the listener rate the treatment as <strong>highly effective</strong>",
+          "Make the listener rate the treatment as <strong>ineffective</strong>",
         ];
         correctIndex = 1;
       } else {
         // pers_minus
         question = "How do you maximize your bonus in this role?";
         options = [
-          "Help the listener correctly identify which trial outcome I observed",
-          "Make the listener rate the treatment as highly effective",
-          "Make the listener rate the treatment as ineffective",
+          "Help the listener <strong>correctly identify</strong> which trial outcome I observed",
+          "Make the listener rate the treatment as <strong>highly effective</strong>",
+          "Make the listener rate the treatment as <strong>ineffective</strong>",
         ];
         correctIndex = 2;
       }
@@ -1336,26 +1336,30 @@ function createBlock(blockIdx) {
 function createAttentionCheck(blockIdx, afterRound) {
   // For attention checks, we don't show a real stimulus
   // Instead we show a blank area to make it clear this is not a normal trial
-  
+
   // Fixed utterance options for attention check (always the same 3)
   const attentionUtterances = [
     {
       text: "The treatment was effective for most patients.",
-      displayText: "The treatment was <b><u>effective</u></b> for <b><u>most</u></b> patients."
+      displayText:
+        "The treatment was <b><u>effective</u></b> for <b><u>most</u></b> patients.",
     },
     {
       text: "The treatment was ineffective for some patients.",
-      displayText: "The treatment was <b><u>ineffective</u></b> for <b><u>some</u></b> patients."
+      displayText:
+        "The treatment was <b><u>ineffective</u></b> for <b><u>some</u></b> patients.",
     },
     {
       text: "The treatment was effective for some patients.",
-      displayText: "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients."
-    }
+      displayText:
+        "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients.",
+    },
   ];
-  
+
   // The correct answer is always "effective for some"
   const requiredDescription = "The treatment was effective for some patients.";
-  const requiredDisplayText = "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients.";
+  const requiredDisplayText =
+    "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients.";
 
   // Attention check uses distinct yellow/amber color
   const attentionColor = "#FFC107";
@@ -1401,9 +1405,9 @@ function createAttentionCheck(blockIdx, afterRound) {
       task: "attention_check",
       block: blockIdx,
       round: afterRound,
-      num_effective: null,  // No real stimulus shown
-      stimulus_variant: null,  // No real stimulus shown
-      stimulus_positions: null,  // No real stimulus shown
+      num_effective: null, // No real stimulus shown
+      stimulus_variant: null, // No real stimulus shown
+      stimulus_positions: null, // No real stimulus shown
       required_description: requiredDescription,
     },
     on_load: function () {
