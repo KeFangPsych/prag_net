@@ -1387,7 +1387,7 @@ function createAttentionCheck(blockIdx, afterRound) {
 
       return `<div class="trial-container">
                 <div class="trial-header">
-                    <span class="round-indicator" style="background:${s.color};">${roleIcon} Attention Check | Round ${afterRound} of ${CONFIG.n_rounds}</span>
+                    <span class="round-indicator" style="background:${s.color};">${roleIcon}⚠️ Attention Check | Round ${afterRound} of ${CONFIG.n_rounds}</span>
                 </div>
                 <div class="stimulus-section">
                     <div style="width: 400px; height: 92px; background: white; border: 2px solid #ddd; border-radius: 8px; margin: 0 auto;">
