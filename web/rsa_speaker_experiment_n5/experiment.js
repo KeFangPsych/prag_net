@@ -1395,7 +1395,7 @@ function createAttentionCheck(blockIdx, afterRound) {
                 </div>
                 <div class="response-section" style="min-width: 500px; max-width: 600px;">
                     <p class="goal-reminder" style="background: ${s.color}20; border: 2px solid ${s.color}; border-left-width: 4px; border-radius: 4px;">
-                        <strong>ATTENTION CHECK:</strong> Please select exactly this description:<br>
+                        <strong>⚠️ ATTENTION CHECK:</strong> Please select exactly this description:<br>
                         <span style="display: block; margin-top: 8px; font-size: 1.1em;">"${requiredDisplayText}"</span>
                     </p>
                     <p style="text-align: center; font-weight: 500;">Select the requested description:</p>
