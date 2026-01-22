@@ -1334,26 +1334,37 @@ function createBlock(blockIdx) {
 }
 
 function createAttentionCheck(blockIdx, afterRound) {
-  // Random image for attention check
-  const randomNumEffective = Math.floor(Math.random() * 6);
+  // For attention checks, we don't show a real stimulus
+  // Instead we show a blank area to make it clear this is not a normal trial
+  
+  // Fixed utterance options for attention check (always the same 3)
+  const attentionUtterances = [
+    {
+      text: "The treatment was effective for most patients.",
+      displayText: "The treatment was <b><u>effective</u></b> for <b><u>most</u></b> patients."
+    },
+    {
+      text: "The treatment was ineffective for some patients.",
+      displayText: "The treatment was <b><u>ineffective</u></b> for <b><u>some</u></b> patients."
+    },
+    {
+      text: "The treatment was effective for some patients.",
+      displayText: "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients."
+    }
+  ];
+  
+  // The correct answer is always "effective for some"
+  const requiredDescription = "The treatment was effective for some patients.";
+  const requiredDisplayText = "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients.";
 
-  // Get random arrangement for this attention check
-  const stimulusInfo = Stimuli.getRandomImage(randomNumEffective);
-
-  // Get all true utterances for this image and pick one randomly
-  const trueUtterances = TruthChecker.getTrueUtterances(randomNumEffective);
-  const requiredUtterance =
-    trueUtterances[Math.floor(Math.random() * trueUtterances.length)];
-  const requiredDescription = requiredUtterance.text;
-  const requiredDisplayText = requiredUtterance.displayText;
+  // Attention check uses distinct yellow/amber color
+  const attentionColor = "#FFC107";
 
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: function () {
-      const s = CONFIG.scenarios[experimentState.currentScenario];
-
       // Shuffle utterances for display
-      let displayUtterances = shuffleArray([...trueUtterances]);
+      let displayUtterances = shuffleArray([...attentionUtterances]);
 
       let optionsHtml = '<div class="utterance-options">';
       displayUtterances.forEach((u, i) => {
@@ -1364,26 +1375,20 @@ function createAttentionCheck(blockIdx, afterRound) {
       });
       optionsHtml += "</div>";
 
-      const roleIcon =
-        experimentState.currentScenario === "informative"
-          ? "🔬"
-          : experimentState.currentScenario === "pers_plus"
-            ? "👍"
-            : "👎";
-
       return `<div class="trial-container">
                 <div class="trial-header">
-                    <span class="round-indicator" style="background:${s.color};">${roleIcon} Round ${afterRound} of ${CONFIG.n_rounds} | ${s.role}</span>
+                    <span class="round-indicator" style="background:${attentionColor};">⚠️ Attention Check | Round ${afterRound} of ${CONFIG.n_rounds}</span>
                 </div>
                 <div class="stimulus-section">
-                    <img src="${stimulusInfo.path}" class="stimulus-image" style="max-width: 400px;">
+                    <div style="width: 400px; height: 92px; background: white; border: 2px solid #ddd; border-radius: 8px; margin: 0 auto;">
+                    </div>
                 </div>
                 <div class="response-section" style="min-width: 500px; max-width: 600px;">
-                    <p class="instruction-text">Describe these results to your listener:</p>
-                    <p class="goal-reminder" style="background: ${s.color}15; border-left: 4px solid ${s.color};">
-                        <strong>⚠️ Attention Check:</strong> Please select exactly this description: "${requiredDisplayText}"
+                    <p class="goal-reminder" style="background: ${attentionColor}30; border: 2px solid ${attentionColor}; border-left-width: 4px; border-radius: 4px;">
+                        <strong>⚠️ ATTENTION CHECK:</strong> Please select exactly this description:<br>
+                        <span style="display: block; margin-top: 8px; font-size: 1.1em;">"${requiredDisplayText}"</span>
                     </p>
-                    <p style="text-align: center; font-weight: 500;">Select one of the following TRUE descriptions:</p>
+                    <p style="text-align: center; font-weight: 500;">Select the requested description:</p>
                     ${optionsHtml}
                     <div style="text-align: center;">
                         <button id="send-btn" class="jspsych-btn submit-btn" disabled>Send Description</button>
@@ -1396,9 +1401,9 @@ function createAttentionCheck(blockIdx, afterRound) {
       task: "attention_check",
       block: blockIdx,
       round: afterRound,
-      num_effective: randomNumEffective,
-      stimulus_variant: stimulusInfo.variant,
-      stimulus_positions: JSON.stringify(stimulusInfo.positions),
+      num_effective: null,  // No real stimulus shown
+      stimulus_variant: null,  // No real stimulus shown
+      stimulus_positions: null,  // No real stimulus shown
       required_description: requiredDescription,
     },
     on_load: function () {
@@ -1434,9 +1439,9 @@ function createAttentionCheck(blockIdx, afterRound) {
           task: "attention_check",
           block: blockIdx,
           round: afterRound,
-          num_effective: randomNumEffective,
-          stimulus_variant: stimulusInfo.variant,
-          stimulus_positions: JSON.stringify(stimulusInfo.positions),
+          num_effective: null,
+          stimulus_variant: null,
+          stimulus_positions: null,
           required_description: requiredDescription,
           selected_description: selectedText,
           attention_passed: passed,
