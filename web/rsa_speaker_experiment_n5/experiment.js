@@ -1361,12 +1361,11 @@ function createAttentionCheck(blockIdx, afterRound) {
   const requiredDisplayText =
     "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients.";
 
-  // Attention check uses distinct yellow/amber color
-  const attentionColor = "#FFC107";
-
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: function () {
+      const s = CONFIG.scenarios[experimentState.currentScenario];
+
       // Shuffle utterances for display
       let displayUtterances = shuffleArray([...attentionUtterances]);
 
@@ -1379,16 +1378,23 @@ function createAttentionCheck(blockIdx, afterRound) {
       });
       optionsHtml += "</div>";
 
+      const roleIcon =
+        experimentState.currentScenario === "informative"
+          ? "🔬"
+          : experimentState.currentScenario === "pers_plus"
+            ? "👍"
+            : "👎";
+
       return `<div class="trial-container">
                 <div class="trial-header">
-                    <span class="round-indicator" style="background:${attentionColor};">Attention Check | Round ${afterRound} of ${CONFIG.n_rounds}</span>
+                    <span class="round-indicator" style="background:${s.color};">${roleIcon} Attention Check | Round ${afterRound} of ${CONFIG.n_rounds}</span>
                 </div>
                 <div class="stimulus-section">
                     <div style="width: 400px; height: 92px; background: white; border: 2px solid #ddd; border-radius: 8px; margin: 0 auto;">
                     </div>
                 </div>
                 <div class="response-section" style="min-width: 500px; max-width: 600px;">
-                    <p class="goal-reminder" style="background: ${attentionColor}30; border: 2px solid ${attentionColor}; border-left-width: 4px; border-radius: 4px;">
+                    <p class="goal-reminder" style="background: ${s.color}20; border: 2px solid ${s.color}; border-left-width: 4px; border-radius: 4px;">
                         <strong>ATTENTION CHECK:</strong> Please select exactly this description:<br>
                         <span style="display: block; margin-top: 8px; font-size: 1.1em;">"${requiredDisplayText}"</span>
                     </p>
