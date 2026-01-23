@@ -56,7 +56,7 @@ jsPsych.data.addProperties({
 const experimentState = {
   // Condition assignments (between-subjects)
   speakerCondition: null,      // "informative", "pers_plus", or "pers_minus" (utterances received)
-  listenerBeliefCondition: null, // "informed", "credulous", or "naive" (what they're told)
+  listenerBeliefCondition: null, // "vigilant", "credulous", or "naturalistic" (what they're told)
   utteranceSequence: [],
   sequenceIdx: 0,
   
@@ -586,7 +586,7 @@ const consent = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="consent-container">
-      <h2>Informed Consent</h2>
+      <h2>Vigilant Consent</h2>
       
       <div class="consent-section">
         <p><strong>DESCRIPTION:</strong> You are invited to participate in a research study about language and communication. The purpose of the research is to understand how people interpret and evaluate information from different sources. This research will be conducted through the Prolific platform. If you decide to participate, you will receive descriptions from another participant and make judgments about those descriptions.</p>
@@ -967,7 +967,7 @@ const assignConditions = {
 };
 
 // INFORMED condition intro - told about all 3 speaker types
-const listenerIntroInformed = {
+const listenerIntroVigilant = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="listener-intro-container">
@@ -1037,7 +1037,7 @@ const listenerIntroCredulous = {
 };
 
 // NAIVE condition intro - told nothing about goals
-const listenerIntroNaive = {
+const listenerIntroNaturalistic = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="listener-intro-container">
@@ -1055,9 +1055,9 @@ const listenerIntroNaive = {
 
 // Conditional intro based on belief condition
 const listenerIntro = {
-  timeline: [listenerIntroInformed],
+  timeline: [listenerIntroVigilant],
   conditional_function: function() {
-    return experimentState.listenerBeliefCondition === "informed";
+    return experimentState.listenerBeliefCondition === "vigilant";
   }
 };
 
@@ -1068,15 +1068,15 @@ const listenerIntroCredulousCond = {
   }
 };
 
-const listenerIntroNaiveCond = {
-  timeline: [listenerIntroNaive],
+const listenerIntroNaturalisticCond = {
+  timeline: [listenerIntroNaturalistic],
   conditional_function: function() {
-    return experimentState.listenerBeliefCondition === "naive";
+    return experimentState.listenerBeliefCondition === "naturalistic";
   }
 };
 
 // Task explanation - varies slightly by condition
-const listenerTaskExplanationInformed = {
+const listenerTaskExplanationVigilant = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="listener-intro-container">
@@ -1115,10 +1115,9 @@ const listenerTaskExplanationCredulous = {
       
       <p style="margin-top: 20px;">After receiving each description, you will:</p>
       
-      <ol style="line-height: 2;">
-        <li><strong>Estimate the treatment's effectiveness</strong> — How likely is each possible effectiveness level (0% to 100%)?</li>
-        <li><strong>Report your impression of the speaker</strong> — What communication style did the speaker use?</li>
-      </ol>
+      <p style="margin-left: 20px; line-height: 2;">
+        <strong>Estimate the treatment's effectiveness</strong> — How likely is each possible effectiveness level (0% to 100%)?
+      </p>
       
       <div class="example-box" style="margin-top: 25px;">
         <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how close your effectiveness estimates are to the true treatment effectiveness.</p>
@@ -1132,7 +1131,7 @@ const listenerTaskExplanationCredulous = {
   on_finish: updateProgress,
 };
 
-const listenerTaskExplanationNaive = {
+const listenerTaskExplanationNaturalistic = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="listener-intro-container">
@@ -1143,10 +1142,9 @@ const listenerTaskExplanationNaive = {
       
       <p style="margin-top: 20px;">After receiving each description, you will:</p>
       
-      <ol style="line-height: 2;">
-        <li><strong>Estimate the treatment's effectiveness</strong> — How likely is each possible effectiveness level (0% to 100%)?</li>
-        <li><strong>Report your impression of the speaker</strong> — What do you think the speaker's approach was?</li>
-      </ol>
+      <p style="margin-left: 20px; line-height: 2;">
+        <strong>Estimate the treatment's effectiveness</strong> — How likely is each possible effectiveness level (0% to 100%)?
+      </p>
       
       <div class="example-box" style="margin-top: 25px;">
         <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how close your effectiveness estimates are to the true treatment effectiveness.</p>
@@ -1161,10 +1159,10 @@ const listenerTaskExplanationNaive = {
 };
 
 // Conditional task explanations
-const listenerTaskExplanationInformedCond = {
-  timeline: [listenerTaskExplanationInformed],
+const listenerTaskExplanationVigilantCond = {
+  timeline: [listenerTaskExplanationVigilant],
   conditional_function: function() {
-    return experimentState.listenerBeliefCondition === "informed";
+    return experimentState.listenerBeliefCondition === "vigilant";
   }
 };
 
@@ -1175,10 +1173,10 @@ const listenerTaskExplanationCredulousCond = {
   }
 };
 
-const listenerTaskExplanationNaiveCond = {
-  timeline: [listenerTaskExplanationNaive],
+const listenerTaskExplanationNaturalisticCond = {
+  timeline: [listenerTaskExplanationNaturalistic],
   conditional_function: function() {
-    return experimentState.listenerBeliefCondition === "naive";
+    return experimentState.listenerBeliefCondition === "naturalistic";
   }
 };
 
@@ -1198,7 +1196,7 @@ const pairingWait = {
 };
 
 // Speaker matched confirmation - varies by condition
-const speakerMatchedInformed = {
+const speakerMatchedVigilant = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="listener-intro-container" style="text-align: center;">
@@ -1225,7 +1223,7 @@ const speakerMatchedCredulous = {
   on_finish: updateProgress,
 };
 
-const speakerMatchedNaive = {
+const speakerMatchedNaturalistic = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="listener-intro-container" style="text-align: center;">
@@ -1239,10 +1237,10 @@ const speakerMatchedNaive = {
 };
 
 // Conditional speaker matched screens
-const speakerMatchedInformedCond = {
-  timeline: [speakerMatchedInformed],
+const speakerMatchedVigilantCond = {
+  timeline: [speakerMatchedVigilant],
   conditional_function: function() {
-    return experimentState.listenerBeliefCondition === "informed";
+    return experimentState.listenerBeliefCondition === "vigilant";
   }
 };
 
@@ -1253,62 +1251,19 @@ const speakerMatchedCredulousCond = {
   }
 };
 
-const speakerMatchedNaiveCond = {
-  timeline: [speakerMatchedNaive],
+const speakerMatchedNaturalisticCond = {
+  timeline: [speakerMatchedNaturalistic],
   conditional_function: function() {
-    return experimentState.listenerBeliefCondition === "naive";
+    return experimentState.listenerBeliefCondition === "naturalistic";
   }
 };
 
 // ============================================================================
-// 6. LISTENER TRIALS (split into two pages)
+// 6. LISTENER TRIALS
 // ============================================================================
 
-// Page 1: Show utterance (no response needed, just display)
-function createUtteranceDisplay(roundNum) {
-  return {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: function () {
-      const utterance = experimentState.utteranceSequence[roundNum];
-      experimentState.currentUtterance = utterance;  // Store for later pages
-      const formattedUtterance = formatUtterance(utterance);
-      
-      return `
-        <div class="trial-container">
-          <div class="trial-header">
-            <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds}</span>
-          </div>
-          
-          <div class="utterance-display">
-            <div class="label">The speaker described the trial result as:</div>
-            <div class="utterance-text">${formattedUtterance.displayText}</div>
-          </div>
-          
-          <div style="text-align: center; margin: 15px 0;">
-            <p style="color: #666; font-size: 0.95em;">The actual trial data:</p>
-            ${Stimuli.getUnknownDataHTML()}
-          </div>
-          
-          <p style="text-align: center; margin-top: 20px;">Click continue to provide your estimates.</p>
-        </div>
-      `;
-    },
-    choices: ["Continue"],
-    data: {
-      task: "utterance_display",
-      round: roundNum + 1,
-    },
-    on_finish: function(data) {
-      const utterance = experimentState.currentUtterance;
-      data.utterance_predicate = utterance.predicate;
-      data.utterance_quantifier = utterance.quantifier;
-      data.utterance_text = formatUtterance(utterance).text;
-    }
-  };
-}
-
 // Effectiveness distribution page
-function createEffectivenessPage(roundNum) {
+function createEffectivenessPage(roundNum, isLastPage) {
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: function () {
@@ -1322,15 +1277,22 @@ function createEffectivenessPage(roundNum) {
         effDist
       );
       
+      const buttonText = isLastPage ? "Submit Response" : "Continue";
+      
       return `
         <div class="trial-container">
           <div class="trial-header">
             <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds} — Effectiveness Estimate</span>
           </div>
           
-          <div class="utterance-display" style="margin-bottom: 20px;">
-            <div class="label">The speaker said:</div>
+          <div class="utterance-display" style="margin-bottom: 15px;">
+            <div class="label">The speaker described the trial result as:</div>
             <div class="utterance-text">${formattedUtterance.displayText}</div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 20px;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The actual trial data:</p>
+            ${Stimuli.getUnknownDataHTML()}
           </div>
           
           <div class="response-section">
@@ -1340,7 +1302,7 @@ function createEffectivenessPage(roundNum) {
             </p>
             ${effectivenessBuilder}
             
-            <button id="submit-btn" class="submit-btn" disabled>Continue</button>
+            <button id="submit-btn" class="submit-btn" disabled>${buttonText}</button>
           </div>
         </div>
       `;
@@ -1402,8 +1364,8 @@ function createEffectivenessPage(roundNum) {
   };
 }
 
-// Speaker type distribution page
-function createSpeakerTypePage(roundNum) {
+// Speaker type distribution page (only shown for vigilant condition)
+function createSpeakerTypePage(roundNum, isLastPage) {
   return {
     type: jsPsychHtmlButtonResponse,
     stimulus: function () {
@@ -1411,30 +1373,8 @@ function createSpeakerTypePage(roundNum) {
       const formattedUtterance = formatUtterance(utterance);
       const spkDist = experimentState.speakerTypeDistribution;
       
-      // Adjust title and instructions based on belief condition
-      let title = "How likely is each speaker type?";
-      let instructions = "Assign all 20 tokens across the possible speaker types.";
-      let explanationNote = "";
-      
-      if (experimentState.listenerBeliefCondition === "informed") {
-        // No additional explanation needed - they were told about the types
-        title = "How likely is each speaker type?";
-        instructions = "Based on the descriptions so far, how likely do you think each type is?";
-      } else if (experimentState.listenerBeliefCondition === "credulous") {
-        title = "What communication style did the speaker use?";
-        explanationNote = `<p style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 15px;">
-          Speakers can have different communication styles: some try to be neutral and informative, 
-          some emphasize positive aspects (pro-treatment), and some emphasize negative aspects (anti-treatment).
-        </p>`;
-        instructions = "Based on the descriptions so far, what style do you think your speaker used?";
-      } else if (experimentState.listenerBeliefCondition === "naive") {
-        title = "What do you think the speaker's approach was?";
-        explanationNote = `<p style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 15px;">
-          Speakers can take different approaches: some try to be neutral and informative, 
-          some emphasize positive aspects (pro-treatment), and some emphasize negative aspects (anti-treatment).
-        </p>`;
-        instructions = "Based on the descriptions so far, what approach do you think your speaker took?";
-      }
+      const title = "How likely is each speaker type?";
+      const instructions = "Based on the descriptions so far, how likely do you think each type is?";
       
       const speakerTypeBuilder = createDistributionBuilderHTML(
         "speaker_type",
@@ -1442,26 +1382,32 @@ function createSpeakerTypePage(roundNum) {
         spkDist
       );
       
+      const buttonText = isLastPage ? "Submit Response" : "Continue";
+      
       return `
         <div class="trial-container">
           <div class="trial-header">
             <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds} — Speaker Assessment</span>
           </div>
           
-          <div class="utterance-display" style="margin-bottom: 20px;">
-            <div class="label">The speaker said:</div>
+          <div class="utterance-display" style="margin-bottom: 15px;">
+            <div class="label">The speaker described the trial result as:</div>
             <div class="utterance-text">${formattedUtterance.displayText}</div>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 20px;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The actual trial data:</p>
+            ${Stimuli.getUnknownDataHTML()}
           </div>
           
           <div class="response-section">
             <h3>${title}</h3>
-            ${explanationNote}
             <p style="text-align: center; color: #666; font-size: 0.9em;">
               ${instructions}
             </p>
             ${speakerTypeBuilder}
             
-            <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
+            <button id="submit-btn" class="submit-btn" disabled>${buttonText}</button>
           </div>
         </div>
       `;
@@ -1556,7 +1502,8 @@ function createSpeakerWait(roundNum) {
 // 7. FINAL MEASURES
 // ============================================================================
 
-const competenceRating = {
+// Competence rating - framed differently by condition
+const competenceRatingVigilant = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="feedback-container">
@@ -1592,6 +1539,7 @@ const competenceRating = {
       jsPsych.finishTrial({
         task: "competence_rating",
         competence_score: parseInt(slider.value),
+        competence_framing: "goal_accomplishment",
         speaker_condition: experimentState.speakerCondition,
         listener_belief_condition: experimentState.listenerBeliefCondition,
       });
@@ -1600,7 +1548,119 @@ const competenceRating = {
   on_finish: updateProgress,
 };
 
-const openEndedQuestions = {
+const competenceRatingCredulous = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div class="feedback-container">
+      <h2>Final Questions</h2>
+      <p>How well do you think the speaker did at being informative?</p>
+      
+      <div class="slider-container">
+        <div class="slider-wrapper">
+          <span class="slider-label left">Very poorly</span>
+          <input type="range" id="competence-slider" min="0" max="100" value="50">
+          <span class="slider-label right">Very well</span>
+        </div>
+        <div class="slider-value" id="slider-value">50</div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px;">
+        <button id="competence-submit" class="jspsych-btn">Continue</button>
+      </div>
+    </div>
+  `,
+  choices: [],
+  data: { task: "competence_rating" },
+  on_load: function () {
+    const slider = document.getElementById("competence-slider");
+    const valueDisplay = document.getElementById("slider-value");
+    const submitBtn = document.getElementById("competence-submit");
+    
+    slider.addEventListener("input", () => {
+      valueDisplay.textContent = slider.value;
+    });
+    
+    submitBtn.addEventListener("click", () => {
+      jsPsych.finishTrial({
+        task: "competence_rating",
+        competence_score: parseInt(slider.value),
+        competence_framing: "informativeness",
+        speaker_condition: experimentState.speakerCondition,
+        listener_belief_condition: experimentState.listenerBeliefCondition,
+      });
+    });
+  },
+  on_finish: updateProgress,
+};
+
+const competenceRatingNaturalistic = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div class="feedback-container">
+      <h2>Final Questions</h2>
+      <p>How well do you think the speaker did as a communicator?</p>
+      
+      <div class="slider-container">
+        <div class="slider-wrapper">
+          <span class="slider-label left">Very poorly</span>
+          <input type="range" id="competence-slider" min="0" max="100" value="50">
+          <span class="slider-label right">Very well</span>
+        </div>
+        <div class="slider-value" id="slider-value">50</div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px;">
+        <button id="competence-submit" class="jspsych-btn">Continue</button>
+      </div>
+    </div>
+  `,
+  choices: [],
+  data: { task: "competence_rating" },
+  on_load: function () {
+    const slider = document.getElementById("competence-slider");
+    const valueDisplay = document.getElementById("slider-value");
+    const submitBtn = document.getElementById("competence-submit");
+    
+    slider.addEventListener("input", () => {
+      valueDisplay.textContent = slider.value;
+    });
+    
+    submitBtn.addEventListener("click", () => {
+      jsPsych.finishTrial({
+        task: "competence_rating",
+        competence_score: parseInt(slider.value),
+        competence_framing: "communicator",
+        speaker_condition: experimentState.speakerCondition,
+        listener_belief_condition: experimentState.listenerBeliefCondition,
+      });
+    });
+  },
+  on_finish: updateProgress,
+};
+
+// Conditional competence ratings
+const competenceRatingVigilantCond = {
+  timeline: [competenceRatingVigilant],
+  conditional_function: function() {
+    return experimentState.listenerBeliefCondition === "vigilant";
+  }
+};
+
+const competenceRatingCredulousCond = {
+  timeline: [competenceRatingCredulous],
+  conditional_function: function() {
+    return experimentState.listenerBeliefCondition === "credulous";
+  }
+};
+
+const competenceRatingNaturalisticCond = {
+  timeline: [competenceRatingNaturalistic],
+  conditional_function: function() {
+    return experimentState.listenerBeliefCondition === "naturalistic";
+  }
+};
+
+const openEndedQuestionsVigilant = {
   type: jsPsychSurveyText,
   preamble: `<div class="feedback-container"><h2>Your Thoughts</h2></div>`,
   questions: [
@@ -1619,6 +1679,43 @@ const openEndedQuestions = {
   ],
   button_label: "Continue",
   on_finish: updateProgress,
+};
+
+const openEndedQuestionsOther = {
+  type: jsPsychSurveyText,
+  preamble: `<div class="feedback-container"><h2>Your Thoughts</h2></div>`,
+  questions: [
+    {
+      prompt: "How did you use the speaker's descriptions to estimate the treatment's effectiveness?",
+      name: "estimation_strategy",
+      rows: 5,
+      required: false,
+    },
+    {
+      prompt: "Do you have any other comments or feedback about this experiment? Was anything confusing?",
+      name: "feedback",
+      rows: 4,
+      required: false,
+    },
+  ],
+  button_label: "Continue",
+  on_finish: updateProgress,
+};
+
+// Conditional open-ended questions
+const openEndedQuestionsVigilantCond = {
+  timeline: [openEndedQuestionsVigilant],
+  conditional_function: function() {
+    return experimentState.listenerBeliefCondition === "vigilant";
+  }
+};
+
+const openEndedQuestionsOtherCond = {
+  timeline: [openEndedQuestionsOther],
+  conditional_function: function() {
+    return experimentState.listenerBeliefCondition === "credulous" || 
+           experimentState.listenerBeliefCondition === "naturalistic";
+  }
 };
 
 // ============================================================================
@@ -1692,66 +1789,90 @@ timeline.push(assignConditions);
 // Listener task introduction (condition-specific)
 timeline.push(listenerIntro);
 timeline.push(listenerIntroCredulousCond);
-timeline.push(listenerIntroNaiveCond);
-timeline.push(listenerTaskExplanationInformedCond);
+timeline.push(listenerIntroNaturalisticCond);
+timeline.push(listenerTaskExplanationVigilantCond);
 timeline.push(listenerTaskExplanationCredulousCond);
-timeline.push(listenerTaskExplanationNaiveCond);
+timeline.push(listenerTaskExplanationNaturalisticCond);
 
 // Pairing wait and matched screens
 timeline.push(pairingWait);
-timeline.push(speakerMatchedInformedCond);
+timeline.push(speakerMatchedVigilantCond);
 timeline.push(speakerMatchedCredulousCond);
-timeline.push(speakerMatchedNaiveCond);
+timeline.push(speakerMatchedNaturalisticCond);
 
 // Listener trials with wait screens
-for (let r = 0; r < CONFIG.n_rounds; r++) {
+// Use a helper function to properly capture round number in closures
+function addRoundToTimeline(roundNum) {
   // Wait for speaker response (except before first round)
-  if (r > 0) {
-    timeline.push(createSpeakerWait(r));
+  if (roundNum > 0) {
+    timeline.push(createSpeakerWait(roundNum));
   }
   
-  // Trial sequence: utterance display + effectiveness page + speaker type page
-  // (order of measure pages determined by measureOrder)
+  // Store the current utterance at the start of each round
   timeline.push({
-    timeline: [createUtteranceDisplay(r)],
-  });
-  
-  // Effectiveness page (conditional on order)
-  timeline.push({
-    timeline: [createEffectivenessPage(r)],
-    conditional_function: function() {
-      return experimentState.measureOrder === "effectiveness_first";
+    type: jsPsychCallFunction,
+    func: function() {
+      experimentState.currentRound = roundNum;
+      experimentState.currentUtterance = experimentState.utteranceSequence[roundNum];
     }
   });
   
-  // Speaker type page (conditional on order - shows if effectiveness was first)
+  // For VIGILANT condition: show both measures in randomized order
+  // Case 1: Effectiveness first, then speaker type
   timeline.push({
-    timeline: [createSpeakerTypePage(r)],
+    timeline: [createEffectivenessPage(roundNum, false)],  // not last page
     conditional_function: function() {
-      return experimentState.measureOrder === "effectiveness_first";
+      return experimentState.listenerBeliefCondition === "vigilant" && 
+             experimentState.measureOrder === "effectiveness_first";
     }
   });
   
-  // Speaker type page (conditional on order - shows if speaker type is first)
   timeline.push({
-    timeline: [createSpeakerTypePage(r)],
+    timeline: [createSpeakerTypePage(roundNum, true)],  // last page
     conditional_function: function() {
-      return experimentState.measureOrder === "speaker_type_first";
+      return experimentState.listenerBeliefCondition === "vigilant" && 
+             experimentState.measureOrder === "effectiveness_first";
     }
   });
   
-  // Effectiveness page (conditional on order - shows if speaker type was first)
+  // Case 2: Speaker type first, then effectiveness
   timeline.push({
-    timeline: [createEffectivenessPage(r)],
+    timeline: [createSpeakerTypePage(roundNum, false)],  // not last page
     conditional_function: function() {
-      return experimentState.measureOrder === "speaker_type_first";
+      return experimentState.listenerBeliefCondition === "vigilant" && 
+             experimentState.measureOrder === "speaker_type_first";
+    }
+  });
+  
+  timeline.push({
+    timeline: [createEffectivenessPage(roundNum, true)],  // last page
+    conditional_function: function() {
+      return experimentState.listenerBeliefCondition === "vigilant" && 
+             experimentState.measureOrder === "speaker_type_first";
+    }
+  });
+  
+  // For CREDULOUS and NATURALISTIC conditions: effectiveness only (last page)
+  timeline.push({
+    timeline: [createEffectivenessPage(roundNum, true)],  // last page
+    conditional_function: function() {
+      return experimentState.listenerBeliefCondition === "credulous" || 
+             experimentState.listenerBeliefCondition === "naturalistic";
     }
   });
 }
 
-// Final measures
-timeline.push(competenceRating);
-timeline.push(openEndedQuestions);
+// Add all rounds to timeline
+for (let r = 0; r < CONFIG.n_rounds; r++) {
+  addRoundToTimeline(r);
+}
+
+// Final measures (conditional based on condition)
+timeline.push(competenceRatingVigilantCond);
+timeline.push(competenceRatingCredulousCond);
+timeline.push(competenceRatingNaturalisticCond);
+timeline.push(openEndedQuestionsVigilantCond);
+timeline.push(openEndedQuestionsOtherCond);
 
 // Mark experiment as completed
 timeline.push({

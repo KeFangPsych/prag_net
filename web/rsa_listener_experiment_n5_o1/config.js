@@ -28,10 +28,10 @@ const CONFIG = {
   bonus_max: PAYMENT.bonus_max,
 
   // Listener belief conditions (what they're told about the speaker)
-  // "informed" - told about all 3 speaker types (original)
+  // "vigilant" - told about all 3 speaker types (aware of possible bias)
   // "credulous" - told speaker is trying to help them guess correctly
-  // "naive" - told nothing about speaker's goal (naturalistic)
-  listener_belief_conditions: ["informed", "credulous", "naive"],
+  // "naturalistic" - told nothing about speaker's goal
+  listener_belief_conditions: ["vigilant", "credulous", "naturalistic"],
   
   // Utterance sequence conditions (what utterances they actually receive)
   utterance_conditions: ["informative", "pers_plus", "pers_minus"],
