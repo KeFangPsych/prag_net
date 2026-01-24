@@ -356,6 +356,13 @@ function initDistributionBuilder(type, onChangeCallback) {
   const nTokens = CONFIG.n_tokens;
   const nOptions = type === "effectiveness" ? CONFIG.effectiveness_options.length : CONFIG.speaker_types.length;
   
+  // IMPORTANT: Reset change flags FIRST, before anything else
+  if (type === "effectiveness") {
+    experimentState.effectivenessChanged = false;
+  } else {
+    experimentState.speakerTypeChanged = false;
+  }
+  
   // Get current distribution from state or initialize to zeros
   let distribution;
   if (type === "effectiveness") {
@@ -372,7 +379,8 @@ function initDistributionBuilder(type, onChangeCallback) {
     return nTokens - getTokensUsed();
   }
   
-  function updateDisplay() {
+  // Update display only - does NOT set changed flag or call callback
+  function updateDisplayOnly() {
     const tokensLeft = getTokensLeft();
     const summaryEl = document.getElementById(`${type}-summary`);
     
@@ -412,15 +420,27 @@ function initDistributionBuilder(type, onChangeCallback) {
       }
     }
     
+    // Save distribution to state
+    if (type === "effectiveness") {
+      experimentState.effectivenessDistribution = [...distribution];
+    } else {
+      experimentState.speakerTypeDistribution = [...distribution];
+    }
+  }
+  
+  // Called ONLY on user click - marks as changed, updates display, AND calls callback
+  function onUserClick() {
     // Mark as changed
     if (type === "effectiveness") {
       experimentState.effectivenessChanged = true;
-      experimentState.effectivenessDistribution = [...distribution];
     } else {
       experimentState.speakerTypeChanged = true;
-      experimentState.speakerTypeDistribution = [...distribution];
     }
     
+    // Update display
+    updateDisplayOnly();
+    
+    // Call callback to check if submit should be enabled
     if (onChangeCallback) onChangeCallback();
   }
   
@@ -429,7 +449,7 @@ function initDistributionBuilder(type, onChangeCallback) {
     if (summaryEl) {
       summaryEl.textContent = message;
       summaryEl.className = "distribution-summary warning";
-      setTimeout(() => updateDisplay(), 2000);
+      setTimeout(() => updateDisplayOnly(), 2000);
     }
   }
   
@@ -440,7 +460,7 @@ function initDistributionBuilder(type, onChangeCallback) {
       const col = parseInt(e.target.dataset.col);
       if (getTokensLeft() > 0) {
         distribution[col]++;
-        updateDisplay();
+        onUserClick();
       } else {
         showWarning("You have 0 tokens left. Please adjust other options to add more here.");
       }
@@ -453,7 +473,7 @@ function initDistributionBuilder(type, onChangeCallback) {
       const col = parseInt(e.target.dataset.col);
       if (distribution[col] > 0) {
         distribution[col]--;
-        updateDisplay();
+        onUserClick();
       }
     });
   });
@@ -476,20 +496,16 @@ function initDistributionBuilder(type, onChangeCallback) {
         }
         
         distribution[col] = targetHeight;
-        updateDisplay();
+        onUserClick();
       }
     });
   });
   
-  // Initial display
-  updateDisplay();
+  // Initial display only - NO callback, NO changed flag
+  updateDisplayOnly();
   
-  // Reset change tracking after initial display
-  if (type === "effectiveness") {
-    experimentState.effectivenessChanged = false;
-  } else {
-    experimentState.speakerTypeChanged = false;
-  }
+  // Call callback once after setup to set initial button state (disabled since changed=false)
+  if (onChangeCallback) onChangeCallback();
   
   return {
     getDistribution: () => [...distribution],
@@ -915,6 +931,26 @@ const comp_multipleDescriptions = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
     const imgPath = Stimuli.getImagePath(5, 0);  // 5 effective
+    
+    // Options: first two are TRUE, third is FALSE
+    const options = [
+      { text: '"The treatment was <b><u>effective</u></b> for <b><u>all</u></b> patients."', correct: true, id: 'all' },
+      { text: '"The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients."', correct: true, id: 'some' },
+      { text: '"The treatment was <b><u>ineffective</u></b> for <b><u>some</u></b> patients."', correct: false, id: 'ineff_some' },
+    ];
+    
+    // Shuffle options
+    const shuffled = shuffleArray(options.map((opt, idx) => ({ ...opt, origIdx: idx })));
+    experimentState.comp_multiDesc_options = shuffled;
+    
+    let optionsHtml = '';
+    shuffled.forEach((opt, i) => {
+      optionsHtml += `<div class="checkbox-option-text" data-idx="${i}" data-correct="${opt.correct}" id="opt-${i}">
+        <span class="checkbox-marker"></span>
+        ${opt.text}
+      </div>`;
+    });
+    
     return `<div class="comprehension-container">
       <h3>Which descriptions are TRUE for this trial?</h3>
       <div class="stimulus-container">
@@ -922,18 +958,7 @@ const comp_multipleDescriptions = {
       </div>
       <p style="text-align: center; color: #666; margin: 15px 0;">Select <strong>all</strong> that are TRUE:</p>
       <div style="max-width: 580px; margin: 0 auto;">
-        <div class="checkbox-option-text" data-idx="0" id="opt-0">
-          <span class="checkbox-marker"></span>
-          "The treatment was <b><u>effective</u></b> for <b><u>all</u></b> patients."
-        </div>
-        <div class="checkbox-option-text" data-idx="1" id="opt-1">
-          <span class="checkbox-marker"></span>
-          "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients."
-        </div>
-        <div class="checkbox-option-text" data-idx="2" id="opt-2">
-          <span class="checkbox-marker"></span>
-          "The treatment was <b><u>effective</u></b> for <b><u>most</u></b> patients."
-        </div>
+        ${optionsHtml}
       </div>
       <div style="margin-top: 20px; text-align: center;">
         <button id="comp-submit" class="jspsych-btn" disabled>Submit Answer</button>
@@ -946,6 +971,7 @@ const comp_multipleDescriptions = {
     const selectedIndices = new Set();
     const options = document.querySelectorAll(".checkbox-option-text");
     const submitBtn = document.getElementById("comp-submit");
+    const shuffledOpts = experimentState.comp_multiDesc_options;
 
     options.forEach((opt, i) => {
       opt.addEventListener("click", () => {
@@ -961,12 +987,15 @@ const comp_multipleDescriptions = {
     });
 
     submitBtn.addEventListener("click", () => {
-      // All three are correct for 5 effective
-      const allCorrect = selectedIndices.has(0) && selectedIndices.has(1) && selectedIndices.has(2) && selectedIndices.size === 3;
+      // Check if exactly the two correct options are selected
+      const correctIndices = shuffledOpts.map((opt, i) => opt.correct ? i : -1).filter(i => i >= 0);
+      const selectedCorrectly = correctIndices.every(i => selectedIndices.has(i)) && 
+                                selectedIndices.size === correctIndices.length;
+      
       jsPsych.finishTrial({
         task: "comp_multiple_desc",
-        selected: Array.from(selectedIndices),
-        comp_correct: allCorrect,
+        selected: Array.from(selectedIndices).map(i => shuffledOpts[i].id),
+        comp_correct: selectedCorrectly,
       });
     });
   },
@@ -981,13 +1010,13 @@ const comp_multipleDescriptions_feedback = {
     if (data.comp_correct) {
       return `<div class="comprehension-container">
         <h2 style="color: #4CAF50;">✓ Correct!</h2>
-        <p>All three descriptions are TRUE for this trial!</p>
-        <div style="text-align: left; max-width: 400px; margin: 15px auto;">
-          <p style="margin-bottom: 8px;"><strong>ALL</strong> (5 = 5) ✓</p>
-          <p style="margin-bottom: 8px;"><strong>SOME</strong> (5 ≥ 1) ✓</p>
-          <p style="margin-bottom: 8px;"><strong>MOST</strong> (5 > half) ✓</p>
+        <p style="text-align: center;">You correctly identified which descriptions are TRUE!</p>
+        <div style="text-align: left; max-width: 500px; margin: 15px auto;">
+          <p style="margin-bottom: 8px; color: #2e7d32;">✓ "...effective for <strong>ALL</strong>" — TRUE (5 = 5)</p>
+          <p style="margin-bottom: 8px; color: #2e7d32;">✓ "...effective for <strong>SOME</strong>" — TRUE (5 ≥ 1)</p>
+          <p style="margin-bottom: 8px; color: #c62828;">✗ "...ineffective for <strong>SOME</strong>" — FALSE (0 is not ≥ 1)</p>
         </div>
-        <p>Multiple descriptions can be true for the same result.</p>
+        <p style="text-align: center;">Multiple descriptions can be true for the same result, but not all!</p>
       </div>`;
     } else {
       return `<div class="comprehension-container">
@@ -995,13 +1024,13 @@ const comp_multipleDescriptions_feedback = {
         <div style="text-align: center; margin: 15px 0;">
           <img src="${imgPath}" class="stimulus-image" style="max-width: 250px;">
         </div>
-        <p style="text-align: center;">Actually, <strong>all three</strong> descriptions are TRUE!</p>
-        <div style="text-align: left; max-width: 450px; margin: 15px auto;">
-          <p style="margin-bottom: 8px;">• "...effective for <strong>ALL</strong>" — TRUE (5 = 5) ✓</p>
-          <p style="margin-bottom: 8px;">• "...effective for <strong>SOME</strong>" — TRUE (5 ≥ 1) ✓</p>
-          <p style="margin-bottom: 8px;">• "...effective for <strong>MOST</strong>" — TRUE (5 > half) ✓</p>
+        <p style="text-align: center;">Let's check each description:</p>
+        <div style="text-align: left; max-width: 500px; margin: 15px auto;">
+          <p style="margin-bottom: 8px; color: #2e7d32;">✓ "...effective for <strong>ALL</strong>" — TRUE (5 = 5)</p>
+          <p style="margin-bottom: 8px; color: #2e7d32;">✓ "...effective for <strong>SOME</strong>" — TRUE (5 ≥ 1)</p>
+          <p style="margin-bottom: 8px; color: #c62828;">✗ "...ineffective for <strong>SOME</strong>" — FALSE (0 patients were ineffective, and 0 is not ≥ 1)</p>
         </div>
-        <p style="text-align: center;">Remember: multiple descriptions can be true for the same clinical trial result.</p>
+        <p style="text-align: center;">Multiple descriptions can be true, but "ineffective for some" requires at least 1 ineffective patient.</p>
       </div>`;
     }
   },
@@ -1284,10 +1313,10 @@ const listenerTaskExplanationVigilant = {
       
       <p style="margin-top: 20px;">After receiving each description, you will:</p>
       
-      <ol style="line-height: 2;">
-        <li><strong>Estimate the treatment's effectiveness</strong> — How likely is each possible effectiveness level (0% to 100%)?</li>
-        <li><strong>Estimate the speaker's type</strong> — How likely is each speaker type (Anti-treatment, Neutral, Pro-treatment)?</li>
-      </ol>
+      <div style="text-align: left; max-width: 600px; margin: 15px auto;">
+        <p style="margin-bottom: 12px;"><strong>1. Estimate the treatment's effectiveness</strong> — How likely is each possible effectiveness level (0% to 100%)?</p>
+        <p style="margin-bottom: 12px;"><strong>2. Estimate the speaker's type</strong> — How likely is each speaker type (Anti-treatment, Neutral, Pro-treatment)?</p>
+      </div>
       
       <div class="example-box" style="margin-top: 25px;">
         <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how accurately your effectiveness estimates match the true treatment effectiveness.</p>
@@ -1365,27 +1394,66 @@ const distributionBuilderExplanation = {
       <p>You will use a <strong>distribution builder</strong> to express your beliefs. You have <strong>20 tokens</strong> to distribute across the possible options.</p>
       
       <h3 style="margin-top: 25px;">How it works:</h3>
-      <ul style="line-height: 1.8;">
-        <li>Click on a column to add tokens, or use the +/− buttons</li>
-        <li>Assign more tokens to options you think are more likely</li>
-        <li>You must assign all 20 tokens before continuing</li>
-      </ul>
+      <div style="text-align: left; max-width: 550px; margin: 15px auto;">
+        <p style="margin-bottom: 10px;">• Click on a column to add tokens, or use the +/− buttons</p>
+        <p style="margin-bottom: 10px;">• Assign more tokens to options you think are more likely</p>
+        <p style="margin-bottom: 10px;">• You must assign all 20 tokens before continuing</p>
+      </div>
       
       <h3 style="margin-top: 25px;">Examples:</h3>
       
       <div class="example-box">
         <p><strong>If you are certain the effectiveness is 80%:</strong></p>
-        <p style="margin-left: 20px;">→ Put all 20 tokens in the "80%" column</p>
+        <p style="color: #666; margin: 10px 0;">Put all 20 tokens in the "80%" column</p>
+        <div class="demo-builder" style="display: flex; justify-content: center; gap: 4px; margin-top: 10px;">
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>0%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>10%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>20%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>30%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>40%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>50%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>60%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>70%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 100px; background: #4CAF50;"></div></div><span>80%</span><span class="demo-count">20</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>90%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>100%</span></div>
+        </div>
       </div>
       
       <div class="example-box" style="margin-top: 15px;">
         <p><strong>If you think it's equally likely to be anywhere from 0% to 100%:</strong></p>
-        <p style="margin-left: 20px;">→ Spread tokens roughly evenly (about 2 tokens per column, though 20 doesn't divide evenly into 11 options, so some variation is fine)</p>
+        <p style="color: #666; margin: 10px 0;">Spread tokens roughly evenly (about 2 per column)</p>
+        <div class="demo-builder" style="display: flex; justify-content: center; gap: 4px; margin-top: 10px;">
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>0%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>10%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>20%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>30%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>40%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>50%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>60%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>70%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 10px; background: #2196F3;"></div></div><span>80%</span><span class="demo-count">2</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 5px; background: #2196F3;"></div></div><span>90%</span><span class="demo-count">1</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 5px; background: #2196F3;"></div></div><span>100%</span><span class="demo-count">1</span></div>
+        </div>
       </div>
       
       <div class="example-box" style="margin-top: 15px;">
         <p><strong>If you think it's probably around 50-70% but not certain:</strong></p>
-        <p style="margin-left: 20px;">→ Put most tokens in 50%, 60%, and 70% columns, with fewer in nearby columns</p>
+        <p style="color: #666; margin: 10px 0;">Put most tokens in 50%, 60%, and 70% columns</p>
+        <div class="demo-builder" style="display: flex; justify-content: center; gap: 4px; margin-top: 10px;">
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>0%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>10%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>20%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 5px; background: #FF9800;"></div></div><span>30%</span><span class="demo-count">1</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 15px; background: #FF9800;"></div></div><span>40%</span><span class="demo-count">3</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 30px; background: #FF9800;"></div></div><span>50%</span><span class="demo-count">6</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 25px; background: #FF9800;"></div></div><span>60%</span><span class="demo-count">5</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 20px; background: #FF9800;"></div></div><span>70%</span><span class="demo-count">4</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 5px; background: #FF9800;"></div></div><span>80%</span><span class="demo-count">1</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>90%</span></div>
+          <div class="demo-col"><div class="demo-bar-container"><div class="demo-bar" style="height: 2px;"></div></div><span>100%</span></div>
+        </div>
       </div>
       
       <p style="margin-top: 25px;">The more tokens you assign to an option, the more confident you are that it's the true value.</p>
@@ -2070,12 +2138,12 @@ timeline.push(listenerTaskExplanationVigilantCond);
 timeline.push(listenerTaskExplanationCredulousCond);
 timeline.push(listenerTaskExplanationNaturalisticCond);
 
-// Distribution builder explanation (shown to all)
-timeline.push(distributionBuilderExplanation);
-
-// Truth comprehension check (shown to all)
+// Truth comprehension check (shown to all) - before distribution builder
 timeline.push(truthComprehensionCheck);
 timeline.push(truthComprehensionFeedback);
+
+// Distribution builder explanation (shown to all)
+timeline.push(distributionBuilderExplanation);
 
 // Pairing wait and matched screens
 timeline.push(pairingWait);
@@ -2149,6 +2217,126 @@ function addRoundToTimeline(roundNum) {
 for (let r = 0; r < CONFIG.n_rounds; r++) {
   addRoundToTimeline(r);
 }
+
+// ============================================================================
+// ATTENTION CHECK ROUND (Round 6)
+// ============================================================================
+
+// Wait screen before attention check
+timeline.push({
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <div class="waiting-container">
+      <h2>Speaker is receiving next trial data and responding...</h2>
+      <div class="spinner"></div>
+      <p>Waiting for description...</p>
+    </div>
+  `,
+  choices: "NO_KEYS",
+  trial_duration: () => randomInt(CONFIG.speaker_response_min, CONFIG.speaker_response_max),
+});
+
+// Attention check effectiveness page
+const attentionCheckPage = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const effDist = experimentState.effectivenessDistribution;
+    
+    const effectivenessBuilder = createDistributionBuilderHTML(
+      "effectiveness",
+      "How likely is each effectiveness level?",
+      effDist
+    );
+    
+    return `
+      <div class="trial-container">
+        <div class="trial-header">
+          <span class="round-indicator">Round ${CONFIG.n_rounds + 1} of ${CONFIG.n_rounds + 1} — Effectiveness Estimate</span>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 15px;">
+          <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The speaker received data of five patients' treatment result:</p>
+          ${Stimuli.getUnknownDataHTML()}
+        </div>
+        
+        <div class="utterance-display" style="margin-bottom: 20px;">
+          <div class="label">The speaker described the trial result as:</div>
+          <div class="utterance-text" style="background: #fff3e0; border-color: #FF9800;">
+            "<strong>This is an attention check. Please assign all 20 tokens to 100%.</strong>"
+          </div>
+        </div>
+        
+        <div class="response-section">
+          <h3>Based on this description, estimate the treatment's true effectiveness:</h3>
+          <p style="text-align: center; color: #666; font-size: 0.9em;">
+            Assign all 20 tokens across the possible effectiveness levels.
+          </p>
+          ${effectivenessBuilder}
+          
+          <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
+        </div>
+      </div>
+    `;
+  },
+  choices: [],
+  data: {
+    task: "attention_check",
+    round: CONFIG.n_rounds + 1,
+  },
+  on_load: function () {
+    startInactivityTimer();
+    experimentState.effectivenessChanged = false;
+    
+    const submitBtn = document.getElementById("submit-btn");
+    
+    function checkCanSubmit() {
+      const effBuilder = window.effBuilderInstance;
+      const effComplete = effBuilder && effBuilder.isComplete();
+      const changed = experimentState.effectivenessChanged;
+      submitBtn.disabled = !(effComplete && changed);
+    }
+    
+    window.effBuilderInstance = initDistributionBuilder("effectiveness", checkCanSubmit);
+    
+    submitBtn.addEventListener("click", () => {
+      clearInactivityTimer();
+      
+      const effDist = window.effBuilderInstance.getDistribution();
+      
+      // Check if attention check passed (all 20 tokens at 100%)
+      const attentionCheckPassed = effDist[10] === 20;  // index 10 = 100%
+      
+      jsPsych.finishTrial({
+        task: "attention_check",
+        round: CONFIG.n_rounds + 1,
+        speaker_condition: experimentState.speakerCondition,
+        listener_belief_condition: experimentState.listenerBeliefCondition,
+        sequence_idx: experimentState.sequenceIdx,
+        measure_order: experimentState.measureOrder,
+        utterance_text: "ATTENTION CHECK: Assign all tokens to 100%",
+        effectiveness_distribution: JSON.stringify(effDist),
+        eff_0: effDist[0],
+        eff_10: effDist[1],
+        eff_20: effDist[2],
+        eff_30: effDist[3],
+        eff_40: effDist[4],
+        eff_50: effDist[5],
+        eff_60: effDist[6],
+        eff_70: effDist[7],
+        eff_80: effDist[8],
+        eff_90: effDist[9],
+        eff_100: effDist[10],
+        attention_check_passed: attentionCheckPassed,
+      });
+    });
+  },
+  on_finish: function () {
+    clearInactivityTimer();
+    updateProgress();
+  },
+};
+
+timeline.push(attentionCheckPage);
 
 // Final measures (conditional based on condition)
 timeline.push(competenceRatingVigilantCond);
