@@ -502,17 +502,16 @@ function initDistributionBuilder(type, onChangeCallback) {
 // ============================================================================
 
 const instructionPages = [
-  // Page 1: Cover story and data representation
+  // Page 1: Cover story and data representation (without effectiveness explanation)
   `<div class="instructions-container">
-    <h2>The Treatment</h2>
-    <p>In this study, you will see results from a clinical trial testing a new medical treatment.</p>
-    <p>The treatment has some chance of working for any given patient. The trial shows what happened for 5 patients, which gives evidence about how effective the treatment is overall.</p>
-    <p>For each patient, the treatment can be:</p>
+    <h2>The Clinical Trial</h2>
+    <p>In this study, you will see results from clinical trials testing new medical treatments.</p>
+    <p>Each trial tests a treatment on <strong>5 patients</strong>. For each patient, the treatment can be:</p>
     <ul>
       <li><strong>EFFECTIVE</strong> (😃) — the treatment worked</li>
       <li><strong>INEFFECTIVE</strong> (🤒) — the treatment did not work</li>
     </ul>
-    <p>Here's what a clinical trial looks like:</p>
+    <p>Here's what a clinical trial result looks like:</p>
     <div class="example-box">
       <div style="text-align: center;">
         <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="Example trial" class="stimulus-image" style="max-width: 400px;">
@@ -521,7 +520,65 @@ const instructionPages = [
     </div>
   </div>`,
 
-  // Page 2: Description structure
+  // Page 2: Treatment Effectiveness explanation
+  `<div class="instructions-container">
+    <h2>Treatment Effectiveness</h2>
+    <p>Each treatment has an underlying <strong>effectiveness level</strong> (from 0% to 100%) that determines how likely it is to work for any patient.</p>
+    
+    <div class="example-box" style="margin-top: 20px;">
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <img src="stimuli_emoji_n5m1/effective_5_v0.png" alt="100% effective" style="max-width: 200px;">
+        <div>
+          <p><strong>100% Effectiveness ("Golden Treatment")</strong></p>
+          <p style="color: #666;">The treatment works for every patient. All 5 patients show improvement.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="example-box" style="margin-top: 15px;">
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <img src="stimuli_emoji_n5m1/effective_0_v0.png" alt="0% effective" style="max-width: 200px;">
+        <div>
+          <p><strong>0% Effectiveness ("Useless Treatment")</strong></p>
+          <p style="color: #666;">The treatment never works. No patients show improvement.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="example-box" style="margin-top: 15px;">
+      <p><strong>50% Effectiveness</strong></p>
+      <p style="color: #666; margin-bottom: 15px;">Each patient has about a 50-50 chance. Results can vary — here are some possible outcomes:</p>
+      
+      <div style="display: flex; align-items: stretch; gap: 15px;">
+        <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 5px;">
+          <span style="font-size: 0.85em; color: #4CAF50;">More likely</span>
+          <div style="flex: 1; display: flex; align-items: center;">
+            <span style="font-size: 1.5em; color: #888;">↓</span>
+          </div>
+          <span style="font-size: 0.85em; color: #f57c00;">Less likely</span>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #e8f5e9; border-radius: 6px;">
+            <img src="stimuli_emoji_n5m1/effective_3_v0.png" alt="3 effective" style="max-width: 140px;">
+            <span style="color: #666; font-size: 0.9em;">3 of 5 improved</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #fff3e0; border-radius: 6px;">
+            <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 140px;">
+            <span style="color: #666; font-size: 0.9em;">1 of 5 improved</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #fff3e0; border-radius: 6px;">
+            <img src="stimuli_emoji_n5m1/effective_5_v0.png" alt="5 effective" style="max-width: 140px;">
+            <span style="color: #666; font-size: 0.9em;">5 of 5 improved</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <p style="margin-top: 20px;">The clinical trial result gives you <strong>evidence</strong> about the treatment's true effectiveness level.</p>
+  </div>`,
+
+  // Page 3: Description structure
   `<div class="instructions-container">
     <h2>Descriptions</h2>
     <p>Trial results are described using sentences like this:</p>
@@ -536,29 +593,75 @@ const instructionPages = [
       <li><strong>ALL</strong> — 5 patients</li>
     </ul>
   </div>`,
-
-  // Page 3: Truth conditions
-  `<div class="instructions-container">
-    <h2>Which Descriptions Are True?</h2>
-    <p>For any clinical trial, multiple descriptions can be true at the same time. Consider this one:</p>
-
-    <div style="text-align: center; margin: 20px 0;">
-      <img src="stimuli_emoji_n5m1/effective_3_v0.png" alt="Example" class="stimulus-image" style="max-width: 300px;">
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-      <div style="background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 12px 16px; border-radius: 4px;">
-        <strong style="color: #2e7d32;">✓ TRUE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients." <span style="color: #666;">(3 is at least 1)</span>
-      </div>
-      <div style="background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 12px 16px; border-radius: 4px;">
-        <strong style="color: #2e7d32;">✓ TRUE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>most</u></b> patients." <span style="color: #666;">(3 is more than half)</span>
-      </div>
-      <div style="background: #ffebee; border-left: 4px solid #f44336; padding: 12px 16px; border-radius: 4px;">
-        <strong style="color: #c62828;">✗ FALSE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>all</u></b> patients." <span style="color: #666;">(only 3, not 5)</span>
-      </div>
-    </div>
-  </div>`,
 ];
+
+// Page showing which descriptions are true (shown after SOME/MOST checks)
+const whichDescriptionsTrue = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div class="instructions-container">
+      <h2>Which Descriptions Are True?</h2>
+      <p>For any clinical trial, <strong>multiple descriptions can be true</strong> at the same time. Consider this one:</p>
+
+      <div style="text-align: center; margin: 20px 0;">
+        <img src="stimuli_emoji_n5m1/effective_3_v0.png" alt="Example" class="stimulus-image" style="max-width: 300px;">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 12px 16px; border-radius: 4px;">
+          <strong style="color: #2e7d32;">✓ TRUE:</strong> "The treatment was <b><u>ineffective</u></b> for <b><u>some</u></b> patients." <span style="color: #666;">(2 is at least 1)</span>
+        </div>
+        <div style="background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 12px 16px; border-radius: 4px;">
+          <strong style="color: #2e7d32;">✓ TRUE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>most</u></b> patients." <span style="color: #666;">(3 is more than half)</span>
+        </div>
+        <div style="background: #ffebee; border-left: 4px solid #f44336; padding: 12px 16px; border-radius: 4px;">
+          <strong style="color: #c62828;">✗ FALSE:</strong> "The treatment was <b><u>ineffective</u></b> for <b><u>most</u></b> patients." <span style="color: #666;">(2 is less than half)</span>
+        </div>
+        <div style="background: #ffebee; border-left: 4px solid #f44336; padding: 12px 16px; border-radius: 4px;">
+          <strong style="color: #c62828;">✗ FALSE:</strong> "The treatment was <b><u>effective</u></b> for <b><u>all</u></b> patients." <span style="color: #666;">(only 3, not 5)</span>
+        </div>
+      </div>
+    </div>
+  `,
+  choices: ["Continue"],
+  on_finish: updateProgress,
+};
+
+// Page showing multiple results can underlie one description
+const multipleResultsOneTruth = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div class="instructions-container">
+      <h2>Multiple Results, One True Description</h2>
+      <p>The same description can be true for <strong>different clinical trial results</strong>:</p>
+
+      <div class="definition-box" style="text-align: center; font-size: 1.1em; padding: 15px; margin: 20px 0;">
+        "The treatment was <b><u>ineffective</u></b> for <b><u>most</u></b> patients."
+      </div>
+
+      <p style="text-align: center; margin-bottom: 15px;">This statement is TRUE for all of these trials:</p>
+
+      <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <div style="text-align: center;">
+          <img src="stimuli_emoji_n5m1/effective_0_v0.png" alt="0 effective" style="max-width: 150px;">
+          <p style="color: #666; font-size: 0.9em;">5 ineffective<br>(5 > half)</p>
+        </div>
+        <div style="text-align: center;">
+          <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 150px;">
+          <p style="color: #666; font-size: 0.9em;">4 ineffective<br>(4 > half)</p>
+        </div>
+        <div style="text-align: center;">
+          <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 150px;">
+          <p style="color: #666; font-size: 0.9em;">3 ineffective<br>(3 > half)</p>
+        </div>
+      </div>
+
+      <p style="margin-top: 20px; text-align: center;">When you hear a description, it could come from <strong>any result</strong> that makes it true!</p>
+    </div>
+  `,
+  choices: ["Continue"],
+  on_finish: updateProgress,
+};
 
 // ============================================================================
 // 1. WELCOME
@@ -739,31 +842,30 @@ const comp1_most_feedback = {
   on_finish: updateProgress,
 };
 
-// Module 2: True/False judgments
+// Module 2: Single True/False judgment (reduced from 2)
 const comp2_welcome = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `<div class="comprehension-container">
     <h2>Quick Check: True or False?</h2>
-    <p>For each trial result shown, decide if the statement is <strong>TRUE</strong> or <strong>FALSE</strong>.</p>
+    <p>Look at the clinical trial result and decide if the statement is <strong>TRUE</strong> or <strong>FALSE</strong>.</p>
   </div>`,
   choices: ["Begin"],
-  on_finish: function () {
-    experimentState.comp2_items = shuffleArray([...CONFIG.comprehension.module2]);
-    updateProgress();
-  },
+  on_finish: updateProgress,
 };
 
-const comp2_trial_1 = {
+const comp2_trial = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
-    const item = experimentState.comp2_items[0];
-    const imgPath = Stimuli.getImagePath(item.numEffective, 0);
+    // Fixed item: 3 effective, "ineffective for some" = TRUE
+    const imgPath = Stimuli.getImagePath(3, 0);
     return `<div class="comprehension-container">
       <h3>Is this statement TRUE or FALSE?</h3>
       <div class="stimulus-container">
         <img src="${imgPath}" class="stimulus-image" style="max-width: 400px;">
       </div>
-      <div class="definition-box" style="text-align: center; font-size: 1.2em;">"${item.statement}"</div>
+      <div class="definition-box" style="text-align: center; font-size: 1.2em;">
+        "The treatment was <b><u>ineffective</u></b> for <b><u>some</u></b> patients."
+      </div>
       <div style="margin-top: 30px; text-align: center;">
         <button class="jspsych-btn tf-btn true-btn" id="btn-true">TRUE</button>
         <button class="jspsych-btn tf-btn false-btn" id="btn-false">FALSE</button>
@@ -771,90 +873,136 @@ const comp2_trial_1 = {
     </div>`;
   },
   choices: [],
-  data: { task: "comp2", item_index: 0 },
+  data: { task: "comp2_tf" },
   on_load: function () {
-    const item = experimentState.comp2_items[0];
     document.getElementById("btn-true").addEventListener("click", () => {
-      jsPsych.finishTrial({ task: "comp2", item_index: 0, item: item, response: true, comp2_correct: item.correct === true });
+      jsPsych.finishTrial({ task: "comp2_tf", response: true, comp2_correct: true });
     });
     document.getElementById("btn-false").addEventListener("click", () => {
-      jsPsych.finishTrial({ task: "comp2", item_index: 0, item: item, response: false, comp2_correct: item.correct === false });
+      jsPsych.finishTrial({ task: "comp2_tf", response: false, comp2_correct: false });
     });
   },
   on_finish: updateProgress,
 };
 
-const comp2_feedback_1 = {
+const comp2_feedback = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
-    const data = jsPsych.data.get().filter({ task: "comp2", item_index: 0 }).last(1).values()[0];
-    const item = data.item;
-    const numIneffective = 5 - item.numEffective;
-    let explanation = "";
-    const statementLower = item.statement.toLowerCase();
-    if (statementLower.includes("ineffective") && statementLower.includes("some")) {
-      explanation = `<strong>SOME</strong> means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? "" : "s"}.`;
-    } else if (statementLower.includes("ineffective") && statementLower.includes("all")) {
-      explanation = `<strong>ALL</strong> means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? "" : "s"}.`;
-    }
+    const data = jsPsych.data.get().filter({ task: "comp2_tf" }).last(1).values()[0];
+    const imgPath = Stimuli.getImagePath(3, 0);
     if (data.comp2_correct) {
-      return `<div class="comprehension-container"><h2 style="color: #4CAF50;">✓ Correct</h2><p>${explanation}</p></div>`;
+      return `<div class="comprehension-container">
+        <h2 style="color: #4CAF50;">✓ Correct!</h2>
+        <p><strong>SOME</strong> means "at least 1". Since 2 patients were ineffective, the statement is TRUE.</p>
+      </div>`;
     } else {
-      return `<div class="comprehension-container"><h2 style="color: #f44336;">✗ Incorrect</h2><p>The answer is <strong>${item.correct ? "TRUE" : "FALSE"}</strong>. ${explanation}</p></div>`;
+      return `<div class="comprehension-container">
+        <h2 style="color: #f44336;">✗ Incorrect</h2>
+        <div style="text-align: center; margin: 15px 0;">
+          <img src="${imgPath}" class="stimulus-image" style="max-width: 300px;">
+        </div>
+        <p>The answer is <strong>TRUE</strong>.</p>
+        <p><strong>SOME</strong> means "at least 1". Looking at the trial, 2 patients were ineffective (🤒🤒). Since 2 ≥ 1, the statement "The treatment was ineffective for <b>some</b> patients" is TRUE.</p>
+      </div>`;
     }
   },
   choices: ["Continue"],
   on_finish: updateProgress,
 };
 
-const comp2_trial_2 = {
+// New comprehension: Multiple descriptions can be true for one result
+const comp_multipleDescriptions = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
-    const item = experimentState.comp2_items[1];
-    const imgPath = Stimuli.getImagePath(item.numEffective, 0);
+    const imgPath = Stimuli.getImagePath(5, 0);  // 5 effective
     return `<div class="comprehension-container">
-      <h3>Is this statement TRUE or FALSE?</h3>
+      <h3>Which descriptions are TRUE for this trial?</h3>
       <div class="stimulus-container">
-        <img src="${imgPath}" class="stimulus-image" style="max-width: 400px;">
+        <img src="${imgPath}" class="stimulus-image" style="max-width: 350px;">
       </div>
-      <div class="definition-box" style="text-align: center; font-size: 1.2em;">"${item.statement}"</div>
-      <div style="margin-top: 30px; text-align: center;">
-        <button class="jspsych-btn tf-btn true-btn" id="btn-true">TRUE</button>
-        <button class="jspsych-btn tf-btn false-btn" id="btn-false">FALSE</button>
+      <p style="text-align: center; color: #666; margin: 15px 0;">Select <strong>all</strong> that are TRUE:</p>
+      <div style="max-width: 580px; margin: 0 auto;">
+        <div class="checkbox-option-text" data-idx="0" id="opt-0">
+          <span class="checkbox-marker"></span>
+          "The treatment was <b><u>effective</u></b> for <b><u>all</u></b> patients."
+        </div>
+        <div class="checkbox-option-text" data-idx="1" id="opt-1">
+          <span class="checkbox-marker"></span>
+          "The treatment was <b><u>effective</u></b> for <b><u>some</u></b> patients."
+        </div>
+        <div class="checkbox-option-text" data-idx="2" id="opt-2">
+          <span class="checkbox-marker"></span>
+          "The treatment was <b><u>effective</u></b> for <b><u>most</u></b> patients."
+        </div>
+      </div>
+      <div style="margin-top: 20px; text-align: center;">
+        <button id="comp-submit" class="jspsych-btn" disabled>Submit Answer</button>
       </div>
     </div>`;
   },
   choices: [],
-  data: { task: "comp2", item_index: 1 },
+  data: { task: "comp_multiple_desc" },
   on_load: function () {
-    const item = experimentState.comp2_items[1];
-    document.getElementById("btn-true").addEventListener("click", () => {
-      jsPsych.finishTrial({ task: "comp2", item_index: 1, item: item, response: true, comp2_correct: item.correct === true });
+    const selectedIndices = new Set();
+    const options = document.querySelectorAll(".checkbox-option-text");
+    const submitBtn = document.getElementById("comp-submit");
+
+    options.forEach((opt, i) => {
+      opt.addEventListener("click", () => {
+        if (selectedIndices.has(i)) {
+          selectedIndices.delete(i);
+          opt.classList.remove("selected");
+        } else {
+          selectedIndices.add(i);
+          opt.classList.add("selected");
+        }
+        submitBtn.disabled = selectedIndices.size === 0;
+      });
     });
-    document.getElementById("btn-false").addEventListener("click", () => {
-      jsPsych.finishTrial({ task: "comp2", item_index: 1, item: item, response: false, comp2_correct: item.correct === false });
+
+    submitBtn.addEventListener("click", () => {
+      // All three are correct for 5 effective
+      const allCorrect = selectedIndices.has(0) && selectedIndices.has(1) && selectedIndices.has(2) && selectedIndices.size === 3;
+      jsPsych.finishTrial({
+        task: "comp_multiple_desc",
+        selected: Array.from(selectedIndices),
+        comp_correct: allCorrect,
+      });
     });
   },
   on_finish: updateProgress,
 };
 
-const comp2_feedback_2 = {
+const comp_multipleDescriptions_feedback = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
-    const data = jsPsych.data.get().filter({ task: "comp2", item_index: 1 }).last(1).values()[0];
-    const item = data.item;
-    const numIneffective = 5 - item.numEffective;
-    let explanation = "";
-    const statementLower = item.statement.toLowerCase();
-    if (statementLower.includes("ineffective") && statementLower.includes("some")) {
-      explanation = `<strong>SOME</strong> means at least 1. The treatment was ineffective for ${numIneffective} patient${numIneffective === 1 ? "" : "s"}.`;
-    } else if (statementLower.includes("ineffective") && statementLower.includes("all")) {
-      explanation = `<strong>ALL</strong> means all 5. The treatment was ineffective for only ${numIneffective} patient${numIneffective === 1 ? "" : "s"}.`;
-    }
-    if (data.comp2_correct) {
-      return `<div class="comprehension-container"><h2 style="color: #4CAF50;">✓ Correct</h2><p>${explanation}</p></div>`;
+    const data = jsPsych.data.get().filter({ task: "comp_multiple_desc" }).last(1).values()[0];
+    const imgPath = Stimuli.getImagePath(5, 0);
+    if (data.comp_correct) {
+      return `<div class="comprehension-container">
+        <h2 style="color: #4CAF50;">✓ Correct!</h2>
+        <p>All three descriptions are TRUE for this trial!</p>
+        <div style="text-align: left; max-width: 400px; margin: 15px auto;">
+          <p style="margin-bottom: 8px;"><strong>ALL</strong> (5 = 5) ✓</p>
+          <p style="margin-bottom: 8px;"><strong>SOME</strong> (5 ≥ 1) ✓</p>
+          <p style="margin-bottom: 8px;"><strong>MOST</strong> (5 > half) ✓</p>
+        </div>
+        <p>Multiple descriptions can be true for the same result.</p>
+      </div>`;
     } else {
-      return `<div class="comprehension-container"><h2 style="color: #f44336;">✗ Incorrect</h2><p>The answer is <strong>${item.correct ? "TRUE" : "FALSE"}</strong>. ${explanation}</p></div>`;
+      return `<div class="comprehension-container">
+        <h2 style="color: #f44336;">✗ Incorrect</h2>
+        <div style="text-align: center; margin: 15px 0;">
+          <img src="${imgPath}" class="stimulus-image" style="max-width: 250px;">
+        </div>
+        <p style="text-align: center;">Actually, <strong>all three</strong> descriptions are TRUE!</p>
+        <div style="text-align: left; max-width: 450px; margin: 15px auto;">
+          <p style="margin-bottom: 8px;">• "...effective for <strong>ALL</strong>" — TRUE (5 = 5) ✓</p>
+          <p style="margin-bottom: 8px;">• "...effective for <strong>SOME</strong>" — TRUE (5 ≥ 1) ✓</p>
+          <p style="margin-bottom: 8px;">• "...effective for <strong>MOST</strong>" — TRUE (5 > half) ✓</p>
+        </div>
+        <p style="text-align: center;">Remember: multiple descriptions can be true for the same clinical trial result.</p>
+      </div>`;
     }
   },
   choices: ["Continue"],
@@ -930,15 +1078,50 @@ const comp3_feedback = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
     const data = jsPsych.data.get().filter({ task: "comp3" }).last(1).values()[0];
+    const item = CONFIG.comprehension.module3;
+    
     if (data.comp3_correct) {
       return `<div class="comprehension-container">
-        <h2 style="color: #4CAF50;">✓ Correct</h2>
-        <p><strong>MOST</strong> means more than half. The treatment was ineffective for 3 or more patients in the correct answers.</p>
+        <h2 style="color: #4CAF50;">✓ Correct!</h2>
+        <p><strong>MOST</strong> means "more than half". Since there are 5 patients, MOST means 3 or more.</p>
+        <p>The statement "The treatment was <b>ineffective</b> for <b>most</b> patients" is TRUE when 3+ patients were ineffective.</p>
       </div>`;
     } else {
+      // Show detailed feedback with each option explained
+      const img0 = Stimuli.getImagePath(0, 0);  // 0 effective = 5 ineffective ✓
+      const img2 = Stimuli.getImagePath(2, 0);  // 2 effective = 3 ineffective ✓
+      const img3 = Stimuli.getImagePath(3, 0);  // 3 effective = 2 ineffective ✗
+      
       return `<div class="comprehension-container">
         <h2 style="color: #f44336;">✗ Incorrect</h2>
-        <p><strong>MOST</strong> means more than half. Look for trials where the treatment was ineffective for 3, 4, or 5 patients.</p>
+        <p>The statement is: "<b>The treatment was ineffective for MOST patients.</b>"</p>
+        <p><strong>MOST</strong> means "more than half". For 5 patients, that's 3 or more.</p>
+        
+        <div style="margin-top: 20px;">
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding: 10px; background: #e8f5e9; border-radius: 8px;">
+            <img src="${img0}" style="max-width: 120px;">
+            <div>
+              <strong style="color: #2e7d32;">✓ TRUE</strong>
+              <p style="margin: 5px 0; color: #666;">5 patients ineffective (5 > half of 5)</p>
+            </div>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding: 10px; background: #e8f5e9; border-radius: 8px;">
+            <img src="${img2}" style="max-width: 120px;">
+            <div>
+              <strong style="color: #2e7d32;">✓ TRUE</strong>
+              <p style="margin: 5px 0; color: #666;">3 patients ineffective (3 > half of 5)</p>
+            </div>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: #ffebee; border-radius: 8px;">
+            <img src="${img3}" style="max-width: 120px;">
+            <div>
+              <strong style="color: #c62828;">✗ FALSE</strong>
+              <p style="margin: 5px 0; color: #666;">Only 2 patients ineffective (2 < half of 5)</p>
+            </div>
+          </div>
+        </div>
       </div>`;
     }
   },
@@ -1848,19 +2031,31 @@ timeline.push({
 timeline.push(welcome);
 timeline.push(consent);
 
-// Instructions
+// Instructions (3 pages: Clinical Trial, Treatment Effectiveness, Descriptions)
 timeline.push(instructions);
 
-// Comprehension checks
+// Comprehension checks for SOME and MOST definitions
 timeline.push(comp1_some);
 timeline.push(comp1_some_feedback);
 timeline.push(comp1_most);
 timeline.push(comp1_most_feedback);
+
+// Show "Which Descriptions Are True?" explanation page
+timeline.push(whichDescriptionsTrue);
+
+// Single True/False check (ineffective for some)
 timeline.push(comp2_welcome);
-timeline.push(comp2_trial_1);
-timeline.push(comp2_feedback_1);
-timeline.push(comp2_trial_2);
-timeline.push(comp2_feedback_2);
+timeline.push(comp2_trial);
+timeline.push(comp2_feedback);
+
+// Multiple descriptions can be true for one result
+timeline.push(comp_multipleDescriptions);
+timeline.push(comp_multipleDescriptions_feedback);
+
+// Show "Multiple Results, One Description" explanation page
+timeline.push(multipleResultsOneTruth);
+
+// Which trials make statement TRUE (comp3)
 timeline.push(comp3_trial);
 timeline.push(comp3_feedback);
 
