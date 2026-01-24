@@ -1813,6 +1813,201 @@ function createSpeakerTypePage(roundNum, isLastPage) {
   };
 }
 
+// Point estimate page - shown before distribution builders
+// All conditions: effectiveness point estimate + confidence
+// Vigilant condition also: speaker favor point estimate + confidence
+function createPointEstimatePage(roundNum) {
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+      const utterance = experimentState.currentUtterance;
+      const formattedUtterance = formatUtterance(utterance);
+      const isVigilant = experimentState.listenerBeliefCondition === "vigilant";
+      
+      // Effectiveness options (0% to 100% in 10% increments)
+      let effectivenessOptions = '';
+      for (let i = 0; i <= 100; i += 10) {
+        effectivenessOptions += `
+          <label class="point-estimate-option">
+            <input type="radio" name="effectiveness_estimate" value="${i}">
+            <span>${i}%</span>
+          </label>
+        `;
+      }
+      
+      // Speaker favor options for vigilant condition
+      let speakerFavorSection = '';
+      if (isVigilant) {
+        speakerFavorSection = `
+          <div class="point-estimate-section" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <h4>What is your best guess about the speaker's goal?</h4>
+            <div class="point-estimate-options speaker-favor-options">
+              <label class="point-estimate-option favor-option">
+                <input type="radio" name="speaker_favor" value="anti">
+                <span>👎 Anti-treatment</span>
+              </label>
+              <label class="point-estimate-option favor-option">
+                <input type="radio" name="speaker_favor" value="neutral">
+                <span>🔬 Neutral</span>
+              </label>
+              <label class="point-estimate-option favor-option">
+                <input type="radio" name="speaker_favor" value="pro">
+                <span>👍 Pro-treatment</span>
+              </label>
+            </div>
+            
+            <div class="confidence-slider" style="margin-top: 15px;">
+              <label>How confident are you in this guess?</label>
+              <div class="slider-wrapper" style="margin-top: 10px;">
+                <span class="slider-label left">Not at all</span>
+                <input type="range" id="speaker-confidence-slider" min="0" max="100" value="50">
+                <span class="slider-label right">Very confident</span>
+              </div>
+              <div class="slider-value" id="speaker-confidence-value">50</div>
+            </div>
+          </div>
+        `;
+      }
+      
+      return `
+        <div class="trial-container">
+          <div class="trial-header">
+            <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds} — Quick Estimate</span>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 15px;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The speaker received data of five patients' treatment result:</p>
+            ${Stimuli.getUnknownDataHTML()}
+          </div>
+          
+          <div class="utterance-display" style="margin-bottom: 20px;">
+            <div class="label">The speaker described the trial result as:</div>
+            <div class="utterance-text">${formattedUtterance.displayText}</div>
+          </div>
+          
+          <div class="response-section">
+            <div class="point-estimate-section">
+              <h4>What is your best guess for the treatment's true effectiveness?</h4>
+              <div class="point-estimate-options effectiveness-options">
+                ${effectivenessOptions}
+              </div>
+              
+              <div class="confidence-slider" style="margin-top: 15px;">
+                <label>How confident are you in this guess?</label>
+                <div class="slider-wrapper" style="margin-top: 10px;">
+                  <span class="slider-label left">Not at all</span>
+                  <input type="range" id="effectiveness-confidence-slider" min="0" max="100" value="50">
+                  <span class="slider-label right">Very confident</span>
+                </div>
+                <div class="slider-value" id="effectiveness-confidence-value">50</div>
+              </div>
+            </div>
+            
+            ${speakerFavorSection}
+            
+            <button id="submit-btn" class="submit-btn" disabled>Continue to Detailed Estimate</button>
+          </div>
+        </div>
+      `;
+    },
+    choices: [],
+    data: {
+      task: "point_estimate",
+      round: roundNum + 1,
+    },
+    on_load: function () {
+      startInactivityTimer();
+      const isVigilant = experimentState.listenerBeliefCondition === "vigilant";
+      
+      const submitBtn = document.getElementById("submit-btn");
+      const effectivenessRadios = document.querySelectorAll('input[name="effectiveness_estimate"]');
+      const effectivenessConfSlider = document.getElementById("effectiveness-confidence-slider");
+      const effectivenessConfValue = document.getElementById("effectiveness-confidence-value");
+      
+      let speakerRadios, speakerConfSlider, speakerConfValue;
+      if (isVigilant) {
+        speakerRadios = document.querySelectorAll('input[name="speaker_favor"]');
+        speakerConfSlider = document.getElementById("speaker-confidence-slider");
+        speakerConfValue = document.getElementById("speaker-confidence-value");
+      }
+      
+      // Track selections
+      let effectivenessSelected = false;
+      let speakerSelected = !isVigilant; // true if not vigilant (not needed)
+      
+      function checkCanSubmit() {
+        submitBtn.disabled = !(effectivenessSelected && speakerSelected);
+      }
+      
+      // Effectiveness radio handlers
+      effectivenessRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          resetInactivityTimer();
+          effectivenessSelected = true;
+          checkCanSubmit();
+        });
+      });
+      
+      // Effectiveness confidence slider
+      effectivenessConfSlider.addEventListener('input', () => {
+        resetInactivityTimer();
+        effectivenessConfValue.textContent = effectivenessConfSlider.value;
+      });
+      
+      // Speaker favor handlers (vigilant only)
+      if (isVigilant) {
+        speakerRadios.forEach(radio => {
+          radio.addEventListener('change', () => {
+            resetInactivityTimer();
+            speakerSelected = true;
+            checkCanSubmit();
+          });
+        });
+        
+        speakerConfSlider.addEventListener('input', () => {
+          resetInactivityTimer();
+          speakerConfValue.textContent = speakerConfSlider.value;
+        });
+      }
+      
+      // Submit handler
+      submitBtn.addEventListener("click", () => {
+        clearInactivityTimer();
+        
+        const selectedEffectiveness = document.querySelector('input[name="effectiveness_estimate"]:checked').value;
+        const effectivenessConfidence = effectivenessConfSlider.value;
+        
+        let trialData = {
+          task: "point_estimate",
+          round: roundNum + 1,
+          speaker_condition: experimentState.speakerCondition,
+          listener_belief_condition: experimentState.listenerBeliefCondition,
+          sequence_idx: experimentState.sequenceIdx,
+          measure_order: experimentState.measureOrder,
+          utterance_predicate: experimentState.currentUtterance.predicate,
+          utterance_quantifier: experimentState.currentUtterance.quantifier,
+          utterance_text: formatUtterance(experimentState.currentUtterance).text,
+          effectiveness_point_estimate: parseInt(selectedEffectiveness),
+          effectiveness_confidence: parseInt(effectivenessConfidence),
+        };
+        
+        if (isVigilant) {
+          const selectedSpeaker = document.querySelector('input[name="speaker_favor"]:checked').value;
+          const speakerConfidence = speakerConfSlider.value;
+          trialData.speaker_favor_estimate = selectedSpeaker;
+          trialData.speaker_favor_confidence = parseInt(speakerConfidence);
+        }
+        
+        jsPsych.finishTrial(trialData);
+      });
+    },
+    on_finish: function () {
+      clearInactivityTimer();
+      updateProgress();
+    },
+  };
+}
+
 // Create full trial sequence for one round (utterance display + two measure pages)
 // Wait screen between trials
 function createSpeakerWait(roundNum) {
@@ -2168,7 +2363,12 @@ function addRoundToTimeline(roundNum) {
     }
   });
   
-  // For VIGILANT condition: show both measures in randomized order
+  // Point estimate page (shown for ALL conditions before distribution builders)
+  timeline.push({
+    timeline: [createPointEstimatePage(roundNum)],
+  });
+  
+  // For VIGILANT condition: show both distribution measures in randomized order
   // Case 1: Effectiveness first, then speaker type
   timeline.push({
     timeline: [createEffectivenessPage(roundNum, false)],  // not last page
@@ -2203,7 +2403,7 @@ function addRoundToTimeline(roundNum) {
     }
   });
   
-  // For CREDULOUS and NATURALISTIC conditions: effectiveness only (last page)
+  // For CREDULOUS and NATURALISTIC conditions: effectiveness distribution only (last page)
   timeline.push({
     timeline: [createEffectivenessPage(roundNum, true)],  // last page
     conditional_function: function() {
