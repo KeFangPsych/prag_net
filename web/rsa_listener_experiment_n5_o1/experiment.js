@@ -586,10 +586,10 @@ const consent = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="consent-container">
-      <h2>Vigilant Consent</h2>
+      <h2>Informed Consent</h2>
       
       <div class="consent-section">
-        <p><strong>DESCRIPTION:</strong> You are invited to participate in a research study about language and communication. The purpose of the research is to understand how people interpret and evaluate information from different sources. This research will be conducted through the Prolific platform. If you decide to participate, you will receive descriptions from another participant and make judgments about those descriptions.</p>
+        <p><strong>DESCRIPTION:</strong> You are invited to participate in a research study about language and communication. The purpose of the research is to understand how you interact and communicate with other people under different roles and goals. This research will be conducted through the Prolific platform, including participants from the US, UK, and Canada. If you decide to participate in this research, you will play a communication game with one partner.</p>
       </div>
       
       <div class="consent-section">
@@ -597,11 +597,21 @@ const consent = {
       </div>
       
       <div class="consent-section">
-        <p><strong>RISKS AND BENEFITS:</strong> There are no risks beyond those of everyday life that we are aware of. Study data will be stored securely, in compliance with Stanford University standards, minimizing the risk of confidentiality breach. This study advances our scientific understanding of how people communicate and interpret information. We cannot and do not guarantee or promise that you will receive any benefits from this study.</p>
+        <p><strong>RISKS AND BENEFITS:</strong> There are no risks beyond those of everyday life that we are aware of. Study data will be stored securely, in compliance with Stanford University standards, minimizing the risk of confidentiality breach. This study advances our scientific understanding of how people communicate in naturalistic settings. This study may lead to further insights about what can go wrong in teamwork, suggest interventions to overcome these barriers, and help to develop assistive technologies that collaborate with human partners. We cannot and do not guarantee or promise that you will receive any benefits from this study.</p>
       </div>
       
       <div class="consent-section">
-        <p><strong>PARTICIPANT'S RIGHTS:</strong> If you have read this form and have decided to participate in this project, please understand your participation is voluntary and you have the right to withdraw your consent or discontinue participation at any time without penalty or loss of benefits to which you are otherwise entitled. The alternative is not to participate.</p>
+        <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>${CONFIG.base_payment}</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>${CONFIG.bonus_max}</strong> based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent.</p>
+      </div>
+      
+      <div class="consent-section">
+        <p><strong>PARTICIPANT'S RIGHTS:</strong> If you have read this form and have decided to participate in this project, please understand your participation is voluntary and you have the right to withdraw your consent or discontinue participation at any time without penalty or loss of benefits to which you are otherwise entitled. The alternative is not to participate. You have the right to refuse to answer particular questions. The results of this research study may be presented at scientific or professional meetings or published in scientific journals. Your individual privacy will be maintained in all published and written data resulting from the study. In accordance with scientific norms, the data from this study may be used or shared with other researchers for future research (after removing personally identifying information) without additional consent from you.</p>
+      </div>
+      
+      <div class="consent-section">
+        <p><strong>CONTACT INFORMATION:</strong></p>
+        <p><em>Questions:</em> If you have any questions, concerns or complaints about this research, its procedures, risks and benefits, contact the Protocol Director, Robert Hawkins (rdhawkins@stanford.edu, 217-549-6923).</p>
+        <p><em>Independent Contact:</em> If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at 650-723-2480 or toll free at 1-866-680-2906, or email at irbnonmed@stanford.edu. You can also write to the Stanford IRB, Stanford University, 1705 El Camino Real, Palo Alto, CA 94306.</p>
       </div>
       
       <p style="margin-top: 20px; font-style: italic;">Please save or print a copy of this page for your records.</p>
@@ -1029,6 +1039,10 @@ const listenerIntroCredulous = {
         </div>
       </div>
       
+      <div class="example-box" style="margin-top: 20px;">
+        <p><strong>Your reward:</strong> You will receive a bonus based on how accurately your estimates match the true treatment effectiveness. The more accurate your guesses, the higher your bonus!</p>
+      </div>
+      
       <p style="margin-top: 25px;">You will communicate with this speaker for <strong>${CONFIG.n_rounds} rounds</strong>.</p>
     </div>
   `,
@@ -1093,14 +1107,14 @@ const listenerTaskExplanationVigilant = {
       </ol>
       
       <div class="example-box" style="margin-top: 25px;">
-        <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how close your effectiveness estimates are to the true treatment effectiveness.</p>
+        <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how accurately your effectiveness estimates match the true treatment effectiveness.</p>
         <p style="margin-top: 10px;">Try to be as accurate as possible!</p>
       </div>
       
-      <p style="margin-top: 25px;"><strong>Remember:</strong> All descriptions the speaker sends are TRUE — but different speakers may choose different true descriptions based on their goals.</p>
+      <p style="margin-top: 25px;"><strong>Remember:</strong> All descriptions the speaker sends are <strong>TRUE</strong> — but different speakers may choose different true descriptions based on their goals.</p>
     </div>
   `,
-  choices: ["Find a Speaker"],
+  choices: ["Continue"],
   on_finish: updateProgress,
 };
 
@@ -1120,14 +1134,14 @@ const listenerTaskExplanationCredulous = {
       </p>
       
       <div class="example-box" style="margin-top: 25px;">
-        <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how close your effectiveness estimates are to the true treatment effectiveness.</p>
+        <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how accurately your effectiveness estimates match the true treatment effectiveness.</p>
         <p style="margin-top: 10px;">Try to be as accurate as possible!</p>
       </div>
       
-      <p style="margin-top: 25px;"><strong>Remember:</strong> All descriptions the speaker sends are TRUE.</p>
+      <p style="margin-top: 25px;"><strong>Remember:</strong> All descriptions the speaker sends are <strong>TRUE</strong>.</p>
     </div>
   `,
-  choices: ["Find a Speaker"],
+  choices: ["Continue"],
   on_finish: updateProgress,
 };
 
@@ -1147,13 +1161,100 @@ const listenerTaskExplanationNaturalistic = {
       </p>
       
       <div class="example-box" style="margin-top: 25px;">
-        <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how close your effectiveness estimates are to the true treatment effectiveness.</p>
+        <p><strong>Your bonus:</strong> You will receive a bonus up to <strong>${CONFIG.bonus_max}</strong> based on how accurately your effectiveness estimates match the true treatment effectiveness.</p>
         <p style="margin-top: 10px;">Try to be as accurate as possible!</p>
       </div>
       
-      <p style="margin-top: 25px;"><strong>Note:</strong> All descriptions the speaker sends are TRUE.</p>
+      <p style="margin-top: 25px;"><strong>Note:</strong> All descriptions the speaker sends are <strong>TRUE</strong>.</p>
     </div>
   `,
+  choices: ["Continue"],
+  on_finish: updateProgress,
+};
+
+// Distribution builder explanation (shown to all conditions)
+const distributionBuilderExplanation = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    <div class="listener-intro-container">
+      <h2>How to Report Your Estimates</h2>
+      
+      <p>You will use a <strong>distribution builder</strong> to express your beliefs. You have <strong>20 tokens</strong> to distribute across the possible options.</p>
+      
+      <h3 style="margin-top: 25px;">How it works:</h3>
+      <ul style="line-height: 1.8;">
+        <li>Click on a column to add tokens, or use the +/− buttons</li>
+        <li>Assign more tokens to options you think are more likely</li>
+        <li>You must assign all 20 tokens before continuing</li>
+      </ul>
+      
+      <h3 style="margin-top: 25px;">Examples:</h3>
+      
+      <div class="example-box">
+        <p><strong>If you are certain the effectiveness is 80%:</strong></p>
+        <p style="margin-left: 20px;">→ Put all 20 tokens in the "80%" column</p>
+      </div>
+      
+      <div class="example-box" style="margin-top: 15px;">
+        <p><strong>If you think it's equally likely to be anywhere from 0% to 100%:</strong></p>
+        <p style="margin-left: 20px;">→ Spread tokens roughly evenly (about 2 tokens per column, though 20 doesn't divide evenly into 11 options, so some variation is fine)</p>
+      </div>
+      
+      <div class="example-box" style="margin-top: 15px;">
+        <p><strong>If you think it's probably around 50-70% but not certain:</strong></p>
+        <p style="margin-left: 20px;">→ Put most tokens in 50%, 60%, and 70% columns, with fewer in nearby columns</p>
+      </div>
+      
+      <p style="margin-top: 25px;">The more tokens you assign to an option, the more confident you are that it's the true value.</p>
+    </div>
+  `,
+  choices: ["I Understand"],
+  on_finish: updateProgress,
+};
+
+// Comprehension check: Descriptions are TRUE
+const truthComprehensionCheck = {
+  type: jsPsychSurveyMultiChoice,
+  preamble: '<div class="comprehension-container"><h2>Quick Check</h2></div>',
+  questions: [
+    {
+      prompt: '<strong>Are the descriptions you receive from the speaker true or false?</strong>',
+      name: "truth_check",
+      options: [
+        "The descriptions are always TRUE",
+        "The descriptions might be TRUE or FALSE",
+        "The descriptions are always FALSE"
+      ],
+      required: true,
+    },
+  ],
+  data: { task: "truth_comprehension" },
+  on_finish: function (data) {
+    data.truth_check_correct = data.response.truth_check === "The descriptions are always TRUE";
+    updateProgress();
+  },
+};
+
+const truthComprehensionFeedback = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const data = jsPsych.data.get().filter({ task: "truth_comprehension" }).last(1).values()[0];
+    if (data.truth_check_correct) {
+      return `<div class="comprehension-container">
+        <h2 style="color: #4CAF50;">✓ Correct!</h2>
+        <p>All descriptions you receive from the speaker are <strong>TRUE</strong>.</p>
+        <p style="margin-top: 15px;">The speaker can only choose from descriptions that are true for the trial data they see.</p>
+        <p style="margin-top: 20px;">You're now ready to be paired with a speaker!</p>
+      </div>`;
+    } else {
+      return `<div class="comprehension-container">
+        <h2 style="color: #f44336;">✗ Incorrect</h2>
+        <p>Actually, all descriptions you receive from the speaker are <strong>TRUE</strong>.</p>
+        <p style="margin-top: 15px;">The speaker can only choose from descriptions that are true for the trial data they see. Please remember this as you make your estimates!</p>
+        <p style="margin-top: 20px;">You're now ready to be paired with a speaker!</p>
+      </div>`;
+    }
+  },
   choices: ["Find a Speaker"],
   on_finish: updateProgress,
 };
@@ -1285,14 +1386,14 @@ function createEffectivenessPage(roundNum, isLastPage) {
             <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds} — Effectiveness Estimate</span>
           </div>
           
-          <div class="utterance-display" style="margin-bottom: 15px;">
-            <div class="label">The speaker described the trial result as:</div>
-            <div class="utterance-text">${formattedUtterance.displayText}</div>
+          <div style="text-align: center; margin-bottom: 15px;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The speaker received data of five patients' treatment result:</p>
+            ${Stimuli.getUnknownDataHTML()}
           </div>
           
-          <div style="text-align: center; margin-bottom: 20px;">
-            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The actual trial data:</p>
-            ${Stimuli.getUnknownDataHTML()}
+          <div class="utterance-display" style="margin-bottom: 20px;">
+            <div class="label">The speaker described the trial result as:</div>
+            <div class="utterance-text">${formattedUtterance.displayText}</div>
           </div>
           
           <div class="response-section">
@@ -1390,14 +1491,14 @@ function createSpeakerTypePage(roundNum, isLastPage) {
             <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds} — Speaker Assessment</span>
           </div>
           
-          <div class="utterance-display" style="margin-bottom: 15px;">
-            <div class="label">The speaker described the trial result as:</div>
-            <div class="utterance-text">${formattedUtterance.displayText}</div>
+          <div style="text-align: center; margin-bottom: 15px;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The speaker received data of five patients' treatment result:</p>
+            ${Stimuli.getUnknownDataHTML()}
           </div>
           
-          <div style="text-align: center; margin-bottom: 20px;">
-            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The actual trial data:</p>
-            ${Stimuli.getUnknownDataHTML()}
+          <div class="utterance-display" style="margin-bottom: 20px;">
+            <div class="label">The speaker described the trial result as:</div>
+            <div class="utterance-text">${formattedUtterance.displayText}</div>
           </div>
           
           <div class="response-section">
@@ -1462,26 +1563,6 @@ function createSpeakerTypePage(roundNum, isLastPage) {
 }
 
 // Create full trial sequence for one round (utterance display + two measure pages)
-function createTrialSequence(roundNum) {
-  const timeline = [];
-  
-  // First: Show the utterance
-  timeline.push(createUtteranceDisplay(roundNum));
-  
-  // Then: Two measure pages in randomized order
-  const effectivenessFirst = experimentState.measureOrder === "effectiveness_first";
-  
-  if (effectivenessFirst) {
-    timeline.push(createEffectivenessPage(roundNum));
-    timeline.push(createSpeakerTypePage(roundNum));
-  } else {
-    timeline.push(createSpeakerTypePage(roundNum));
-    timeline.push(createEffectivenessPage(roundNum));
-  }
-  
-  return { timeline };
-}
-
 // Wait screen between trials
 function createSpeakerWait(roundNum) {
   return {
@@ -1793,6 +1874,13 @@ timeline.push(listenerIntroNaturalisticCond);
 timeline.push(listenerTaskExplanationVigilantCond);
 timeline.push(listenerTaskExplanationCredulousCond);
 timeline.push(listenerTaskExplanationNaturalisticCond);
+
+// Distribution builder explanation (shown to all)
+timeline.push(distributionBuilderExplanation);
+
+// Truth comprehension check (shown to all)
+timeline.push(truthComprehensionCheck);
+timeline.push(truthComprehensionFeedback);
 
 // Pairing wait and matched screens
 timeline.push(pairingWait);
