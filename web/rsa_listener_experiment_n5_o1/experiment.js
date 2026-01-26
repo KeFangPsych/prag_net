@@ -96,8 +96,8 @@ const experimentState = {
 
 // Calculate total progress steps
 // Welcome(1) + Consent(1) + Instructions(1) + Comp checks(11) + Intro pages(2) +
-// Pairing(1) + Matched(1) + Trials(5 rounds × 2 measure pages = 10) + Final(2) = 30
-const TOTAL_PROGRESS_STEPS = 30;
+// Pairing(1) + Matched(1) + Trials(5 rounds × 1-2 point estimate pages) + Attention(1) + Final(2) ≈ 25
+const TOTAL_PROGRESS_STEPS = 25;
 
 function updateProgress() {
   experimentState.completedTrials++;
@@ -1871,7 +1871,7 @@ function createPointEstimatePage(roundNum) {
       return `
         <div class="trial-container">
           <div class="trial-header">
-            <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds} — Quick Estimate</span>
+            <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds} — Effectiveness Estimate</span>
           </div>
           
           <div style="text-align: center; margin-bottom: 15px;">
@@ -2481,9 +2481,6 @@ timeline.push(listenerIntroVigilantCond);
 timeline.push(listenerIntroCredulousCond);
 timeline.push(listenerIntroNaturalisticCond);
 
-// Distribution builder explanation (shown to all)
-timeline.push(distributionBuilderExplanation);
-
 // Pairing wait and matched screens
 timeline.push(pairingWait);
 timeline.push(speakerMatchedVigilantCond);
@@ -2518,60 +2515,6 @@ function addRoundToTimeline(roundNum) {
     timeline: [createSpeakerGoalPage(roundNum)],
     conditional_function: function () {
       return experimentState.listenerBeliefCondition === "vigilant";
-    },
-  });
-
-  // For VIGILANT condition: show both distribution measures in randomized order
-  // Case 1: Effectiveness first, then speaker type
-  timeline.push({
-    timeline: [createEffectivenessPage(roundNum, false)], // not last page
-    conditional_function: function () {
-      return (
-        experimentState.listenerBeliefCondition === "vigilant" &&
-        experimentState.measureOrder === "effectiveness_first"
-      );
-    },
-  });
-
-  timeline.push({
-    timeline: [createSpeakerTypePage(roundNum, true)], // last page
-    conditional_function: function () {
-      return (
-        experimentState.listenerBeliefCondition === "vigilant" &&
-        experimentState.measureOrder === "effectiveness_first"
-      );
-    },
-  });
-
-  // Case 2: Speaker type first, then effectiveness
-  timeline.push({
-    timeline: [createSpeakerTypePage(roundNum, false)], // not last page
-    conditional_function: function () {
-      return (
-        experimentState.listenerBeliefCondition === "vigilant" &&
-        experimentState.measureOrder === "speaker_type_first"
-      );
-    },
-  });
-
-  timeline.push({
-    timeline: [createEffectivenessPage(roundNum, true)], // last page
-    conditional_function: function () {
-      return (
-        experimentState.listenerBeliefCondition === "vigilant" &&
-        experimentState.measureOrder === "speaker_type_first"
-      );
-    },
-  });
-
-  // For CREDULOUS and NATURALISTIC conditions: effectiveness distribution only (last page)
-  timeline.push({
-    timeline: [createEffectivenessPage(roundNum, true)], // last page
-    conditional_function: function () {
-      return (
-        experimentState.listenerBeliefCondition === "credulous" ||
-        experimentState.listenerBeliefCondition === "naturalistic"
-      );
     },
   });
 }
