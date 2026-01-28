@@ -245,6 +245,13 @@ function getTerminationMessage(reason) {
       <p style="margin-top: 15px; color: #666;">Thank you for your participation.</p>
       ${prolificRedirect}
     </div>`;
+  } else if (reason === "attention_check_failed") {
+    return `<div class="debrief-container">
+      <h2 style="color: #f44336;">Study Ended</h2>
+      <p>Unfortunately, you did not pass the attention check.</p>
+      <p style="margin-top: 15px; color: #666;">Thank you for your time.</p>
+      ${prolificRedirect}
+    </div>`;
   } else {
     return `<div class="debrief-container">
       <h2 style="color: #f44336;">Study Ended</h2>
@@ -261,6 +268,8 @@ async function saveDataAndEndExperiment(reason) {
   let completionStatus = "terminated_unknown";
   if (reason === "inactivity_timeout") {
     completionStatus = "terminated_inactivity";
+  } else if (reason === "attention_check_failed") {
+    completionStatus = "terminated_attention_check";
   }
 
   jsPsych.data.addProperties({
@@ -2672,6 +2681,22 @@ const attentionCheckPage = {
 };
 
 timeline.push(attentionCheckPage);
+
+// Check attention check result and terminate if failed
+timeline.push({
+  type: jsPsychCallFunction,
+  func: function () {
+    const attentionData = jsPsych.data
+      .get()
+      .filter({ task: "attention_check" })
+      .last(1)
+      .values()[0];
+    if (attentionData && !attentionData.attention_check_passed) {
+      // Failed attention check - terminate early
+      saveDataAndEndExperiment("attention_check_failed");
+    }
+  },
+});
 
 // Final measures (conditional based on condition)
 timeline.push(competenceRatingVigilantCond);
