@@ -27,8 +27,8 @@ const subjectId = generateSubjectId();
 // PROLIFIC CONFIGURATION
 // ============================================================================
 
-const PROLIFIC_COMPLETION_CODE = "YOUR_COMPLETION_CODE"; // Replace with actual code
-const PROLIFIC_SCREENING_CODE = "YOUR_SCREENING_CODE"; // Replace with actual code
+const PROLIFIC_COMPLETION_CODE = "C14LE684"; // Replace with actual code
+const PROLIFIC_SCREENING_CODE = "CNFUH4X1"; // Replace with actual code
 
 // Initialize jsPsych
 const jsPsych = initJsPsych({
