@@ -32,7 +32,7 @@ const CONFIG = {
   // "credulous" - told speaker is trying to help them guess correctly
   // "naturalistic" - told nothing about speaker's goal
   listener_belief_conditions: ["vigilant", "credulous", "naturalistic"],
-  
+
   // Utterance sequence conditions (what utterances they actually receive)
   utterance_conditions: ["informative", "pers_plus", "pers_minus"],
 
@@ -43,9 +43,9 @@ const CONFIG = {
   speaker_response_max: 4000,
 
   // Inactivity timeout settings (in ms)
-  inactivity_warning_1: 90000,  // First warning at 1.5 minutes
+  inactivity_warning_1: 90000, // First warning at 1.5 minutes
   inactivity_warning_2: 120000, // Second warning at 2 minutes
-  inactivity_timeout: 150000,   // Terminate at 2.5 minutes
+  inactivity_timeout: 150000, // Terminate at 2.5 minutes
 
   // Distribution builder settings
   n_tokens: 20,
@@ -70,31 +70,31 @@ const CONFIG = {
     informative: [
       // Placeholder: same utterance 5 times
       [
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "All" },
+        { predicate: "Effective", quantifier: "No" },
+        { predicate: "Inffective", quantifier: "Most" },
+        { predicate: "Inffective", quantifier: "Most" },
       ],
     ],
     pers_plus: [
       // Placeholder: same utterance 5 times
       [
         { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "Some" },
         { predicate: "Effective", quantifier: "Some" },
       ],
     ],
     pers_minus: [
       // Placeholder: same utterance 5 times
       [
+        { predicate: "Ineffective", quantifier: "Some" },
         { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "Some" },
       ],
     ],
   },
