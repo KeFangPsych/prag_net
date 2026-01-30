@@ -27,8 +27,8 @@ const subjectId = generateSubjectId();
 // PROLIFIC CONFIGURATION
 // ============================================================================
 
-const PROLIFIC_COMPLETION_CODE = "C14LE684"; // Replace with actual code
-const PROLIFIC_SCREENING_CODE = "CNFUH4X1"; // Replace with actual code
+const PROLIFIC_COMPLETION_CODE = "YOUR_COMPLETION_CODE"; // Replace with actual code
+const PROLIFIC_SCREENING_CODE = "YOUR_SCREENING_CODE"; // Replace with actual code
 
 // Initialize jsPsych
 const jsPsych = initJsPsych({
@@ -248,8 +248,8 @@ function getTerminationMessage(reason) {
   } else if (reason === "attention_check_failed") {
     return `<div class="debrief-container">
       <h2 style="color: #f44336;">Study Ended</h2>
-      <p>Unfortunately, you did not pass the attention check.</p>
-      <p style="margin-top: 15px; color: #666;">Thank you for your time.</p>
+      <p>Unfortunately, the study has ended because attention checks were not passed.</p>
+      <p style="margin-top: 15px; color: #666;">Thank you for your time. If you believe this is an error, please contact the researcher.</p>
       ${prolificRedirect}
     </div>`;
   } else {
@@ -1347,6 +1347,10 @@ const listenerIntroVigilantPages = {
           <p><strong>Your Bonus:</strong> You will receive a bonus of up to <strong>${CONFIG.bonus_max}</strong>, based on how closely your effectiveness estimates after each round match the true treatment effectiveness.</p>
           <p style="margin-top: 10px;"><strong>Try to be as accurate as possible!</strong></p>
         </div>
+        
+        <p style="margin-top: 20px; padding: 12px; background: #fff3e0; border-left: 4px solid #FF9800; font-size: 0.95em;">
+          <strong>Important:</strong> To submit your response each round, you must click or drag each slider — if you want to keep the same value, you can simply click it or move it but leave it at the original place.
+        </p>
       </div>`,
     ];
   },
@@ -1383,6 +1387,10 @@ const listenerIntroCredulousPagesObj = {
           <p style="margin-top: 10px;">The more accurate your guesses, the higher your bonus!</p>
           <p style="margin-top: 10px;"><strong>Try to be as accurate as possible!</strong></p>
         </div>
+        
+        <p style="margin-top: 20px; padding: 12px; background: #fff3e0; border-left: 4px solid #FF9800; font-size: 0.95em;">
+          <strong>Important:</strong> To submit your response each round, you must click or drag each slider — if you want to keep the same value, you can simply click it or move it but leave it at the original place.
+        </p>
       </div>`,
     ];
   },
@@ -1411,6 +1419,10 @@ const listenerIntroNaturalistic = {
         <p><strong>Bonus:</strong> You will receive a bonus of up to <strong>${CONFIG.bonus_max}</strong>, based on how closely your effectiveness estimates after each round match the true treatment effectiveness.</p>
         <p style="margin-top: 10px;"><strong>Try to be as accurate as possible!</strong></p>
       </div>
+      
+      <p style="margin-top: 20px; padding: 12px; background: #fff3e0; border-left: 4px solid #FF9800; font-size: 0.95em;">
+        <strong>Important:</strong> To submit your response each round, you must click or drag each slider — if you want to keep the same value, you can simply click it or move it but leave it at the original place.
+      </p>
     </div>
   `;
   },
@@ -1917,6 +1929,7 @@ function createPointEstimatePage(roundNum) {
             </div>
             
             <button id="submit-btn" class="submit-btn" disabled>Continue</button>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must click or drag both sliders to enable the button.</p>
           </div>
         </div>
       `;
@@ -2069,7 +2082,8 @@ function createSpeakerGoalPage(roundNum) {
               </div>
             </div>
             
-            <button id="submit-btn" class="submit-btn" disabled>Continue to Detailed Estimate</button>
+            <button id="submit-btn" class="submit-btn" disabled>Continue</button>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must select a speaker type and click or drag the slider to enable the button.</p>
           </div>
         </div>
       `;

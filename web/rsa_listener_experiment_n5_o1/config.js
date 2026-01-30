@@ -69,31 +69,96 @@ const CONFIG = {
   utterance_sequences: {
     informative: [
       // Placeholder: same utterance 5 times
+      /*
+      'most,successful', 'no,unsuccessful', 'all,successful', 'no,unsuccessful', 'all,successful'
+      'most,unsuccessful', 'all,unsuccessful', 'no,successful', 'all,unsuccessful', 'no,successful'
+      'most,unsuccessful', 'some,unsuccessful', 'some,successful', 'most,unsuccessful', 'most,successful'
+      'most,successful', 'some,successful', 'some,unsuccessful', 'most,successful', 'most,unsuccessful'
+      */
+      [
+        { predicate: "Effective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "No" },
+        { predicate: "Effective", quantifier: "All" },
+        { predicate: "Ineffective", quantifier: "No" },
+        { predicate: "Effective", quantifier: "All" },
+      ],
       [
         { predicate: "Ineffective", quantifier: "Most" },
         { predicate: "Ineffective", quantifier: "All" },
         { predicate: "Effective", quantifier: "No" },
-        { predicate: "Inffective", quantifier: "Most" },
-        { predicate: "Inffective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "All" },
+        { predicate: "Effective", quantifier: "No" },
+      ],
+      [
+        { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Effective", quantifier: "Most" },
+      ],
+      [
+        { predicate: "Effective", quantifier: "Most" },
+        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Effective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "Most" },
       ],
     ],
     pers_plus: [
       // Placeholder: same utterance 5 times
+      /*
+      'most,successful', 'some,successful', 'some,unsuccessful', 'some,successful', 'some,successful'
+      'most,successful', 'some,successful', 'some,unsuccessful', 'some,successful', 'some,unsuccessful'
+      'most,successful', 'some,unsuccessful', 'some,successful', 'some,unsuccessful', 'some,successful'
+      */
       [
+        { predicate: "Effective", quantifier: "Most" },
         { predicate: "Effective", quantifier: "Some" },
         { predicate: "Ineffective", quantifier: "Some" },
-        { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Effective", quantifier: "Some" },
+      ],
+      [
+        { predicate: "Effective", quantifier: "Most" },
+        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Some" },
+      ],
+      [
+        { predicate: "Effective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Effective", quantifier: "Some" },
         { predicate: "Ineffective", quantifier: "Some" },
         { predicate: "Effective", quantifier: "Some" },
       ],
     ],
     pers_minus: [
       // Placeholder: same utterance 5 times
+      /*
+      'most,unsuccessful', 'some,unsuccessful', 'some,successful', 'some,unsuccessful', 'some,unsuccessful'
+      'most,unsuccessful', 'some,unsuccessful', 'some,successful', 'some,unsuccessful', 'some,successful'
+      'most,unsuccessful', 'some,successful', 'some,unsuccessful', 'some,successful', 'some,unsuccessful'
+      */
       [
+        { predicate: "Ineffective", quantifier: "Most" },
         { predicate: "Ineffective", quantifier: "Some" },
         { predicate: "Effective", quantifier: "Some" },
         { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Some" },
+      ],
+      [
         { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Effective", quantifier: "Some" },
+      ],
+      [
+        { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Effective", quantifier: "Some" },
+        { predicate: "Ineffective", quantifier: "Some" },
+        { predicate: "Effective", quantifier: "Some" },
         { predicate: "Ineffective", quantifier: "Some" },
       ],
     ],
