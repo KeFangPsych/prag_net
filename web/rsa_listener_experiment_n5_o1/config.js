@@ -7,7 +7,7 @@
 // DATAPIPE CONFIGURATION - UPDATE THIS WITH YOUR EXPERIMENT ID
 // ============================================================================
 const DATAPIPE_CONFIG = {
-  experiment_id: "TqBT0Rd1Oyoo", // Replace with your DataPipe experiment ID
+  experiment_id: "bQbERoIUJHLP", // Replace with your DataPipe experiment ID
   enabled: true,
 };
 
@@ -89,20 +89,6 @@ const CONFIG = {
         { predicate: "Ineffective", quantifier: "All" },
         { predicate: "Effective", quantifier: "No" },
       ],
-      [
-        { predicate: "Ineffective", quantifier: "Most" },
-        { predicate: "Ineffective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Ineffective", quantifier: "Most" },
-        { predicate: "Effective", quantifier: "Most" },
-      ],
-      [
-        { predicate: "Effective", quantifier: "Most" },
-        { predicate: "Effective", quantifier: "Some" },
-        { predicate: "Ineffective", quantifier: "Some" },
-        { predicate: "Effective", quantifier: "Most" },
-        { predicate: "Ineffective", quantifier: "Most" },
-      ],
     ],
     pers_plus: [
       // Placeholder: same utterance 5 times
@@ -112,7 +98,7 @@ const CONFIG = {
       'most,successful', 'some,unsuccessful', 'some,successful', 'some,unsuccessful', 'some,successful'
       */
       [
-        { predicate: "Effective", quantifier: "Most" },
+        { predicate: "Effective", quantifier: "Some" },
         { predicate: "Effective", quantifier: "Some" },
         { predicate: "Ineffective", quantifier: "Some" },
         { predicate: "Effective", quantifier: "Some" },
@@ -141,7 +127,7 @@ const CONFIG = {
       'most,unsuccessful', 'some,successful', 'some,unsuccessful', 'some,successful', 'some,unsuccessful'
       */
       [
-        { predicate: "Ineffective", quantifier: "Most" },
+        { predicate: "Ineffective", quantifier: "Some" },
         { predicate: "Ineffective", quantifier: "Some" },
         { predicate: "Effective", quantifier: "Some" },
         { predicate: "Ineffective", quantifier: "Some" },
