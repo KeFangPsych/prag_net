@@ -52,6 +52,78 @@ jsPsych.data.addProperties({
 });
 
 // ============================================================================
+// COPY PROTECTION - Prevent copying content to external tools
+// ============================================================================
+
+// Disable right-click context menu
+document.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+  return false;
+});
+
+// Disable copy event
+document.addEventListener("copy", function (e) {
+  e.preventDefault();
+  return false;
+});
+
+// Disable cut event
+document.addEventListener("cut", function (e) {
+  e.preventDefault();
+  return false;
+});
+
+// Disable keyboard shortcuts for copy/cut/select all
+document.addEventListener("keydown", function (e) {
+  // Check for Ctrl+C, Ctrl+X, Ctrl+A (Windows/Linux) or Cmd+C, Cmd+X, Cmd+A (Mac)
+  if ((e.ctrlKey || e.metaKey) && (e.key === "c" || e.key === "C" || 
+                                    e.key === "x" || e.key === "X" || 
+                                    e.key === "a" || e.key === "A")) {
+    e.preventDefault();
+    return false;
+  }
+  // Also block F12 (dev tools) and Ctrl+Shift+I/J/C (dev tools shortcuts)
+  if (e.key === "F12" || 
+      ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "I" || e.key === "i" ||
+                                                   e.key === "J" || e.key === "j" ||
+                                                   e.key === "C" || e.key === "c"))) {
+    e.preventDefault();
+    return false;
+  }
+  // Block Ctrl+P (print)
+  if ((e.ctrlKey || e.metaKey) && (e.key === "p" || e.key === "P")) {
+    e.preventDefault();
+    return false;
+  }
+  // Block Ctrl+S (save)
+  if ((e.ctrlKey || e.metaKey) && (e.key === "s" || e.key === "S")) {
+    e.preventDefault();
+    return false;
+  }
+  // Block Ctrl+U (view source)
+  if ((e.ctrlKey || e.metaKey) && (e.key === "u" || e.key === "U")) {
+    e.preventDefault();
+    return false;
+  }
+});
+
+// Disable drag events (prevents dragging text/images)
+document.addEventListener("dragstart", function (e) {
+  e.preventDefault();
+  return false;
+});
+
+// Disable selection via mouse
+document.addEventListener("selectstart", function (e) {
+  // Allow selection in input fields
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+    return true;
+  }
+  e.preventDefault();
+  return false;
+});
+
+// ============================================================================
 // EXPERIMENT STATE
 // ============================================================================
 
@@ -1642,7 +1714,7 @@ const speakerMatchedVigilant = {
       <h2 style="color: #4CAF50;">✓ Speaker Matched</h2>
       <p>You are now connected with a speaker with an unknown goal.</p>
       <p style="margin-top: 15px;">You will receive <strong>${CONFIG.n_rounds} descriptions</strong> from this speaker.</p>
-      <p><strong>Remember: You don't know which of the three types of goals the speaker has!</strong></p>
+      <p>Remember: You don't know which of the three types your speaker is!</p>
     </div>
   `,
   choices: ["Start Listening"],
@@ -2143,12 +2215,11 @@ function createCombinedMeasurePage(roundNum) {
       // Get previous value for effectiveness carryover
       const prevEffectiveness =
         experimentState.lastEffectivenessPointEstimate ?? 50;
-
+      
       // Speaker type options start unselected (all grey) each round
 
       // Determine order based on measureOrder (randomized between participants)
-      const effectivenessFirst =
-        experimentState.measureOrder === "effectiveness_first";
+      const effectivenessFirst = experimentState.measureOrder === "effectiveness_first";
 
       const effectivenessSection = `
         <div class="measure-block" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
@@ -2184,8 +2255,8 @@ function createCombinedMeasurePage(roundNum) {
         </div>
       `;
 
-      const measures = effectivenessFirst
-        ? effectivenessSection + speakerTypeSection
+      const measures = effectivenessFirst 
+        ? effectivenessSection + speakerTypeSection 
         : speakerTypeSection + effectivenessSection;
 
       return `
@@ -2224,21 +2295,15 @@ function createCombinedMeasurePage(roundNum) {
       startInactivityTimer();
 
       const submitBtn = document.getElementById("submit-btn");
-      const effectivenessSlider = document.getElementById(
-        "effectiveness-slider",
-      );
+      const effectivenessSlider = document.getElementById("effectiveness-slider");
       const effectivenessValue = document.getElementById("effectiveness-value");
-      const speakerRadios = document.querySelectorAll(
-        'input[name="speaker_type"]',
-      );
+      const speakerRadios = document.querySelectorAll('input[name="speaker_type"]');
 
       let effectivenessInteracted = false;
       let speakerTypeInteracted = false;
 
       function checkCanSubmit() {
-        submitBtn.disabled = !(
-          effectivenessInteracted && speakerTypeInteracted
-        );
+        submitBtn.disabled = !(effectivenessInteracted && speakerTypeInteracted);
       }
 
       // Effectiveness slider handlers
@@ -2541,14 +2606,14 @@ const persuasiveSpeakerReveal = {
   stimulus: function () {
     const speakerCondition = experimentState.speakerCondition;
     const isProTreatment = speakerCondition === "pers_plus";
-
-    const goalDescription = isProTreatment
+    
+    const goalDescription = isProTreatment 
       ? "make the treatment sound <strong>good</strong> (Pro-treatment / Promoter)"
       : "make the treatment sound <strong>bad</strong> (Anti-treatment / Skeptic)";
-
+    
     const icon = isProTreatment ? "👍" : "👎";
     const goalColor = isProTreatment ? "#4CAF50" : "#f44336";
-
+    
     return `
       <div class="feedback-container" style="max-width: 700px;">
         <h2>About Your Speaker</h2>
@@ -2585,11 +2650,9 @@ const persuasiveSpeakerRevealCond = {
   timeline: [persuasiveSpeakerReveal],
   conditional_function: function () {
     // Show only for vigilant condition AND persuasive speakers (pers_plus or pers_minus)
-    return (
-      experimentState.listenerBeliefCondition === "vigilant" &&
-      (experimentState.speakerCondition === "pers_plus" ||
-        experimentState.speakerCondition === "pers_minus")
-    );
+    return experimentState.listenerBeliefCondition === "vigilant" &&
+           (experimentState.speakerCondition === "pers_plus" || 
+            experimentState.speakerCondition === "pers_minus");
   },
 };
 
@@ -2774,12 +2837,11 @@ const attentionCheckPage = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
     const isVigilant = experimentState.listenerBeliefCondition === "vigilant";
-
+    
     if (isVigilant) {
       // Vigilant condition: both effectiveness and speaker type
       // Use the same order as determined by measureOrder for the main trials
-      const effectivenessFirst =
-        experimentState.measureOrder === "effectiveness_first";
+      const effectivenessFirst = experimentState.measureOrder === "effectiveness_first";
 
       const effectivenessSection = `
         <div class="measure-block" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
@@ -2815,8 +2877,8 @@ const attentionCheckPage = {
         </div>
       `;
 
-      const measures = effectivenessFirst
-        ? effectivenessSection + speakerTypeSection
+      const measures = effectivenessFirst 
+        ? effectivenessSection + speakerTypeSection 
         : speakerTypeSection + effectivenessSection;
 
       return `
@@ -2826,9 +2888,9 @@ const attentionCheckPage = {
           </div>
           
           <div class="utterance-display" style="margin-bottom: 25px;">
-            <div class="label" style="font-weight: bold; color: #000000;">Attention Check</div>
+            <div class="label" style="font-weight: bold; color: #f44336;">Attention Check</div>
             <div class="utterance-text" style="font-size: 1.1em;">
-              Please drag the effectiveness to <strong>a hundred percent</strong> and select <strong>Skeptic</strong>.
+              Please drag the effectiveness to <strong>100%</strong> and select <strong>Skeptic</strong>.
             </div>
           </div>
           
@@ -2850,9 +2912,9 @@ const attentionCheckPage = {
           </div>
           
           <div class="utterance-display" style="margin-bottom: 25px;">
-            <div class="label" style="font-weight: bold; color: #000000;">Attention Check</div>
+            <div class="label" style="font-weight: bold; color: #f44336;">Attention Check</div>
             <div class="utterance-text" style="font-size: 1.1em;">
-              Please drag the effectiveness to <strong>a hundred percent</strong>.
+              Please drag the effectiveness to <strong>100%</strong>.
             </div>
           </div>
           
@@ -2911,9 +2973,7 @@ const attentionCheckPage = {
 
     // Speaker type radio handlers (only for vigilant)
     if (isVigilant) {
-      const speakerRadios = document.querySelectorAll(
-        'input[name="speaker_type"]',
-      );
+      const speakerRadios = document.querySelectorAll('input[name="speaker_type"]');
       speakerRadios.forEach((radio) => {
         radio.addEventListener("click", () => {
           resetInactivityTimer();
@@ -2928,14 +2988,12 @@ const attentionCheckPage = {
       clearInactivityTimer();
 
       const effValue = parseInt(effectivenessSlider.value);
-
+      
       let attentionCheckPassed;
       let selectedSpeaker = null;
-
+      
       if (isVigilant) {
-        selectedSpeaker = document.querySelector(
-          'input[name="speaker_type"]:checked',
-        ).value;
+        selectedSpeaker = document.querySelector('input[name="speaker_type"]:checked').value;
         // Vigilant: effectiveness = 100 AND speaker = anti/Skeptic
         attentionCheckPassed = effValue === 100 && selectedSpeaker === "anti";
       } else {

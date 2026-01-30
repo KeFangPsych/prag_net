@@ -2,6 +2,22 @@
  * styles.css - Experiment styling for N=5, M=1 version
  */
 
+/* Copy protection - prevent text selection */
+.jspsych-content,
+.jspsych-content-wrapper,
+.trial-container,
+.instructions-container,
+.comprehension-container,
+.feedback-container,
+.utterance-display,
+.example-box,
+.definition-box {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 /* General */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
