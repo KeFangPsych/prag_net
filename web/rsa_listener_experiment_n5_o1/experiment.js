@@ -574,8 +574,9 @@ function initDistributionBuilder(type, onChangeCallback) {
 const instructionPages = [
   // Page 1: Cover story and data representation (without effectiveness explanation)
   `<div class="instructions-container">
-    <h2>The Clinical Trial</h2>
-    <p>In this study, you will see results from clinical trials testing new medical treatments.</p>
+    <h2>Clinical Trials</h2>
+    <p>In this study, a speaker and a listener will be communicating about results from 5 clinical trials testing a new medical treatment.</p>
+    <p>Only the speaker will be able to see the result of these trials.</p>
     <p>Each trial tests a treatment on <strong>5 patients</strong>. For each patient, the treatment can be:</p>
     <ul>
       <li><strong>EFFECTIVE</strong> (😃) — the treatment worked</li>
@@ -593,7 +594,7 @@ const instructionPages = [
   // Page 2: Treatment Effectiveness explanation
   `<div class="instructions-container">
     <h2>Treatment Effectiveness</h2>
-    <p>Each treatment has an underlying <strong>effectiveness level</strong> (from 0% to 100%) that determines how likely it is to work for any patient.</p>
+    <p>The treatment has an underlying <strong>effectiveness level</strong> (from 0% to 100%) that determines how likely it is to work for any patient.</p>
     
     <div class="example-box" style="margin-top: 20px;">
       <div style="display: flex; align-items: center; gap: 20px;">
@@ -616,30 +617,62 @@ const instructionPages = [
     </div>
     
     <div class="example-box" style="margin-top: 15px;">
-      <p><strong>50% Effectiveness</strong></p>
-      <p style="color: #666; margin-bottom: 15px;">Each patient has about a 50-50 chance. Results can vary — here are some possible outcomes:</p>
+      <p><strong>In Between: The same effectiveness level can produce different results</strong></p>
+      <p style="color: #666; margin-bottom: 15px;">Here are some possible outcomes at different effectiveness levels:</p>
       
-      <div style="display: flex; align-items: stretch; gap: 15px;">
-        <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 5px;">
-          <span style="font-size: 0.85em; color: #4CAF50;">More likely</span>
-          <div style="flex: 1; display: flex; align-items: center;">
-            <span style="font-size: 1.5em; color: #888;">↓</span>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Header row with axis -->
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 8px 12px 8px;">
+          <span style="min-width: 120px;"></span>
+          <div style="display: flex; gap: 8px; flex: 1; align-items: center; justify-content: center;">
+            <span style="font-size: 0.9em; color: #4CAF50; font-weight: 500;">More likely</span>
+            <span style="font-size: 1.2em; color: #888; margin: 0 10px;">→</span>
+            <span style="font-size: 0.9em; color: #f57c00; font-weight: 500;">Less likely</span>
           </div>
-          <span style="font-size: 0.85em; color: #f57c00;">Less likely</span>
         </div>
         
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #e8f5e9; border-radius: 6px;">
-            <img src="stimuli_emoji_n5m1/effective_3_v0.png" alt="3 effective" style="max-width: 140px;">
-            <span style="color: #666; font-size: 0.9em;">3 of 5 improved</span>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #f5f5f5; border-radius: 6px;">
+          <span style="min-width: 120px; font-weight: 500;">20% Effectiveness:</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; justify-content: center;">
+            <div style="text-align: center; padding: 4px 8px; background: #e8f5e9; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 100px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #fff3e0; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 100px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #ffebee; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 100px;">
+            </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #fff3e0; border-radius: 6px;">
-            <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 140px;">
-            <span style="color: #666; font-size: 0.9em;">1 of 5 improved</span>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #f5f5f5; border-radius: 6px;">
+          <span style="min-width: 120px; font-weight: 500;">50% Effectiveness:</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; justify-content: center;">
+            <div style="text-align: center; padding: 4px 8px; background: #e8f5e9; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 100px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #fff3e0; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 100px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #ffebee; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 100px;">
+            </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #fff3e0; border-radius: 6px;">
-            <img src="stimuli_emoji_n5m1/effective_5_v0.png" alt="5 effective" style="max-width: 140px;">
-            <span style="color: #666; font-size: 0.9em;">5 of 5 improved</span>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #f5f5f5; border-radius: 6px;">
+          <span style="min-width: 120px; font-weight: 500;">70% Effectiveness:</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; justify-content: center;">
+            <div style="text-align: center; padding: 4px 8px; background: #e8f5e9; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 100px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #fff3e0; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 100px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #ffebee; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 100px;">
+            </div>
           </div>
         </div>
       </div>
@@ -650,18 +683,20 @@ const instructionPages = [
 
   // Page 3: Description structure
   `<div class="instructions-container">
-    <h2>Descriptions</h2>
-    <p>Trial results are described using sentences like this:</p>
+    <h2>Descriptions of Trials</h2>
+    <p>The speaker is then responsible for describing the trial results to the listener who <strong>cannot see the results</strong>.</p>
+    <p>The descriptions are structured like this:</p>
     <div class="definition-box" style="text-align: center; font-size: 1.1em; padding: 20px;">
       "The treatment was <strong>[effective / ineffective]</strong> for <strong>[no / some / most / all]</strong> patients."
     </div>
-    <p style="margin-top: 20px;">Here's what each word means:</p>
+    <p style="margin-top: 20px;">To ensure a shared understanding of the descriptions, each word is defined by the minimal conditions under which it is factually true:</p>
     <ul style="font-size: 1.05em; line-height: 1.8;">
       <li><strong>NO</strong> — 0 patients</li>
       <li><strong>SOME</strong> — 1, 2, 3, 4, or 5 patients (at least one)</li>
       <li><strong>MOST</strong> — 3, 4, or 5 patients (more than half)</li>
       <li><strong>ALL</strong> — 5 patients</li>
     </ul>
+    <p>These definitions set the <strong>minimum rules for using each word</strong>. A description may be used if it satisfies the definition, and may not be used otherwise.</p>
   </div>`,
 ];
 
@@ -670,8 +705,8 @@ const whichDescriptionsTrue = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="instructions-container">
-      <h2>Which Descriptions Are True?</h2>
-      <p>For any clinical trial, <strong>multiple descriptions can be true</strong> at the same time. Consider this one:</p>
+      <h2>Speaker: Multiple True Descriptions, One Result</h2>
+      <p>For any clinical trial, <strong>multiple descriptions can be used</strong> by the speaker even though they may give different impressions. Consider this one:</p>
 
       <div style="text-align: center; margin: 20px 0;">
         <img src="stimuli_emoji_n5m1/effective_3_v0.png" alt="Example" class="stimulus-image" style="max-width: 300px;">
@@ -702,8 +737,8 @@ const multipleResultsOneTruth = {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
     <div class="instructions-container">
-      <h2>Multiple Results, One True Description</h2>
-      <p>The same description can be true for <strong>different clinical trial results</strong>:</p>
+      <h2>Listener: One True Description, Multiple Results</h2>
+      <p>From the listener’s perspective, <strong>multiple different clinical trial results</strong> may be consistent with the same description:</p>
 
       <div class="definition-box" style="text-align: center; font-size: 1.1em; padding: 15px; margin: 20px 0;">
         "The treatment was <b><u>ineffective</u></b> for <b><u>most</u></b> patients."
@@ -726,7 +761,6 @@ const multipleResultsOneTruth = {
         </div>
       </div>
 
-      <p style="margin-top: 20px; text-align: center;">When you hear a description, it could come from <strong>any result</strong> that makes it true!</p>
     </div>
   `,
   choices: ["Continue"],
@@ -1327,7 +1361,7 @@ const listenerIntroVigilantPages = {
         <p>You will be paired with another participant who has been assigned the role of <strong>speaker</strong>.</p>
         <p>You will communicate with this speaker regarding <strong>${CONFIG.n_rounds}</strong> clinical trial results for a new treatment.</p>
         <p>For each round, the speaker will see a new clinical trial result for this treatment and send you a description. <strong>You will NOT see the results</strong> — only the speaker's description.</p>
-        <p style="margin-top: 15px; color: #666;"><em>Note: Each round, the description corresponds to a new trial result for this treatment. Your goal is to incrementally figure out how effective this treatment truly is through the ${CONFIG.n_rounds} interactions.</em></p>
+        <p style="margin-top: 15px; color: #666;"><em>Note: Each round, the description corresponds to a new trial result for this treatment. Your goal is to incrementally figure out how effective this treatment truly is and the speaker's real goal through the ${CONFIG.n_rounds} interactions.</em></p>
       </div>`,
       `<div class="instructions-container">
         <h2>Speaker Types</h2>
@@ -1339,7 +1373,7 @@ const listenerIntroVigilantPages = {
           <p style="margin-bottom: 0;">👎 <strong>Skeptic</strong> — makes treatment sound bad</p>
         </div>
         
-        <p style="margin-top: 20px;">Your speaker is one of these. <strong>You won't know which. All their statements are true, but <em>which</em> truth they choose to tell you depends on their goal.</strong></p>
+        <p style="margin-top: 20px;">Your speaker is one of these types. <strong>You will not know which one.</strong> All of their descriptions are factually consistent with the trial results, <strong>but which true description they choose to give depends on their goal.</strong></p>
         
         <p style="margin-top: 20px;">After receiving each description, you will estimate the treatment's effectiveness (0% to 100%) and the speaker's potential goal.</p>
         
@@ -1413,7 +1447,7 @@ const listenerIntroNaturalistic = {
       <p>For each round, the speaker will see a new clinical trial result for this treatment and send you a description. <strong>You will NOT see the results</strong> — only the speaker's description.</p>
       <p style="margin-top: 15px;">After receiving each description, you will estimate the treatment's effectiveness (0% to 100%).</p>
       
-      <p style="margin-top: 15px; color: #666;"><em>Note: Each round, the description corresponds to a new trial result for this treatment. Your goal is to incrementally figure out how effective this treatment truly is through the ${CONFIG.n_rounds} interactions.</em></p>
+      <p style="margin-top: 15px; color: #666;"><em>Note: Each round, the description corresponds to a new trial for this treatment. Your goal is to incrementally figure out how effective this treatment truly is through the ${CONFIG.n_rounds} interactions.</em></p>
       
       <div class="example-box" style="margin-top: 20px;">
         <p><strong>Bonus:</strong> You will receive a bonus of up to <strong>${CONFIG.bonus_max}</strong>, based on how closely your effectiveness estimates after each round match the true treatment effectiveness.</p>
@@ -1568,14 +1602,14 @@ const truthComprehensionFeedback = {
       return `<div class="comprehension-container">
         <h2 style="color: #4CAF50;">✓ Correct!</h2>
         <p>All descriptions you receive from the speaker are <strong>TRUE</strong>.</p>
-        <p style="margin-top: 15px;">The speaker can only choose from descriptions that are true for the trial data they see.</p>
+        <p style="margin-top: 15px;">The speaker can only choose from descriptions that are true for the trial result they see.</p>
         <p style="margin-top: 20px;">You're now ready to be paired with a speaker!</p>
       </div>`;
     } else {
       return `<div class="comprehension-container">
         <h2 style="color: #f44336;">✗ Incorrect</h2>
         <p>Actually, all descriptions you receive from the speaker are <strong>TRUE</strong>.</p>
-        <p style="margin-top: 15px;">The speaker can only choose from descriptions that are true for the trial data they see. Please remember this as you make your estimates!</p>
+        <p style="margin-top: 15px;">The speaker can only choose from descriptions that are true for the trial result they see. Please remember this as you make your estimates!</p>
         <p style="margin-top: 20px;">You're now ready to be paired with a speaker!</p>
       </div>`;
     }
@@ -1876,7 +1910,7 @@ function createSpeakerTypePage(roundNum, isLastPage) {
 }
 
 // Point estimate page - effectiveness only (shown for ALL conditions)
-// Uses sliders for both effectiveness and confidence
+// Uses sliders for effectiveness only (confidence removed)
 function createPointEstimatePage(roundNum) {
   return {
     type: jsPsychHtmlButtonResponse,
@@ -1884,10 +1918,9 @@ function createPointEstimatePage(roundNum) {
       const utterance = experimentState.currentUtterance;
       const formattedUtterance = formatUtterance(utterance);
 
-      // Get previous values or defaults
+      // Get previous value or default
       const prevEffectiveness =
         experimentState.lastEffectivenessPointEstimate ?? 50;
-      const prevConfidence = experimentState.lastEffectivenessConfidence ?? 50;
 
       return `
         <div class="trial-container">
@@ -1916,20 +1949,10 @@ function createPointEstimatePage(roundNum) {
                 </div>
                 <div class="slider-value" id="effectiveness-value">${prevEffectiveness}%</div>
               </div>
-              
-              <h4 style="margin-top: 30px;">How confident are you about your estimated effectiveness?</h4>
-              <div class="slider-container" style="margin: 20px auto;">
-                <div class="slider-wrapper">
-                  <span class="slider-label left">Not at all</span>
-                  <input type="range" id="effectiveness-confidence-slider" min="0" max="100" value="${prevConfidence}" step="5">
-                  <span class="slider-label right">100% confident</span>
-                </div>
-                <div class="slider-value" id="effectiveness-confidence-value">${prevConfidence}</div>
-              </div>
             </div>
             
             <button id="submit-btn" class="submit-btn" disabled>Continue</button>
-            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must click or drag both sliders to enable the button.</p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must click or drag the slider to enable the button.</p>
           </div>
         </div>
       `;
@@ -1947,18 +1970,11 @@ function createPointEstimatePage(roundNum) {
         "effectiveness-slider",
       );
       const effectivenessValue = document.getElementById("effectiveness-value");
-      const confidenceSlider = document.getElementById(
-        "effectiveness-confidence-slider",
-      );
-      const confidenceValue = document.getElementById(
-        "effectiveness-confidence-value",
-      );
 
       let effectivenessInteracted = false;
-      let confidenceInteracted = false;
 
       function checkCanSubmit() {
-        submitBtn.disabled = !(effectivenessInteracted && confidenceInteracted);
+        submitBtn.disabled = !effectivenessInteracted;
       }
 
       // Effectiveness slider handlers - track interaction (click/touch), not just change
@@ -1975,20 +1991,6 @@ function createPointEstimatePage(roundNum) {
         effectivenessValue.textContent = effectivenessSlider.value + "%";
       });
 
-      // Confidence slider handlers
-      confidenceSlider.addEventListener("mousedown", () => {
-        confidenceInteracted = true;
-        checkCanSubmit();
-      });
-      confidenceSlider.addEventListener("touchstart", () => {
-        confidenceInteracted = true;
-        checkCanSubmit();
-      });
-      confidenceSlider.addEventListener("input", () => {
-        resetInactivityTimer();
-        confidenceValue.textContent = confidenceSlider.value;
-      });
-
       // Submit handler
       submitBtn.addEventListener("click", () => {
         clearInactivityTimer();
@@ -1996,9 +1998,6 @@ function createPointEstimatePage(roundNum) {
         // Store values for carryover to next round
         experimentState.lastEffectivenessPointEstimate = parseInt(
           effectivenessSlider.value,
-        );
-        experimentState.lastEffectivenessConfidence = parseInt(
-          confidenceSlider.value,
         );
 
         jsPsych.finishTrial({
@@ -2013,7 +2012,6 @@ function createPointEstimatePage(roundNum) {
           utterance_text: formatUtterance(experimentState.currentUtterance)
             .text,
           effectiveness_point_estimate: parseInt(effectivenessSlider.value),
-          effectiveness_confidence: parseInt(confidenceSlider.value),
         });
       });
     },
@@ -2025,7 +2023,8 @@ function createPointEstimatePage(roundNum) {
 }
 
 // Speaker goal page - VIGILANT condition only
-// Separate page asking about speaker type
+// Separate page asking about speaker type (confidence removed)
+// Note: This function is kept for reference but vigilant now uses combined page
 function createSpeakerGoalPage(roundNum) {
   return {
     type: jsPsychHtmlButtonResponse,
@@ -2033,14 +2032,7 @@ function createSpeakerGoalPage(roundNum) {
       const utterance = experimentState.currentUtterance;
       const formattedUtterance = formatUtterance(utterance);
 
-      // Get previous values for carryover
-      const prevSpeakerType = experimentState.lastSpeakerTypeEstimate || null;
-      const prevConfidence = experimentState.lastSpeakerTypeConfidence ?? 50;
-
-      // Pre-select radio if there's a previous value
-      const antiChecked = prevSpeakerType === "anti" ? "checked" : "";
-      const neutralChecked = prevSpeakerType === "neutral" ? "checked" : "";
-      const proChecked = prevSpeakerType === "pro" ? "checked" : "";
+      // Speaker type options start unselected (all grey) each round
 
       return `
         <div class="trial-container">
@@ -2058,32 +2050,22 @@ function createSpeakerGoalPage(roundNum) {
               <h4>What type of speaker do you think this is?</h4>
               <div class="point-estimate-options speaker-favor-options" style="margin: 20px auto;">
                 <label class="point-estimate-option favor-option">
-                  <input type="radio" name="speaker_type" value="anti" ${antiChecked}>
+                  <input type="radio" name="speaker_type" value="anti">
                   <span>👎 Skeptic</span>
                 </label>
                 <label class="point-estimate-option favor-option">
-                  <input type="radio" name="speaker_type" value="neutral" ${neutralChecked}>
+                  <input type="radio" name="speaker_type" value="neutral">
                   <span>🔬 Scientist</span>
                 </label>
                 <label class="point-estimate-option favor-option">
-                  <input type="radio" name="speaker_type" value="pro" ${proChecked}>
+                  <input type="radio" name="speaker_type" value="pro">
                   <span>👍 Promoter</span>
                 </label>
-              </div>
-              
-              <h4 style="margin-top: 30px;">How confident are you about your guess?</h4>
-              <div class="slider-container" style="margin: 20px auto;">
-                <div class="slider-wrapper">
-                  <span class="slider-label left">Not at all</span>
-                  <input type="range" id="speaker-confidence-slider" min="0" max="100" value="${prevConfidence}" step="5">
-                  <span class="slider-label right">100% confident</span>
-                </div>
-                <div class="slider-value" id="speaker-confidence-value">${prevConfidence}</div>
               </div>
             </div>
             
             <button id="submit-btn" class="submit-btn" disabled>Continue</button>
-            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must select a speaker type and click or drag the slider to enable the button.</p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must select a speaker type to enable the button.</p>
           </div>
         </div>
       `;
@@ -2100,18 +2082,11 @@ function createSpeakerGoalPage(roundNum) {
       const speakerRadios = document.querySelectorAll(
         'input[name="speaker_type"]',
       );
-      const confidenceSlider = document.getElementById(
-        "speaker-confidence-slider",
-      );
-      const confidenceValue = document.getElementById(
-        "speaker-confidence-value",
-      );
 
       let speakerTypeInteracted = false;
-      let confidenceInteracted = false;
 
       function checkCanSubmit() {
-        submitBtn.disabled = !(speakerTypeInteracted && confidenceInteracted);
+        submitBtn.disabled = !speakerTypeInteracted;
       }
 
       // Speaker type radio handlers - track clicks on radio options
@@ -2121,20 +2096,6 @@ function createSpeakerGoalPage(roundNum) {
           speakerTypeInteracted = true;
           checkCanSubmit();
         });
-      });
-
-      // Confidence slider handlers - track interaction
-      confidenceSlider.addEventListener("mousedown", () => {
-        confidenceInteracted = true;
-        checkCanSubmit();
-      });
-      confidenceSlider.addEventListener("touchstart", () => {
-        confidenceInteracted = true;
-        checkCanSubmit();
-      });
-      confidenceSlider.addEventListener("input", () => {
-        resetInactivityTimer();
-        confidenceValue.textContent = confidenceSlider.value;
       });
 
       // Submit handler
@@ -2147,9 +2108,6 @@ function createSpeakerGoalPage(roundNum) {
 
         // Store values for carryover to next round
         experimentState.lastSpeakerTypeEstimate = selectedSpeaker;
-        experimentState.lastSpeakerTypeConfidence = parseInt(
-          confidenceSlider.value,
-        );
 
         jsPsych.finishTrial({
           task: "point_estimate_speaker_goal",
@@ -2163,7 +2121,176 @@ function createSpeakerGoalPage(roundNum) {
           utterance_text: formatUtterance(experimentState.currentUtterance)
             .text,
           speaker_type_point_estimate: selectedSpeaker,
-          speaker_type_confidence: parseInt(confidenceSlider.value),
+        });
+      });
+    },
+    on_finish: function () {
+      clearInactivityTimer();
+      updateProgress();
+    },
+  };
+}
+
+// Combined page for VIGILANT condition - both effectiveness and speaker type on same page
+// Order is randomized between participants but consistent within participant
+function createCombinedMeasurePage(roundNum) {
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: function () {
+      const utterance = experimentState.currentUtterance;
+      const formattedUtterance = formatUtterance(utterance);
+
+      // Get previous value for effectiveness carryover
+      const prevEffectiveness =
+        experimentState.lastEffectivenessPointEstimate ?? 50;
+
+      // Speaker type options start unselected (all grey) each round
+
+      // Determine order based on measureOrder (randomized between participants)
+      const effectivenessFirst =
+        experimentState.measureOrder === "effectiveness_first";
+
+      const effectivenessSection = `
+        <div class="measure-block" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
+          <h4>How effective do you think this treatment is?</h4>
+          <div class="slider-container" style="margin: 20px auto;">
+            <div class="slider-wrapper">
+              <span class="slider-label left">0%</span>
+              <input type="range" id="effectiveness-slider" min="0" max="100" value="${prevEffectiveness}" step="5">
+              <span class="slider-label right">100%</span>
+            </div>
+            <div class="slider-value" id="effectiveness-value">${prevEffectiveness}%</div>
+          </div>
+        </div>
+      `;
+
+      const speakerTypeSection = `
+        <div class="measure-block">
+          <h4>What type of speaker do you think this is?</h4>
+          <div class="point-estimate-options speaker-favor-options" style="margin: 20px auto;">
+            <label class="point-estimate-option favor-option">
+              <input type="radio" name="speaker_type" value="anti">
+              <span>👎 Skeptic</span>
+            </label>
+            <label class="point-estimate-option favor-option">
+              <input type="radio" name="speaker_type" value="neutral">
+              <span>🔬 Scientist</span>
+            </label>
+            <label class="point-estimate-option favor-option">
+              <input type="radio" name="speaker_type" value="pro">
+              <span>👍 Promoter</span>
+            </label>
+          </div>
+        </div>
+      `;
+
+      const measures = effectivenessFirst
+        ? effectivenessSection + speakerTypeSection
+        : speakerTypeSection + effectivenessSection;
+
+      return `
+        <div class="trial-container">
+          <div class="trial-header">
+            <span class="round-indicator">Round ${roundNum + 1} of ${CONFIG.n_rounds}</span>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 15px;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The speaker received data of five patients' treatment result:</p>
+            ${Stimuli.getUnknownDataHTML()}
+          </div>
+          
+          <div class="utterance-display" style="margin-bottom: 20px;">
+            <div class="label">The speaker described the trial result as:</div>
+            <div class="utterance-text">${formattedUtterance.displayText}</div>
+          </div>
+          
+          <div class="response-section">
+            <div class="point-estimate-section">
+              ${measures}
+            </div>
+            
+            <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must interact with the slider and select a speaker type to enable the button.</p>
+          </div>
+        </div>
+      `;
+    },
+    choices: [],
+    data: {
+      task: "combined_measure",
+      round: roundNum + 1,
+    },
+    on_load: function () {
+      startInactivityTimer();
+
+      const submitBtn = document.getElementById("submit-btn");
+      const effectivenessSlider = document.getElementById(
+        "effectiveness-slider",
+      );
+      const effectivenessValue = document.getElementById("effectiveness-value");
+      const speakerRadios = document.querySelectorAll(
+        'input[name="speaker_type"]',
+      );
+
+      let effectivenessInteracted = false;
+      let speakerTypeInteracted = false;
+
+      function checkCanSubmit() {
+        submitBtn.disabled = !(
+          effectivenessInteracted && speakerTypeInteracted
+        );
+      }
+
+      // Effectiveness slider handlers
+      effectivenessSlider.addEventListener("mousedown", () => {
+        effectivenessInteracted = true;
+        checkCanSubmit();
+      });
+      effectivenessSlider.addEventListener("touchstart", () => {
+        effectivenessInteracted = true;
+        checkCanSubmit();
+      });
+      effectivenessSlider.addEventListener("input", () => {
+        resetInactivityTimer();
+        effectivenessValue.textContent = effectivenessSlider.value + "%";
+      });
+
+      // Speaker type radio handlers
+      speakerRadios.forEach((radio) => {
+        radio.addEventListener("click", () => {
+          resetInactivityTimer();
+          speakerTypeInteracted = true;
+          checkCanSubmit();
+        });
+      });
+
+      // Submit handler
+      submitBtn.addEventListener("click", () => {
+        clearInactivityTimer();
+
+        const selectedSpeaker = document.querySelector(
+          'input[name="speaker_type"]:checked',
+        ).value;
+
+        // Store values for carryover
+        experimentState.lastEffectivenessPointEstimate = parseInt(
+          effectivenessSlider.value,
+        );
+        experimentState.lastSpeakerTypeEstimate = selectedSpeaker;
+
+        jsPsych.finishTrial({
+          task: "combined_measure",
+          round: roundNum + 1,
+          speaker_condition: experimentState.speakerCondition,
+          listener_belief_condition: experimentState.listenerBeliefCondition,
+          sequence_idx: experimentState.sequenceIdx,
+          measure_order: experimentState.measureOrder,
+          utterance_predicate: experimentState.currentUtterance.predicate,
+          utterance_quantifier: experimentState.currentUtterance.quantifier,
+          utterance_text: formatUtterance(experimentState.currentUtterance)
+            .text,
+          effectiveness_point_estimate: parseInt(effectivenessSlider.value),
+          speaker_type_point_estimate: selectedSpeaker,
         });
       });
     },
@@ -2181,7 +2308,7 @@ function createSpeakerWait(roundNum) {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
       <div class="waiting-container">
-        <h2>Speaker is receiving next trial data and responding...</h2>
+        <h2>Speaker is receiving next trial result and responding...</h2>
         <div class="spinner"></div>
         <p>Waiting for description...</p>
       </div>
@@ -2204,7 +2331,7 @@ const competenceRatingVigilant = {
       <h2>Final Questions</h2>
       <p>Based on your belief about the speaker's goal, how well do you think they accomplished that goal?</p>
       
-      <div class="slider-container">
+      <div class="slider-container" style="max-width: 500px; margin: 30px auto;">
         <div class="slider-wrapper">
           <span class="slider-label left">Very poorly</span>
           <input type="range" id="competence-slider" min="0" max="100" value="50">
@@ -2249,7 +2376,7 @@ const competenceRatingCredulous = {
       <h2>Final Questions</h2>
       <p>How well do you think the speaker did at being informative?</p>
       
-      <div class="slider-container">
+      <div class="slider-container" style="max-width: 500px; margin: 30px auto;">
         <div class="slider-wrapper">
           <span class="slider-label left">Very poorly</span>
           <input type="range" id="competence-slider" min="0" max="100" value="50">
@@ -2294,7 +2421,7 @@ const competenceRatingNaturalistic = {
       <h2>Final Questions</h2>
       <p>How well do you think the speaker did as a communicator?</p>
       
-      <div class="slider-container">
+      <div class="slider-container" style="max-width: 500px; margin: 30px auto;">
         <div class="slider-wrapper">
           <span class="slider-label left">Very poorly</span>
           <input type="range" id="competence-slider" min="0" max="100" value="50">
@@ -2408,6 +2535,64 @@ const openEndedQuestionsVigilantCond = {
   },
 };
 
+// Persuasive speaker reveal page (shown to vigilant condition with persuasive speakers)
+const persuasiveSpeakerReveal = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: function () {
+    const speakerCondition = experimentState.speakerCondition;
+    const isProTreatment = speakerCondition === "pers_plus";
+
+    const goalDescription = isProTreatment
+      ? "make the treatment sound <strong>good</strong> (Pro-treatment / Promoter)"
+      : "make the treatment sound <strong>bad</strong> (Anti-treatment / Skeptic)";
+
+    const icon = isProTreatment ? "👍" : "👎";
+    const goalColor = isProTreatment ? "#4CAF50" : "#f44336";
+
+    return `
+      <div class="feedback-container" style="max-width: 700px;">
+        <h2>About Your Speaker</h2>
+        
+        <div style="text-align: center; margin: 25px 0;">
+          <span style="font-size: 3em;">${icon}</span>
+        </div>
+        
+        <p style="text-align: center; font-size: 1.1em;">
+          The speaker you were paired with was a <strong style="color: ${goalColor};">Persuasive Speaker</strong> whose goal was to ${goalDescription}.
+        </p>
+        
+        <div class="example-box" style="margin-top: 25px;">
+          <h3 style="margin-top: 0;">How Persuasive Speakers Communicate</h3>
+          <p>Persuasive speakers strategically choose which true descriptions to give. They often:</p>
+          <ul style="line-height: 1.8;">
+            <li>Use <strong>vaguer language</strong> like "<em>some</em>" rather than more specific terms like "<em>most</em>" or "<em>all</em>"</li>
+            <li>Frame the same data differently depending on their goal — for example, saying "effective for <em>some</em>" vs "ineffective for <em>some</em>" for the same trial</li>
+            <li>Avoid descriptions that would clearly contradict their persuasive goal</li>
+          </ul>
+          <p style="margin-top: 15px; color: #666;">
+            <em>Note: All descriptions were still factually true — the speaker just chose which true description to share based on their goal.</em>
+          </p>
+        </div>
+      </div>
+    `;
+  },
+  choices: ["Continue"],
+  data: { task: "persuasive_speaker_reveal" },
+  on_finish: updateProgress,
+};
+
+const persuasiveSpeakerRevealCond = {
+  timeline: [persuasiveSpeakerReveal],
+  conditional_function: function () {
+    // Show only for vigilant condition AND persuasive speakers (pers_plus or pers_minus)
+    return (
+      experimentState.listenerBeliefCondition === "vigilant" &&
+      (experimentState.speakerCondition === "pers_plus" ||
+        experimentState.speakerCondition === "pers_minus")
+    );
+  },
+};
+
 const openEndedQuestionsOtherCond = {
   timeline: [openEndedQuestionsOther],
   conditional_function: function () {
@@ -2477,13 +2662,12 @@ timeline.push(comp1_some_feedback);
 timeline.push(comp1_most);
 timeline.push(comp1_most_feedback);
 
-// Show "Which Descriptions Are True?" explanation page
-timeline.push(whichDescriptionsTrue);
-
-// Single True/False check (ineffective for some)
-timeline.push(comp2_welcome);
+// Single True/False check (ineffective for some) - moved here after SOME/MOST definitions
 timeline.push(comp2_trial);
 timeline.push(comp2_feedback);
+
+// Show "Which Descriptions Are True?" explanation page
+timeline.push(whichDescriptionsTrue);
 
 // Multiple descriptions can be true for one result
 timeline.push(comp_multipleDescriptions);
@@ -2513,8 +2697,23 @@ timeline.push(speakerMatchedNaturalisticCond);
 // Listener trials with wait screens
 // Use a helper function to properly capture round number in closures
 function addRoundToTimeline(roundNum) {
-  // Wait for speaker response (except before first round)
-  if (roundNum > 0) {
+  // Wait for speaker response (including before first round)
+  if (roundNum === 0) {
+    // Special message for first round
+    timeline.push({
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+        <div class="waiting-container">
+          <h2>Speaker is receiving the first trial result and responding...</h2>
+          <div class="spinner"></div>
+          <p>Waiting for description...</p>
+        </div>
+      `,
+      choices: "NO_KEYS",
+      trial_duration: () =>
+        randomInt(CONFIG.speaker_response_min, CONFIG.speaker_response_max),
+    });
+  } else {
     timeline.push(createSpeakerWait(roundNum));
   }
 
@@ -2528,16 +2727,19 @@ function addRoundToTimeline(roundNum) {
     },
   });
 
-  // Point estimate page - effectiveness (shown for ALL conditions)
+  // For VIGILANT condition: combined page with both effectiveness and speaker type
   timeline.push({
-    timeline: [createPointEstimatePage(roundNum)],
-  });
-
-  // Speaker goal point estimate page (VIGILANT condition only)
-  timeline.push({
-    timeline: [createSpeakerGoalPage(roundNum)],
+    timeline: [createCombinedMeasurePage(roundNum)],
     conditional_function: function () {
       return experimentState.listenerBeliefCondition === "vigilant";
+    },
+  });
+
+  // For NON-VIGILANT conditions (credulous, naturalistic): effectiveness only page
+  timeline.push({
+    timeline: [createPointEstimatePage(roundNum)],
+    conditional_function: function () {
+      return experimentState.listenerBeliefCondition !== "vigilant";
     },
   });
 }
@@ -2556,7 +2758,7 @@ timeline.push({
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
     <div class="waiting-container">
-      <h2>Speaker is receiving next trial data and responding...</h2>
+      <h2>Speaker is receiving next trial result and responding...</h2>
       <div class="spinner"></div>
       <p>Waiting for description...</p>
     </div>
@@ -2567,50 +2769,111 @@ timeline.push({
 });
 
 // Attention check using point estimate sliders
+// Adapts based on condition: vigilant has both measures, others only have effectiveness
 const attentionCheckPage = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
-    return `
-      <div class="trial-container">
-        <div class="trial-header">
-          <span class="round-indicator">Round ${CONFIG.n_rounds + 1} of ${CONFIG.n_rounds + 1} — Attention Check</span>
-        </div>
-        
-        <div class="utterance-display" style="margin-bottom: 25px;">
-          <div class="label">The speaker described the trial result as:</div>
-          <div class="utterance-text">
-            <strong>This is an attention check.</strong><br>
-            Please drag the effectiveness slider to <strong>100%</strong> and the confidence slider to <strong>0</strong>.
+    const isVigilant = experimentState.listenerBeliefCondition === "vigilant";
+
+    if (isVigilant) {
+      // Vigilant condition: both effectiveness and speaker type
+      // Use the same order as determined by measureOrder for the main trials
+      const effectivenessFirst =
+        experimentState.measureOrder === "effectiveness_first";
+
+      const effectivenessSection = `
+        <div class="measure-block" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
+          <h4>Effectiveness:</h4>
+          <div class="slider-container" style="margin: 20px auto;">
+            <div class="slider-wrapper">
+              <span class="slider-label left">0%</span>
+              <input type="range" id="effectiveness-slider" min="0" max="100" value="50" step="5">
+              <span class="slider-label right">100%</span>
+            </div>
+            <div class="slider-value" id="effectiveness-value">50%</div>
           </div>
         </div>
-        
-        <div class="response-section">
-          <div class="point-estimate-section">
-            <h4>How effective do you think this treatment is?</h4>
-            <div class="slider-container" style="margin: 20px auto;">
-              <div class="slider-wrapper">
-                <span class="slider-label left">0%</span>
-                <input type="range" id="effectiveness-slider" min="0" max="100" value="50" step="5">
-                <span class="slider-label right">100%</span>
-              </div>
-              <div class="slider-value" id="effectiveness-value">50%</div>
-            </div>
-            
-            <h4 style="margin-top: 30px;">How confident are you about your estimated effectiveness?</h4>
-            <div class="slider-container" style="margin: 20px auto;">
-              <div class="slider-wrapper">
-                <span class="slider-label left">Not at all</span>
-                <input type="range" id="effectiveness-confidence-slider" min="0" max="100" value="50" step="5">
-                <span class="slider-label right">100% confident</span>
-              </div>
-              <div class="slider-value" id="effectiveness-confidence-value">50</div>
+      `;
+
+      const speakerTypeSection = `
+        <div class="measure-block">
+          <h4>Speaker type:</h4>
+          <div class="point-estimate-options speaker-favor-options" style="margin: 20px auto;">
+            <label class="point-estimate-option favor-option">
+              <input type="radio" name="speaker_type" value="anti">
+              <span>👎 Skeptic</span>
+            </label>
+            <label class="point-estimate-option favor-option">
+              <input type="radio" name="speaker_type" value="neutral">
+              <span>🔬 Scientist</span>
+            </label>
+            <label class="point-estimate-option favor-option">
+              <input type="radio" name="speaker_type" value="pro">
+              <span>👍 Promoter</span>
+            </label>
+          </div>
+        </div>
+      `;
+
+      const measures = effectivenessFirst
+        ? effectivenessSection + speakerTypeSection
+        : speakerTypeSection + effectivenessSection;
+
+      return `
+        <div class="trial-container">
+          <div class="trial-header">
+            <span class="round-indicator">Round ${CONFIG.n_rounds + 1} of ${CONFIG.n_rounds + 1}</span>
+          </div>
+          
+          <div class="utterance-display" style="margin-bottom: 25px;">
+            <div class="label" style="font-weight: bold; color: #000000;">Attention Check</div>
+            <div class="utterance-text" style="font-size: 1.1em;">
+              Please drag the effectiveness to <strong>a hundred percent</strong> and select <strong>Skeptic</strong>.
             </div>
           </div>
           
-          <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
+          <div class="response-section">
+            <div class="point-estimate-section">
+              ${measures}
+            </div>
+            
+            <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      // Credulous/Naturalistic conditions: effectiveness only
+      return `
+        <div class="trial-container">
+          <div class="trial-header">
+            <span class="round-indicator">Round ${CONFIG.n_rounds + 1} of ${CONFIG.n_rounds + 1}</span>
+          </div>
+          
+          <div class="utterance-display" style="margin-bottom: 25px;">
+            <div class="label" style="font-weight: bold; color: #000000;">Attention Check</div>
+            <div class="utterance-text" style="font-size: 1.1em;">
+              Please drag the effectiveness to <strong>a hundred percent</strong>.
+            </div>
+          </div>
+          
+          <div class="response-section">
+            <div class="point-estimate-section">
+              <h4>Effectiveness:</h4>
+              <div class="slider-container" style="margin: 20px auto;">
+                <div class="slider-wrapper">
+                  <span class="slider-label left">0%</span>
+                  <input type="range" id="effectiveness-slider" min="0" max="100" value="50" step="5">
+                  <span class="slider-label right">100%</span>
+                </div>
+                <div class="slider-value" id="effectiveness-value">50%</div>
+              </div>
+            </div>
+            
+            <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
+          </div>
+        </div>
+      `;
+    }
   },
   choices: [],
   data: {
@@ -2620,21 +2883,16 @@ const attentionCheckPage = {
   on_load: function () {
     startInactivityTimer();
 
+    const isVigilant = experimentState.listenerBeliefCondition === "vigilant";
     const submitBtn = document.getElementById("submit-btn");
     const effectivenessSlider = document.getElementById("effectiveness-slider");
     const effectivenessValue = document.getElementById("effectiveness-value");
-    const confidenceSlider = document.getElementById(
-      "effectiveness-confidence-slider",
-    );
-    const confidenceValue = document.getElementById(
-      "effectiveness-confidence-value",
-    );
 
     let effectivenessInteracted = false;
-    let confidenceInteracted = false;
+    let speakerTypeInteracted = !isVigilant; // Auto-true for non-vigilant conditions
 
     function checkCanSubmit() {
-      submitBtn.disabled = !(effectivenessInteracted && confidenceInteracted);
+      submitBtn.disabled = !(effectivenessInteracted && speakerTypeInteracted);
     }
 
     // Effectiveness slider handlers - track interaction
@@ -2651,29 +2909,39 @@ const attentionCheckPage = {
       effectivenessValue.textContent = effectivenessSlider.value + "%";
     });
 
-    // Confidence slider handlers - track interaction
-    confidenceSlider.addEventListener("mousedown", () => {
-      confidenceInteracted = true;
-      checkCanSubmit();
-    });
-    confidenceSlider.addEventListener("touchstart", () => {
-      confidenceInteracted = true;
-      checkCanSubmit();
-    });
-    confidenceSlider.addEventListener("input", () => {
-      resetInactivityTimer();
-      confidenceValue.textContent = confidenceSlider.value;
-    });
+    // Speaker type radio handlers (only for vigilant)
+    if (isVigilant) {
+      const speakerRadios = document.querySelectorAll(
+        'input[name="speaker_type"]',
+      );
+      speakerRadios.forEach((radio) => {
+        radio.addEventListener("click", () => {
+          resetInactivityTimer();
+          speakerTypeInteracted = true;
+          checkCanSubmit();
+        });
+      });
+    }
 
     // Submit handler
     submitBtn.addEventListener("click", () => {
       clearInactivityTimer();
 
       const effValue = parseInt(effectivenessSlider.value);
-      const confValue = parseInt(confidenceSlider.value);
 
-      // Check if attention check passed (effectiveness = 100, confidence = 0)
-      const attentionCheckPassed = effValue === 100 && confValue === 0;
+      let attentionCheckPassed;
+      let selectedSpeaker = null;
+
+      if (isVigilant) {
+        selectedSpeaker = document.querySelector(
+          'input[name="speaker_type"]:checked',
+        ).value;
+        // Vigilant: effectiveness = 100 AND speaker = anti/Skeptic
+        attentionCheckPassed = effValue === 100 && selectedSpeaker === "anti";
+      } else {
+        // Non-vigilant: effectiveness = 100 only
+        attentionCheckPassed = effValue === 100;
+      }
 
       jsPsych.finishTrial({
         task: "attention_check",
@@ -2683,7 +2951,7 @@ const attentionCheckPage = {
         sequence_idx: experimentState.sequenceIdx,
         measure_order: experimentState.measureOrder,
         effectiveness_point_estimate: effValue,
-        effectiveness_confidence: confValue,
+        speaker_type_point_estimate: selectedSpeaker,
         attention_check_passed: attentionCheckPassed,
       });
     });
@@ -2716,6 +2984,7 @@ timeline.push({
 timeline.push(competenceRatingVigilantCond);
 timeline.push(competenceRatingCredulousCond);
 timeline.push(competenceRatingNaturalisticCond);
+timeline.push(persuasiveSpeakerRevealCond);
 timeline.push(openEndedQuestionsVigilantCond);
 timeline.push(openEndedQuestionsOtherCond);
 
