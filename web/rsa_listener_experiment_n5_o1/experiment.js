@@ -1642,7 +1642,7 @@ const speakerMatchedVigilant = {
       <h2 style="color: #4CAF50;">✓ Speaker Matched</h2>
       <p>You are now connected with a speaker with an unknown goal.</p>
       <p style="margin-top: 15px;">You will receive <strong>${CONFIG.n_rounds} descriptions</strong> from this speaker.</p>
-      <p>Remember: You don't know which of the three types your speaker is!</p>
+      <p><strong>Remember: You don't know which of the three types of goals the speaker has!</strong></p>
     </div>
   `,
   choices: ["Start Listening"],
