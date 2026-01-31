@@ -1484,8 +1484,20 @@ const getDataPipeCondition = {
   experiment_id: DATAPIPE_CONFIG.experiment_id,
   on_finish: function (data) {
     // Store the assigned condition (0-612)
-    experimentState.datapipeCondition = data.condition;
-    console.log("DataPipe assigned condition:", data.condition);
+    // data.condition will be undefined/null if DataPipe fails
+    if (data.condition !== undefined && data.condition !== null) {
+      experimentState.datapipeCondition = data.condition;
+      console.log("DataPipe assigned condition:", data.condition);
+    } else {
+      console.warn(
+        "DataPipe did not return a condition, will use random assignment",
+      );
+      experimentState.datapipeCondition = null;
+    }
+  },
+  on_error: function (error) {
+    console.error("DataPipe condition request failed:", error);
+    experimentState.datapipeCondition = null;
   },
 };
 
@@ -1493,6 +1505,11 @@ const getDataPipeCondition = {
 const assignConditions = {
   type: jsPsychCallFunction,
   func: function () {
+    console.log(
+      "assignConditions called, datapipeCondition:",
+      experimentState.datapipeCondition,
+    );
+
     // Use DataPipe condition assignment with weighted mapping
     if (
       experimentState.datapipeCondition !== null &&
@@ -1555,6 +1572,14 @@ const assignConditions = {
       datapipe_condition: experimentState.datapipeCondition,
       cell_idx: experimentState.cellIdx,
     });
+
+    console.log("Condition assignment complete:");
+    console.log(
+      "  listenerBeliefCondition:",
+      experimentState.listenerBeliefCondition,
+    );
+    console.log("  speakerCondition:", experimentState.speakerCondition);
+    console.log("  sequenceIdx:", experimentState.sequenceIdx);
   },
 };
 
@@ -1850,7 +1875,7 @@ const speakerMatchedVigilant = {
       <h2 style="color: #4CAF50;">✓ Speaker Matched</h2>
       <p>You are now connected with a speaker with an unknown goal.</p>
       <p style="margin-top: 15px;">You will receive <strong>${CONFIG.n_rounds} descriptions</strong> from this speaker.</p>
-      <p>Remember: You don't know which of the three types your speaker is!</p>
+      <p>Remember: <strong>You don't know which of the three types your speaker is!</strong></p>
     </div>
   `,
   choices: ["Start Listening"],
@@ -2149,18 +2174,25 @@ function createPointEstimatePage(roundNum) {
           <div class="response-section">
             <div class="point-estimate-section">
               <h4>How effective do you think this treatment is?</h4>
+              <p style="text-align: center; color: #666; font-size: 0.85em; margin-bottom: 15px;">
+                <em>The closer your estimate is to the true effectiveness, the higher your bonus (up to ${CONFIG.bonus_max}).</em>
+              </p>
               <div class="slider-container" style="margin: 20px auto;">
                 <div class="slider-wrapper">
-                  <span class="slider-label left">0%</span>
+                  <span class="slider-label left">0%<br><small>(never works)</small></span>
                   <input type="range" id="effectiveness-slider" min="0" max="100" value="${prevEffectiveness}" step="5">
-                  <span class="slider-label right">100%</span>
+                  <span class="slider-label right">100%<br><small>(always works)</small></span>
                 </div>
+                <div style="text-align: center; color: #999; font-size: 0.75em; margin-bottom: 3px;">50% = works half the time</div>
                 <div class="slider-value" id="effectiveness-value">${prevEffectiveness}%</div>
               </div>
             </div>
             
             <button id="submit-btn" class="submit-btn" disabled>Continue</button>
-            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must click or drag the slider to enable the button.</p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">
+            You must move the slider to enable the button.<br>
+            If you want to keep the same value, you can simply click it.
+            </p>
           </div>
         </div>
       `;
@@ -2361,12 +2393,16 @@ function createCombinedMeasurePage(roundNum) {
       const effectivenessSection = `
         <div class="measure-block" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
           <h4>How effective do you think this treatment is?</h4>
+          <p style="text-align: center; color: #666; font-size: 0.85em; margin-bottom: 15px;">
+            <em>The closer your estimate is to the true effectiveness, the higher your bonus (up to ${CONFIG.bonus_max}).</em>
+          </p>
           <div class="slider-container" style="margin: 20px auto;">
             <div class="slider-wrapper">
-              <span class="slider-label left">0%</span>
+              <span class="slider-label left">0%<br><small>(never works)</small></span>
               <input type="range" id="effectiveness-slider" min="0" max="100" value="${prevEffectiveness}" step="5">
-              <span class="slider-label right">100%</span>
+              <span class="slider-label right">100%<br><small>(always works)</small></span>
             </div>
+            <div style="text-align: center; color: #999; font-size: 0.75em; margin-bottom: 3px;">50% = works half the time</div>
             <div class="slider-value" id="effectiveness-value">${prevEffectiveness}%</div>
           </div>
         </div>
@@ -2418,7 +2454,10 @@ function createCombinedMeasurePage(roundNum) {
             </div>
             
             <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
-            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must interact with the slider and select a speaker type to enable the button.</p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">
+            You must interact with the slider and select a speaker type to enable the button.<br>
+            If you want to keep the same effectiveness value, you can simply click the slider.
+            </p>
           </div>
         </div>
       `;
@@ -2534,25 +2573,40 @@ function createSpeakerWait(roundNum) {
 // Competence rating - framed differently by condition
 const competenceRatingVigilant = {
   type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <div class="feedback-container">
-      <h2>Final Questions</h2>
-      <p>Based on your belief about the speaker's goal, how well do you think they accomplished that goal?</p>
-      
-      <div class="slider-container" style="max-width: 500px; margin: 30px auto;">
-        <div class="slider-wrapper">
-          <span class="slider-label left">Very poorly</span>
-          <input type="range" id="competence-slider" min="0" max="100" value="50">
-          <span class="slider-label right">Very well</span>
+  stimulus: function () {
+    // Get the participant's last speaker type estimate
+    const lastSpeakerType =
+      experimentState.lastSpeakerTypeEstimate || "neutral";
+
+    // Map to display text with emoji
+    const speakerTypeDisplay = {
+      anti: "Skeptic 👎",
+      neutral: "Scientist 🔬",
+      pro: "Promoter 👍",
+    };
+
+    const displayText = speakerTypeDisplay[lastSpeakerType] || "Unknown";
+
+    return `
+      <div class="feedback-container">
+        <h2>Final Questions</h2>
+        <p>Based on your belief on the last round that the speaker is a <strong>${displayText}</strong>, how effectively do you think they are pursuing their goal?</p>
+        
+        <div class="slider-container" style="max-width: 500px; margin: 30px auto;">
+          <div class="slider-wrapper">
+            <span class="slider-label left">Not at all effectively</span>
+            <input type="range" id="competence-slider" min="0" max="100" value="50">
+            <span class="slider-label right">Extremely effectively</span>
+          </div>
+          <div class="slider-value" id="slider-value">50</div>
         </div>
-        <div class="slider-value" id="slider-value">50</div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+          <button id="competence-submit" class="jspsych-btn">Continue</button>
+        </div>
       </div>
-      
-      <div style="text-align: center; margin-top: 30px;">
-        <button id="competence-submit" class="jspsych-btn">Continue</button>
-      </div>
-    </div>
-  `,
+    `;
+  },
   choices: [],
   data: { task: "competence_rating" },
   on_load: function () {
@@ -2568,7 +2622,8 @@ const competenceRatingVigilant = {
       jsPsych.finishTrial({
         task: "competence_rating",
         competence_score: parseInt(slider.value),
-        competence_framing: "goal_accomplishment",
+        competence_framing: "goal_pursuit_effectiveness",
+        last_speaker_type_belief: experimentState.lastSpeakerTypeEstimate,
         speaker_condition: experimentState.speakerCondition,
         listener_belief_condition: experimentState.listenerBeliefCondition,
       });
@@ -2582,15 +2637,20 @@ const competenceRatingCredulous = {
   stimulus: `
     <div class="feedback-container">
       <h2>Final Questions</h2>
-      <p>How well do you think the speaker did at being informative?</p>
+      <p>How helpful do you think the speaker is in helping you assess the true effectiveness?</p>
       
       <div class="slider-container" style="max-width: 500px; margin: 30px auto;">
         <div class="slider-wrapper">
-          <span class="slider-label left">Very poorly</span>
+          <span class="slider-label left">Not at all helpful</span>
           <input type="range" id="competence-slider" min="0" max="100" value="50">
-          <span class="slider-label right">Very well</span>
+          <span class="slider-label right">Extremely helpful</span>
         </div>
         <div class="slider-value" id="slider-value">50</div>
+      </div>
+      
+      <div style="margin-top: 30px; text-align: left;">
+        <p style="font-weight: bold; margin-bottom: 10px;">The speaker is meant to help you understand how effective it really is—did anything in their description surprise you?</p>
+        <textarea id="surprise-response" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"></textarea>
       </div>
       
       <div style="text-align: center; margin-top: 30px;">
@@ -2604,6 +2664,7 @@ const competenceRatingCredulous = {
     const slider = document.getElementById("competence-slider");
     const valueDisplay = document.getElementById("slider-value");
     const submitBtn = document.getElementById("competence-submit");
+    const surpriseTextarea = document.getElementById("surprise-response");
 
     slider.addEventListener("input", () => {
       valueDisplay.textContent = slider.value;
@@ -2613,7 +2674,8 @@ const competenceRatingCredulous = {
       jsPsych.finishTrial({
         task: "competence_rating",
         competence_score: parseInt(slider.value),
-        competence_framing: "informativeness",
+        competence_framing: "helpfulness",
+        surprise_response: surpriseTextarea.value,
         speaker_condition: experimentState.speakerCondition,
         listener_belief_condition: experimentState.listenerBeliefCondition,
       });
@@ -2627,15 +2689,20 @@ const competenceRatingNaturalistic = {
   stimulus: `
     <div class="feedback-container">
       <h2>Final Questions</h2>
-      <p>How well do you think the speaker did as a communicator?</p>
+      <p>How helpful do you think the speaker is in helping you assess the true effectiveness?</p>
       
       <div class="slider-container" style="max-width: 500px; margin: 30px auto;">
         <div class="slider-wrapper">
-          <span class="slider-label left">Very poorly</span>
+          <span class="slider-label left">Not at all helpful</span>
           <input type="range" id="competence-slider" min="0" max="100" value="50">
-          <span class="slider-label right">Very well</span>
+          <span class="slider-label right">Extremely helpful</span>
         </div>
         <div class="slider-value" id="slider-value">50</div>
+      </div>
+      
+      <div style="margin-top: 30px; text-align: left;">
+        <p style="font-weight: bold; margin-bottom: 10px;">How did you use the speaker's descriptions to estimate the treatment's effectiveness?</p>
+        <textarea id="estimation-strategy" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"></textarea>
       </div>
       
       <div style="text-align: center; margin-top: 30px;">
@@ -2649,6 +2716,7 @@ const competenceRatingNaturalistic = {
     const slider = document.getElementById("competence-slider");
     const valueDisplay = document.getElementById("slider-value");
     const submitBtn = document.getElementById("competence-submit");
+    const strategyTextarea = document.getElementById("estimation-strategy");
 
     slider.addEventListener("input", () => {
       valueDisplay.textContent = slider.value;
@@ -2658,7 +2726,8 @@ const competenceRatingNaturalistic = {
       jsPsych.finishTrial({
         task: "competence_rating",
         competence_score: parseInt(slider.value),
-        competence_framing: "communicator",
+        competence_framing: "helpfulness",
+        estimation_strategy: strategyTextarea.value,
         speaker_condition: experimentState.speakerCondition,
         listener_belief_condition: experimentState.listenerBeliefCondition,
       });
@@ -2712,17 +2781,26 @@ const openEndedQuestionsVigilant = {
   on_finish: updateProgress,
 };
 
-const openEndedQuestionsOther = {
+const openEndedQuestionsCredulous = {
   type: jsPsychSurveyText,
-  preamble: `<div class="feedback-container"><h2>Your Thoughts</h2></div>`,
+  preamble: `<div class="feedback-container"><h2>Additional Feedback</h2></div>`,
   questions: [
     {
       prompt:
-        "How did you use the speaker's descriptions to estimate the treatment's effectiveness?",
-      name: "estimation_strategy",
-      rows: 5,
+        "Do you have any other comments or feedback about this experiment? Was anything confusing?",
+      name: "feedback",
+      rows: 4,
       required: false,
     },
+  ],
+  button_label: "Continue",
+  on_finish: updateProgress,
+};
+
+const openEndedQuestionsNaturalistic = {
+  type: jsPsychSurveyText,
+  preamble: `<div class="feedback-container"><h2>Additional Feedback</h2></div>`,
+  questions: [
     {
       prompt:
         "Do you have any other comments or feedback about this experiment? Was anything confusing?",
@@ -2801,13 +2879,17 @@ const persuasiveSpeakerRevealCond = {
   },
 };
 
-const openEndedQuestionsOtherCond = {
-  timeline: [openEndedQuestionsOther],
+const openEndedQuestionsCredulousCond = {
+  timeline: [openEndedQuestionsCredulous],
   conditional_function: function () {
-    return (
-      experimentState.listenerBeliefCondition === "credulous" ||
-      experimentState.listenerBeliefCondition === "naturalistic"
-    );
+    return experimentState.listenerBeliefCondition === "credulous";
+  },
+};
+
+const openEndedQuestionsNaturalisticCond = {
+  timeline: [openEndedQuestionsNaturalistic],
+  conditional_function: function () {
+    return experimentState.listenerBeliefCondition === "naturalistic";
   },
 };
 
@@ -2889,9 +2971,16 @@ timeline.push(comp3_trial);
 timeline.push(comp3_feedback);
 
 // Get condition from DataPipe for weighted balanced assignment
-timeline.push(getDataPipeCondition);
+// Only request from DataPipe if we have a Prolific PID (real study, not testing)
+timeline.push({
+  timeline: [getDataPipeCondition],
+  conditional_function: function () {
+    // Only use DataPipe in production (when Prolific PID exists)
+    return prolificPID !== null;
+  },
+});
 
-// Assign conditions BEFORE showing listener intro (uses DataPipe weighted mapping)
+// Assign conditions BEFORE showing listener intro (uses DataPipe weighted mapping if available)
 timeline.push(assignConditions);
 
 // Listener introduction (condition-specific, with navigation for multi-page conditions)
@@ -2994,13 +3083,17 @@ const attentionCheckPage = {
 
       const effectivenessSection = `
         <div class="measure-block" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
-          <h4>Effectiveness:</h4>
+          <h4>How effective do you think this treatment is?</h4>
+          <p style="text-align: center; color: #666; font-size: 0.85em; margin-bottom: 15px;">
+            <em>The closer your estimate is to the true effectiveness, the higher your bonus (up to ${CONFIG.bonus_max}).</em>
+          </p>
           <div class="slider-container" style="margin: 20px auto;">
             <div class="slider-wrapper">
-              <span class="slider-label left">0%</span>
+              <span class="slider-label left">0%<br><small>(never works)</small></span>
               <input type="range" id="effectiveness-slider" min="0" max="100" value="50" step="5">
-              <span class="slider-label right">100%</span>
+              <span class="slider-label right">100%<br><small>(always works)</small></span>
             </div>
+            <div style="text-align: center; color: #999; font-size: 0.75em; margin-bottom: 3px;">50% = works half the time</div>
             <div class="slider-value" id="effectiveness-value">50%</div>
           </div>
         </div>
@@ -3008,7 +3101,7 @@ const attentionCheckPage = {
 
       const speakerTypeSection = `
         <div class="measure-block">
-          <h4>Speaker type:</h4>
+          <h4>What type of speaker do you think this is?</h4>
           <div class="point-estimate-options speaker-favor-options" style="margin: 20px auto;">
             <label class="point-estimate-option favor-option">
               <input type="radio" name="speaker_type" value="anti">
@@ -3036,11 +3129,14 @@ const attentionCheckPage = {
             <span class="round-indicator">Round ${CONFIG.n_rounds + 1} of ${CONFIG.n_rounds + 1}</span>
           </div>
           
-          <div class="utterance-display" style="margin-bottom: 25px;">
-            <div class="label" style="font-weight: bold; color: #f44336;">Attention Check</div>
-            <div class="utterance-text" style="font-size: 1.1em;">
-              Please drag the effectiveness to <strong>100%</strong> and select <strong>Skeptic</strong>.
-            </div>
+          <div style="text-align: center; margin-bottom: 15px;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The speaker received data of five patients' treatment result:</p>
+            ${Stimuli.getUnknownDataHTML()}
+          </div>
+          
+          <div class="utterance-display" style="margin-bottom: 20px;">
+            <div class="label">Attention Check</div>
+            <div class="utterance-text">Please drag the effectiveness to one hundred percent and select skeptic.</div>
           </div>
           
           <div class="response-section">
@@ -3049,6 +3145,7 @@ const attentionCheckPage = {
             </div>
             
             <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must interact with the slider and select a speaker type to enable the button.</p>
           </div>
         </div>
       `;
@@ -3057,30 +3154,38 @@ const attentionCheckPage = {
       return `
         <div class="trial-container">
           <div class="trial-header">
-            <span class="round-indicator">Round ${CONFIG.n_rounds + 1} of ${CONFIG.n_rounds + 1}</span>
+            <span class="round-indicator">Round ${CONFIG.n_rounds + 1} of ${CONFIG.n_rounds + 1} — Effectiveness Estimate</span>
           </div>
           
-          <div class="utterance-display" style="margin-bottom: 25px;">
-            <div class="label" style="font-weight: bold; color: #f44336;">Attention Check</div>
-            <div class="utterance-text" style="font-size: 1.1em;">
-              Please drag the effectiveness to <strong>100%</strong>.
-            </div>
+          <div style="text-align: center; margin-bottom: 15px;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">The speaker received data of five patients' treatment result:</p>
+            ${Stimuli.getUnknownDataHTML()}
+          </div>
+          
+          <div class="utterance-display" style="margin-bottom: 20px;">
+            <div class="label">Attention Check</div>
+            <div class="utterance-text">Please drag the effectiveness to one hundred percent.</div>
           </div>
           
           <div class="response-section">
             <div class="point-estimate-section">
-              <h4>Effectiveness:</h4>
+              <h4>How effective do you think this treatment is?</h4>
+              <p style="text-align: center; color: #666; font-size: 0.85em; margin-bottom: 15px;">
+                <em>The closer your estimate is to the true effectiveness, the higher your bonus (up to ${CONFIG.bonus_max}).</em>
+              </p>
               <div class="slider-container" style="margin: 20px auto;">
                 <div class="slider-wrapper">
-                  <span class="slider-label left">0%</span>
+                  <span class="slider-label left">0%<br><small>(never works)</small></span>
                   <input type="range" id="effectiveness-slider" min="0" max="100" value="50" step="5">
-                  <span class="slider-label right">100%</span>
+                  <span class="slider-label right">100%<br><small>(always works)</small></span>
                 </div>
+                <div style="text-align: center; color: #999; font-size: 0.75em; margin-bottom: 3px;">50% = works half the time</div>
                 <div class="slider-value" id="effectiveness-value">50%</div>
               </div>
             </div>
             
-            <button id="submit-btn" class="submit-btn" disabled>Submit Response</button>
+            <button id="submit-btn" class="submit-btn" disabled>Continue</button>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #888; text-align: center;">You must click or drag the slider to enable the button.</p>
           </div>
         </div>
       `;
@@ -3197,7 +3302,8 @@ timeline.push(competenceRatingCredulousCond);
 timeline.push(competenceRatingNaturalisticCond);
 timeline.push(persuasiveSpeakerRevealCond);
 timeline.push(openEndedQuestionsVigilantCond);
-timeline.push(openEndedQuestionsOtherCond);
+timeline.push(openEndedQuestionsCredulousCond);
+timeline.push(openEndedQuestionsNaturalisticCond);
 
 // Mark experiment as completed
 timeline.push({

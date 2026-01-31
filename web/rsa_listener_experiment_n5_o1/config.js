@@ -7,7 +7,7 @@
 // DATAPIPE CONFIGURATION - UPDATE THIS WITH YOUR EXPERIMENT ID
 // ============================================================================
 const DATAPIPE_CONFIG = {
-  experiment_id: "LEgq52S68Wsu", // Replace with your DataPipe experiment ID
+  experiment_id: "YOUR_NEW_DATAPIPE_EXPERIMENT_ID", // Replace with your DataPipe experiment ID
   enabled: true,
 };
 
@@ -39,8 +39,8 @@ const CONFIG = {
   // Timing (in ms)
   pairing_wait_min: 5000,
   pairing_wait_max: 10000,
-  speaker_response_min: 2000,
-  speaker_response_max: 4000,
+  speaker_response_min: 2500,
+  speaker_response_max: 5000,
 
   // Inactivity timeout settings (in ms)
   inactivity_warning_1: 90000, // First warning at 1.5 minutes
