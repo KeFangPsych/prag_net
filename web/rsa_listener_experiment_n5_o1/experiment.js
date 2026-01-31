@@ -76,17 +76,30 @@ document.addEventListener("cut", function (e) {
 // Disable keyboard shortcuts for copy/cut/select all
 document.addEventListener("keydown", function (e) {
   // Check for Ctrl+C, Ctrl+X, Ctrl+A (Windows/Linux) or Cmd+C, Cmd+X, Cmd+A (Mac)
-  if ((e.ctrlKey || e.metaKey) && (e.key === "c" || e.key === "C" || 
-                                    e.key === "x" || e.key === "X" || 
-                                    e.key === "a" || e.key === "A")) {
+  if (
+    (e.ctrlKey || e.metaKey) &&
+    (e.key === "c" ||
+      e.key === "C" ||
+      e.key === "x" ||
+      e.key === "X" ||
+      e.key === "a" ||
+      e.key === "A")
+  ) {
     e.preventDefault();
     return false;
   }
   // Also block F12 (dev tools) and Ctrl+Shift+I/J/C (dev tools shortcuts)
-  if (e.key === "F12" || 
-      ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "I" || e.key === "i" ||
-                                                   e.key === "J" || e.key === "j" ||
-                                                   e.key === "C" || e.key === "c"))) {
+  if (
+    e.key === "F12" ||
+    ((e.ctrlKey || e.metaKey) &&
+      e.shiftKey &&
+      (e.key === "I" ||
+        e.key === "i" ||
+        e.key === "J" ||
+        e.key === "j" ||
+        e.key === "C" ||
+        e.key === "c"))
+  ) {
     e.preventDefault();
     return false;
   }
@@ -164,7 +177,80 @@ const experimentState = {
 
   // Progress tracking
   completedTrials: 0,
+
+  // DataPipe condition assignment
+  datapipeCondition: null,
+  cellIdx: null,
 };
+
+// ============================================================================
+// WEIGHTED CONDITION MAPPING FOR BALANCED DESIGN
+// ============================================================================
+// This maps DataPipe conditions (0-612) to experimental cells (0-23)
+// Each cell has a number of "slots" equal to how many more participants it needs
+// to reach the target of 30 per cell (accounting for existing data from run 1)
+
+// CELL_MAP: 24 experimental cells
+const CELL_MAP = [
+  { listener: "vigilant", speaker: "informative", seq: 0 }, // Cell 0: need 26
+  { listener: "vigilant", speaker: "informative", seq: 1 }, // Cell 1: need 21
+  { listener: "vigilant", speaker: "pers_plus", seq: 0 }, // Cell 2: need 27
+  { listener: "vigilant", speaker: "pers_plus", seq: 1 }, // Cell 3: need 25
+  { listener: "vigilant", speaker: "pers_plus", seq: 2 }, // Cell 4: need 26
+  { listener: "vigilant", speaker: "pers_minus", seq: 0 }, // Cell 5: need 24
+  { listener: "vigilant", speaker: "pers_minus", seq: 1 }, // Cell 6: need 30
+  { listener: "vigilant", speaker: "pers_minus", seq: 2 }, // Cell 7: need 25
+  { listener: "credulous", speaker: "informative", seq: 0 }, // Cell 8: need 27
+  { listener: "credulous", speaker: "informative", seq: 1 }, // Cell 9: need 16
+  { listener: "credulous", speaker: "pers_plus", seq: 0 }, // Cell 10: need 29
+  { listener: "credulous", speaker: "pers_plus", seq: 1 }, // Cell 11: need 25
+  { listener: "credulous", speaker: "pers_plus", seq: 2 }, // Cell 12: need 24
+  { listener: "credulous", speaker: "pers_minus", seq: 0 }, // Cell 13: need 28
+  { listener: "credulous", speaker: "pers_minus", seq: 1 }, // Cell 14: need 29
+  { listener: "credulous", speaker: "pers_minus", seq: 2 }, // Cell 15: need 28
+  { listener: "naturalistic", speaker: "informative", seq: 0 }, // Cell 16: need 19
+  { listener: "naturalistic", speaker: "informative", seq: 1 }, // Cell 17: need 24
+  { listener: "naturalistic", speaker: "pers_plus", seq: 0 }, // Cell 18: need 27
+  { listener: "naturalistic", speaker: "pers_plus", seq: 1 }, // Cell 19: need 24
+  { listener: "naturalistic", speaker: "pers_plus", seq: 2 }, // Cell 20: need 28
+  { listener: "naturalistic", speaker: "pers_minus", seq: 0 }, // Cell 21: need 27
+  { listener: "naturalistic", speaker: "pers_minus", seq: 1 }, // Cell 22: need 27
+  { listener: "naturalistic", speaker: "pers_minus", seq: 2 }, // Cell 23: need 27
+];
+
+// WEIGHTED_CONDITION_MAP: 613 slots mapping DataPipe conditions to cell indices
+// DataPipe will assign 0-612, this maps each to the appropriate cell (0-23)
+const WEIGHTED_CONDITION_MAP = [
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3,
+  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
+  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5,
+  5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6,
+  6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7,
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9,
+  9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+  11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
+  11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+  12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13,
+  13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
+  13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+  14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15,
+  15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+  15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+  16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,
+  17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18,
+  18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19,
+  19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+  20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+  20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21,
+  21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22,
+  22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22,
+  22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+  23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+];
 
 // Calculate total progress steps
 // Welcome(1) + Consent(1) + Instructions(1) + Comp checks(11) + Intro pages(2) +
@@ -1390,27 +1476,71 @@ const comp3_feedback = {
 // 5. LISTENER TASK INTRODUCTION (varies by belief condition)
 // ============================================================================
 
-// Initial assignment of conditions (called before showing intro)
+// Get condition assignment from DataPipe (for balanced design)
+// DataPipe will assign condition 0-612, which maps to cells 0-23 via WEIGHTED_CONDITION_MAP
+const getDataPipeCondition = {
+  type: jsPsychPipe,
+  action: "condition",
+  experiment_id: DATAPIPE_CONFIG.experiment_id,
+  on_finish: function (data) {
+    // Store the assigned condition (0-612)
+    experimentState.datapipeCondition = data.condition;
+    console.log("DataPipe assigned condition:", data.condition);
+  },
+};
+
+// Initial assignment of conditions (uses DataPipe weighted condition mapping)
 const assignConditions = {
   type: jsPsychCallFunction,
   func: function () {
-    // Randomly assign listener belief condition
-    const beliefConditions = CONFIG.listener_belief_conditions;
-    experimentState.listenerBeliefCondition =
-      beliefConditions[Math.floor(Math.random() * beliefConditions.length)];
+    // Use DataPipe condition assignment with weighted mapping
+    if (
+      experimentState.datapipeCondition !== null &&
+      experimentState.datapipeCondition >= 0 &&
+      experimentState.datapipeCondition < WEIGHTED_CONDITION_MAP.length
+    ) {
+      // Map DataPipe condition (0-612) to cell index (0-23)
+      experimentState.cellIdx =
+        WEIGHTED_CONDITION_MAP[experimentState.datapipeCondition];
 
-    // Randomly assign utterance sequence condition (independent of belief condition)
-    const utteranceConditions = CONFIG.utterance_conditions;
-    experimentState.speakerCondition =
-      utteranceConditions[
-        Math.floor(Math.random() * utteranceConditions.length)
+      // Get the experimental conditions from the cell
+      const cell = CELL_MAP[experimentState.cellIdx];
+      experimentState.listenerBeliefCondition = cell.listener;
+      experimentState.speakerCondition = cell.speaker;
+      experimentState.sequenceIdx = cell.seq;
+
+      console.log("DataPipe condition:", experimentState.datapipeCondition);
+      console.log("Mapped to cell:", experimentState.cellIdx);
+      console.log("Assigned:", cell);
+    } else {
+      // Fallback to random assignment if DataPipe fails
+      console.warn("DataPipe condition not available, using random assignment");
+
+      // Randomly assign listener belief condition
+      const beliefConditions = CONFIG.listener_belief_conditions;
+      experimentState.listenerBeliefCondition =
+        beliefConditions[Math.floor(Math.random() * beliefConditions.length)];
+
+      // Randomly assign utterance sequence condition
+      const utteranceConditions = CONFIG.utterance_conditions;
+      experimentState.speakerCondition =
+        utteranceConditions[
+          Math.floor(Math.random() * utteranceConditions.length)
+        ];
+
+      // Select utterance sequence randomly
+      const sequences =
+        CONFIG.utterance_sequences[experimentState.speakerCondition];
+      experimentState.sequenceIdx = Math.floor(
+        Math.random() * sequences.length,
+      );
+    }
+
+    // Get the utterance sequence based on assigned condition
+    experimentState.utteranceSequence =
+      CONFIG.utterance_sequences[experimentState.speakerCondition][
+        experimentState.sequenceIdx
       ];
-
-    // Select utterance sequence
-    const sequences =
-      CONFIG.utterance_sequences[experimentState.speakerCondition];
-    experimentState.sequenceIdx = Math.floor(Math.random() * sequences.length);
-    experimentState.utteranceSequence = sequences[experimentState.sequenceIdx];
 
     // Randomize measure order (between-participants, fixed within)
     experimentState.measureOrder =
@@ -1419,6 +1549,12 @@ const assignConditions = {
     // Initialize distributions as null (unassigned)
     experimentState.effectivenessDistribution = null;
     experimentState.speakerTypeDistribution = null;
+
+    // Add condition info to data
+    jsPsych.data.addProperties({
+      datapipe_condition: experimentState.datapipeCondition,
+      cell_idx: experimentState.cellIdx,
+    });
   },
 };
 
@@ -2215,11 +2351,12 @@ function createCombinedMeasurePage(roundNum) {
       // Get previous value for effectiveness carryover
       const prevEffectiveness =
         experimentState.lastEffectivenessPointEstimate ?? 50;
-      
+
       // Speaker type options start unselected (all grey) each round
 
       // Determine order based on measureOrder (randomized between participants)
-      const effectivenessFirst = experimentState.measureOrder === "effectiveness_first";
+      const effectivenessFirst =
+        experimentState.measureOrder === "effectiveness_first";
 
       const effectivenessSection = `
         <div class="measure-block" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
@@ -2255,8 +2392,8 @@ function createCombinedMeasurePage(roundNum) {
         </div>
       `;
 
-      const measures = effectivenessFirst 
-        ? effectivenessSection + speakerTypeSection 
+      const measures = effectivenessFirst
+        ? effectivenessSection + speakerTypeSection
         : speakerTypeSection + effectivenessSection;
 
       return `
@@ -2295,15 +2432,21 @@ function createCombinedMeasurePage(roundNum) {
       startInactivityTimer();
 
       const submitBtn = document.getElementById("submit-btn");
-      const effectivenessSlider = document.getElementById("effectiveness-slider");
+      const effectivenessSlider = document.getElementById(
+        "effectiveness-slider",
+      );
       const effectivenessValue = document.getElementById("effectiveness-value");
-      const speakerRadios = document.querySelectorAll('input[name="speaker_type"]');
+      const speakerRadios = document.querySelectorAll(
+        'input[name="speaker_type"]',
+      );
 
       let effectivenessInteracted = false;
       let speakerTypeInteracted = false;
 
       function checkCanSubmit() {
-        submitBtn.disabled = !(effectivenessInteracted && speakerTypeInteracted);
+        submitBtn.disabled = !(
+          effectivenessInteracted && speakerTypeInteracted
+        );
       }
 
       // Effectiveness slider handlers
@@ -2606,14 +2749,14 @@ const persuasiveSpeakerReveal = {
   stimulus: function () {
     const speakerCondition = experimentState.speakerCondition;
     const isProTreatment = speakerCondition === "pers_plus";
-    
-    const goalDescription = isProTreatment 
+
+    const goalDescription = isProTreatment
       ? "make the treatment sound <strong>good</strong> (Pro-treatment / Promoter)"
       : "make the treatment sound <strong>bad</strong> (Anti-treatment / Skeptic)";
-    
+
     const icon = isProTreatment ? "👍" : "👎";
     const goalColor = isProTreatment ? "#4CAF50" : "#f44336";
-    
+
     return `
       <div class="feedback-container" style="max-width: 700px;">
         <h2>About Your Speaker</h2>
@@ -2650,9 +2793,11 @@ const persuasiveSpeakerRevealCond = {
   timeline: [persuasiveSpeakerReveal],
   conditional_function: function () {
     // Show only for vigilant condition AND persuasive speakers (pers_plus or pers_minus)
-    return experimentState.listenerBeliefCondition === "vigilant" &&
-           (experimentState.speakerCondition === "pers_plus" || 
-            experimentState.speakerCondition === "pers_minus");
+    return (
+      experimentState.listenerBeliefCondition === "vigilant" &&
+      (experimentState.speakerCondition === "pers_plus" ||
+        experimentState.speakerCondition === "pers_minus")
+    );
   },
 };
 
@@ -2743,7 +2888,10 @@ timeline.push(multipleResultsOneTruth);
 timeline.push(comp3_trial);
 timeline.push(comp3_feedback);
 
-// Assign conditions BEFORE showing listener intro
+// Get condition from DataPipe for weighted balanced assignment
+timeline.push(getDataPipeCondition);
+
+// Assign conditions BEFORE showing listener intro (uses DataPipe weighted mapping)
 timeline.push(assignConditions);
 
 // Listener introduction (condition-specific, with navigation for multi-page conditions)
@@ -2837,11 +2985,12 @@ const attentionCheckPage = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
     const isVigilant = experimentState.listenerBeliefCondition === "vigilant";
-    
+
     if (isVigilant) {
       // Vigilant condition: both effectiveness and speaker type
       // Use the same order as determined by measureOrder for the main trials
-      const effectivenessFirst = experimentState.measureOrder === "effectiveness_first";
+      const effectivenessFirst =
+        experimentState.measureOrder === "effectiveness_first";
 
       const effectivenessSection = `
         <div class="measure-block" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
@@ -2877,8 +3026,8 @@ const attentionCheckPage = {
         </div>
       `;
 
-      const measures = effectivenessFirst 
-        ? effectivenessSection + speakerTypeSection 
+      const measures = effectivenessFirst
+        ? effectivenessSection + speakerTypeSection
         : speakerTypeSection + effectivenessSection;
 
       return `
@@ -2973,7 +3122,9 @@ const attentionCheckPage = {
 
     // Speaker type radio handlers (only for vigilant)
     if (isVigilant) {
-      const speakerRadios = document.querySelectorAll('input[name="speaker_type"]');
+      const speakerRadios = document.querySelectorAll(
+        'input[name="speaker_type"]',
+      );
       speakerRadios.forEach((radio) => {
         radio.addEventListener("click", () => {
           resetInactivityTimer();
@@ -2988,12 +3139,14 @@ const attentionCheckPage = {
       clearInactivityTimer();
 
       const effValue = parseInt(effectivenessSlider.value);
-      
+
       let attentionCheckPassed;
       let selectedSpeaker = null;
-      
+
       if (isVigilant) {
-        selectedSpeaker = document.querySelector('input[name="speaker_type"]:checked').value;
+        selectedSpeaker = document.querySelector(
+          'input[name="speaker_type"]:checked',
+        ).value;
         // Vigilant: effectiveness = 100 AND speaker = anti/Skeptic
         attentionCheckPassed = effValue === 100 && selectedSpeaker === "anti";
       } else {
