@@ -1,3 +1,12 @@
-/node_modules
-/data
+# OS / editor junk
 .DS_Store
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# Raw data (never commit)
+**/raw_do_not_track/

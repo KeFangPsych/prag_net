@@ -14,6 +14,7 @@ import itertools
 from typing import List, Dict, Union, Optional, Tuple, TypeVar, Iterator, Callable, Any, Literal
 import numpy as np
 import pandas as pd
+import xarray as xr
 from scipy.special import gammaln, logsumexp
 
 USE_PRECISE_LOGSPACE = False
@@ -1670,3 +1671,434 @@ class PragmaticSpeaker_obs:
         return normalized
 
 
+
+## Pragmatic Listener
+
+class PragmaticListener_obs_n:
+    """
+    A level-n pragmatic listener (L_n) in an RSA-style communication game.
+
+    The listener assume utterances are from a level-n pragmatic speaker (S_n) and
+    performs Bayesian inference jointly over:
+      - theta: the world parameter (e.g., coin bias)
+      - psi: the speaker's goal type ('pers-', 'inf', or 'pers+')
+      - alpha: the speaker's rationality/temperature parameter
+    """
+
+    VALID_OMEGA_TYPES = {"coop", "strat"}
+    PSI_TYPES = ["pers-", "inf", "pers+"]
+
+    def __init__(
+        self,
+        world: 'World',
+        level: int,
+        omega: str,
+        update_internal: bool,
+        alpha: Union[float, str],
+        beta: float = 0.0,
+        initial_beliefs_theta: Optional[np.ndarray] = None,
+        initial_beliefs_psi: Optional[np.ndarray] = None,
+        alpha_vals: Optional[List[Union[float, str]]] = None,
+        initial_beliefs_alpha: Optional[np.ndarray] = None,
+    ) -> None:
+        """Initialize the pragmatic listener."""
+        # Validate level
+        if not isinstance(level, int) or level < 1:
+            raise ValueError(f"level must be an integer ≥ 1, got {level}")
+        # Validate omega
+        if omega not in self.VALID_OMEGA_TYPES:
+            raise ValueError(f"omega must be one of {self.VALID_OMEGA_TYPES}")
+
+        self.world = world
+        self.level = level
+        self.omega = omega
+        self.update_internal = update_internal
+        self.alpha = alpha
+        self.beta = beta
+
+        # Setup grids for psi and alpha
+        self.psi_vals = self.PSI_TYPES.copy() if omega == "strat" else ["inf"]
+        self.alpha_vals = alpha_vals if alpha_vals is not None else [alpha]
+
+        try:
+            # Build the unnormalized joint prior over (theta, psi, alpha)
+            self.un_current_log_belief_theta_psi_alpha_joint = self._process_initial_beliefs(
+                initial_beliefs_theta,
+                initial_beliefs_psi,
+                initial_beliefs_alpha,
+                self.world.theta_values,
+                self.psi_vals,
+                self.alpha_vals
+            )
+
+            # Instantiate a pragmatic speaker for each (psi, alpha)
+            if level == 1:
+                self.pragmatic_speakers = {
+                    (psi, a): PragmaticSpeaker_obs(
+                        world=self.world,
+                        omega = self.omega,
+                        psi=psi,
+                        update_internal=self.update_internal,
+                        alpha=a,
+                        beta=self.beta,
+                        initial_beliefs_theta=initial_beliefs_theta
+                    )
+                    for psi in self.psi_vals
+                    for a in self.alpha_vals
+                }
+            else:
+                self.pragmatic_speakers = {
+                    (psi, a): PragmaticSpeaker_obs_2plus(
+                        world=self.world,
+                        level = self.level,
+                        omega = self.omega,
+                        psi=psi,
+                        update_internal=self.update_internal,
+                        alpha=a,
+                        beta=self.beta,
+                        initial_beliefs_theta=initial_beliefs_theta,
+                        initial_beliefs_psi = initial_beliefs_psi,
+                        alpha_vals = alpha_vals,
+                        initial_beliefs_alpha = initial_beliefs_alpha,
+                    )
+                    for psi in self.psi_vals
+                    for a in self.alpha_vals
+                }
+
+            # Precompute log-likelihoods P_S1(u | theta, psi, alpha)
+            self.utterance_log_likelihood_theta_psi_alpha = self._compute_utterance_log_likelihood_theta_psi_alpha(
+                self.pragmatic_speakers,
+                self.psi_vals,
+                self.alpha_vals,
+                self.world.utterances,
+                self.world.theta_values,
+                self.world.obs_log_likelihood_theta.values
+            )
+
+            # Combine with prior to get unnormalized posteriors
+            self.theta_psi_alpha_log_post_utterance = self._compute_theta_psi_alpha_log_post_utterance(
+                self.utterance_log_likelihood_theta_psi_alpha,
+                self.un_current_log_belief_theta_psi_alpha_joint
+            )
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to initialize pragmatic listener: {e}")
+
+    def _process_initial_beliefs(
+        self,
+        initial_beliefs_theta: Optional[np.ndarray],
+        initial_beliefs_psi: Optional[np.ndarray],
+        initial_beliefs_alpha: Optional[np.ndarray],
+        theta_vals: np.ndarray,
+        psi_vals: List[str],
+        alpha_vals: List[Union[float, str]]
+    ) -> xr.DataArray:
+        """
+        Construct the unnormalized log prior P(theta, psi, alpha).
+
+        Parameters
+        ----------
+        initial_beliefs_theta : Optional[np.ndarray]
+            Prior over theta values, or None for uniform prior.
+        theta_vals : np.ndarray
+            Array of possible theta values.
+        psi_vals : List[str]
+            List of speaker goal types.
+        alpha_vals : List[Union[float, str]]
+            List of softmax temperature values.
+
+        Returns
+        -------
+        xr.DataArray
+            Joint prior over (theta, psi, alpha).
+        """
+        n_theta = len(theta_vals)
+        n_psi = len(psi_vals)
+        n_alpha = len(alpha_vals)
+
+        # 1) theta prior
+        if initial_beliefs_theta is None:
+            log_belief_theta = np.full(n_theta, -np.log(n_theta), dtype=float)
+        else:
+            # Validate and log-transform
+            if not isinstance(initial_beliefs_theta, np.ndarray):
+                raise ValueError("initial_beliefs_theta must be a numpy array")
+            if initial_beliefs_theta.shape != (n_theta,):
+                raise ValueError(
+                    f"initial_beliefs_theta length {initial_beliefs_theta.size} must match number of theta values {n_theta}."
+                )
+            if not np.all((0 <= initial_beliefs_theta) & (initial_beliefs_theta <= 1)):
+                raise ValueError("All probabilities in initial_beliefs_theta must be between 0 and 1.")
+            if not np.isclose(initial_beliefs_theta.sum(), 1.0):
+                raise ValueError("Probabilities in initial_beliefs_theta must sum to 1.")
+            log_belief_theta = np.log(initial_beliefs_theta)
+
+        # 2) psi prior
+        if initial_beliefs_psi is None:
+            log_belief_psi = np.full(n_psi, -np.log(n_psi), dtype=float)
+        else:
+            # Validate and log-transform
+            if not isinstance(initial_beliefs_psi, np.ndarray):
+                raise ValueError("initial_beliefs_psi must be a numpy array")
+            if initial_beliefs_psi.shape != (n_psi,):
+                raise ValueError(
+                    f"initial_beliefs_psi length {initial_beliefs_psi.size} must match number of psi values {n_psi}."
+                )
+            if not np.all((0 <= initial_beliefs_psi) & (initial_beliefs_psi <= 1)):
+                raise ValueError("All probabilities in initial_beliefs_psi must be between 0 and 1.")
+            if not np.isclose(initial_beliefs_psi.sum(), 1.0):
+                raise ValueError("Probabilities in initial_beliefs_psi must sum to 1.")
+            log_belief_psi = np.log(initial_beliefs_psi)
+
+        # 3) alpha prior: uniform
+        if initial_beliefs_alpha is None:
+            log_belief_alpha = np.full(n_alpha, -np.log(n_alpha), dtype=float)
+        else:
+            # Validate and log-transform
+            if not isinstance(initial_beliefs_alpha, np.ndarray):
+                raise ValueError("initial_beliefs_alpha must be a numpy array")
+            if initial_beliefs_alpha.shape != (n_alpha,):
+                raise ValueError(
+                    f"initial_beliefs_alpha length {initial_beliefs_alpha.size} must match number of alpha values {n_alpha}."
+                )
+            if not np.all((0 <= initial_beliefs_alpha) & (initial_beliefs_alpha <= 1)):
+                raise ValueError("All probabilities in log_belief_alpha must be between 0 and 1.")
+            if not np.isclose(initial_beliefs_alpha.sum(), 1.0):
+                raise ValueError("Probabilities in log_belief_alpha must sum to 1.")
+            log_belief_alpha = np.log(initial_beliefs_alpha)
+
+        # 4) Broadcast-sum to get joint log prior
+        joint_log = (
+            log_belief_theta[:, None, None]
+            + log_belief_psi[None, :, None]
+            + log_belief_alpha[None, None, :]
+        )
+
+        # Return as xarray for convenient indexing
+        return xr.DataArray(
+            data=joint_log,
+            coords={
+                "theta": theta_vals,
+                "psi": psi_vals,
+                "alpha": alpha_vals,
+            },
+            dims=("theta", "psi", "alpha"),
+            name="log P(theta,psi,alpha)"
+        )
+
+    def _compute_utterance_log_likelihood_theta_psi_alpha(
+        self,
+        pragmatic_speakers: Dict[Tuple[str, Union[float, str]], 'PragmaticSpeaker_obs'],
+        psi_vals: List[str],
+        alpha_vals: List[Union[float, str]],
+        utterances: List[str],
+        theta_vals: np.ndarray,
+        log_P_O_given_theta: np.ndarray
+    ) -> xr.DataArray:
+        """
+        Compute log P_S1(u | theta, psi, alpha) by marginalizing over latent observations O.
+
+        Parameters
+        ----------
+        pragmatic_speakers : Dict[Tuple[str, Union[float, str]], 'PragmaticSpeaker_obs']
+            Dictionary mapping (psi, alpha) to corresponding speaker instance.
+        psi_vals : List[str]
+            List of speaker goal types.
+        alpha_vals : List[Union[float, str]]
+            List of softmax temperature values.
+        utterances : List[str]
+            List of all possible utterances.
+        theta_vals : np.ndarray
+            Array of possible theta values.
+        log_P_O_given_theta : np.ndarray
+            Log-probability of observations given theta.
+
+        Returns
+        -------
+        xr.DataArray
+            Log-likelihoods log P_S1(u | theta, psi, alpha) for all utterances, theta, psi, alpha.
+        """
+        n_psi = len(psi_vals)
+        n_alpha = len(alpha_vals)
+        n_u = len(utterances)
+        n_theta = len(theta_vals)
+
+        try:
+            # Allocate buffer: (psi, alpha, u, theta)
+            buf = np.empty((n_psi, n_alpha, n_u, n_theta), dtype=float)
+
+            # Loop over each speaker configuration
+            for i, psi in enumerate(psi_vals):
+                for j, a in enumerate(alpha_vals):
+                    ps = pragmatic_speakers[(psi, a)]
+                    # log P_S1(u | O) matrix
+                    log_P_u_given_O_psi_alpha = ps.utterance_log_prob_obs.values
+                    # Marginalize out O in log-space
+                    log_P_u_given_theta_psi_alpha = log_M_product(
+                        log_P_u_given_O_psi_alpha,
+                        log_P_O_given_theta,
+                        precise= USE_PRECISE_LOGSPACE
+                    )
+                    buf[i, j, :, :] = log_P_u_given_theta_psi_alpha
+
+            # Return as xarray.DataArray
+            return xr.DataArray(
+                data=buf,
+                dims=("psi", "alpha", "utterance", "theta"),
+                coords={
+                    "psi": psi_vals,
+                    "alpha": alpha_vals,
+                    "utterance": utterances,
+                    "theta": theta_vals,
+                },
+                name="log P_S1(u | theta, psi, alpha)"
+            ).transpose("utterance", "theta", "psi", "alpha")
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to compute utterance log likelihoods: {e}")
+
+    def _compute_theta_psi_alpha_log_post_utterance(
+        self,
+        utterance_log_likelihood_theta_psi_alpha: xr.DataArray,
+        un_current_log_belief_theta_psi_alpha_joint: xr.DataArray
+    ) -> xr.DataArray:
+        """
+        Combine joint prior and speaker likelihood to form unnormalized joint log P(theta, psi, alpha, u).
+
+        Parameters
+        ----------
+        utterance_log_likelihood_theta_psi_alpha : xr.DataArray
+            Log-likelihoods log P_S1(u | theta, psi, alpha).
+        un_current_log_belief_theta_psi_alpha_joint : xr.DataArray
+            Joint prior over (theta, psi, alpha).
+
+        Returns
+        -------
+        xr.DataArray
+            Unnormalized log-posteriors indexed by utterance.
+        """
+        try:
+            # Add prior + likelihood
+            unnorm = (
+                utterance_log_likelihood_theta_psi_alpha
+                + un_current_log_belief_theta_psi_alpha_joint
+            )
+            # Reorder dims: put 'utterance' first
+            return unnorm
+        except Exception as e:
+            raise RuntimeError(
+                f"Failed to compute unnormalized posterior over "
+                f"(theta,psi,alpha | u): {e}"
+            )
+
+    def listen_and_update(self, utterance: str) -> None:
+        """
+        Incorporate a received utterance and update the listener's beliefs.
+
+        Parameters
+        ----------
+        utterance : str
+            The utterance string produced by the speaker in this round.
+        """
+        # Validate utterance
+        if utterance not in self.world.utterances:
+            raise ValueError(
+                f"Utterance '{utterance}' not in known utterances:\n"
+                f"{self.world.utterances}"
+            )
+
+        try:
+            # 1) Pull out the column for this utterance
+            new_joint = self.theta_psi_alpha_log_post_utterance.sel(
+                utterance=utterance
+            )
+            # 2) Update the joint prior
+            self.un_current_log_belief_theta_psi_alpha_joint = new_joint
+
+            # 3) If we assume the speaker learns, update internal models
+            if self.update_internal:
+                for speaker in self.pragmatic_speakers.values():
+                    if self.level == 1:
+                        speaker.literal_listener.listen_and_update(utterance)
+                    else:
+                        speaker.pragmatic_listener.listen_and_update(utterance)
+                    speaker.utterance_log_prob_obs = speaker._compute_utterance_log_prob_obs(speaker.alpha)
+
+                # Recompute speaker likelihood tables under new models
+                self.utterance_log_likelihood_theta_psi_alpha = self._compute_utterance_log_likelihood_theta_psi_alpha(
+                    self.pragmatic_speakers,
+                    self.psi_vals,
+                    self.alpha_vals,
+                    self.world.utterances,
+                    self.world.theta_values,
+                    self.world.obs_log_likelihood_theta.values
+                )
+
+            # 4) Rebuild Ln's unnormalized posterior table for next round
+            self.theta_psi_alpha_log_post_utterance = self._compute_theta_psi_alpha_log_post_utterance(
+                self.utterance_log_likelihood_theta_psi_alpha,
+                self.un_current_log_belief_theta_psi_alpha_joint
+            )
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to update Ln beliefs on '{utterance}': {e}")
+
+    @property
+    def current_belief_theta(self) -> np.ndarray:
+        """
+        Returns P(theta) \propto exp( sum_{psi, alpha} log_joint(theta,psi,alpha) ).
+        """
+        L = self.un_current_log_belief_theta_psi_alpha_joint.values
+        # 1) global log-Z
+        logZ = logsumexp(L.ravel())
+        # 2) log-marginal over psi,alpha
+        log_m_theta = logsumexp(L, axis=(1,2))
+        # 3) normalize & exponentiate
+        return np.exp(log_m_theta - logZ)
+
+    @property
+    def current_belief_psi(self) -> np.ndarray:
+        """
+        Returns P(psi) \propto exp( sum_{theta, alpha} log_joint(theta,psi,alpha) ).
+        """
+        L = self.un_current_log_belief_theta_psi_alpha_joint.values
+        logZ = logsumexp(L.ravel())
+        log_m_psi = logsumexp(L, axis=(0,2))
+        return np.exp(log_m_psi - logZ)
+
+    @property
+    def current_belief_alpha(self) -> np.ndarray:
+        """
+        Returns P(alpha) \propto exp( sum_{theta, psi} log_joint(theta,psi,alpha)).
+        """
+        L = self.un_current_log_belief_theta_psi_alpha_joint.values
+        logZ = logsumexp(L.ravel())
+        log_m_alpha = logsumexp(L, axis=(0,1))
+        return np.exp(log_m_alpha - logZ)
+
+    @property
+    def current_belief_theta_psi(self) -> np.ndarray:
+        """
+        Returns the marginal P(theta, psi) in linear space,
+        i.e. P(theta,psi) = sum_alpha P(theta,psi,alpha).
+        """
+        # 1) Grab the raw unnormalized log-joint: shape (theta,psi,alpha)
+        L = self.un_current_log_belief_theta_psi_alpha_joint.values
+        # 2) Compute the global log-normalizer (log evidence)
+        logZ = logsumexp(L.ravel())
+        # 3) Marginalize out alpha in log-space: sum over axis=2
+        log_m = logsumexp(L, axis=2)
+        # 4) Normalize and exponentiate
+        return np.exp(log_m - logZ)
+
+    @property
+    def current_belief_theta_psi_alpha_joint(self) -> np.ndarray:
+        """
+        Returns the full joint P(theta, psi, alpha) in linear space,
+        normalized so that sum_{theta,psi,alpha} P = 1.
+        """
+        L = self.un_current_log_belief_theta_psi_alpha_joint.values
+        # Global normalizer
+        logZ = logsumexp(L.ravel())
+        # Normalize the entire 3D array and exponentiate
+        return np.exp(L - logZ)
