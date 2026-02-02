@@ -1,0 +1,340 @@
+---
+title: "prag_net_listener_n1"
+output:
+  pdf_document: default
+  html_document: default
+date: "2026-02-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(tidyverse)
+library(Rcpp)
+library(RcppEigen)
+library(lme4)
+library(emmeans)
+library(lmerTest)
+```
+
+```{r}
+df_listeners <- read.csv("~/Documents/prag_net/prag_net_listener_n1/data_listener_n1/processed_listener_n1_anonymized.csv", 
+  colClasses = c(
+    "participant_id" = "character",
+    "experiment_version" = "character",
+    "start_time" = "character",
+    "completion_status" = "character",
+    "completion_time" = "character",
+    "terminated_early" = "logical",
+    "termination_reason" = "character",
+    "total_duration_ms" = "integer",
+    "total_duration_min" = "numeric",
+    "datapipe_condition" = "numeric",
+    "cell_idx" = "numeric",
+    "speaker_condition" = "character",
+    "listener_belief_condition" = "character",
+    "sequence_idx" = "numeric",
+    "measure_order" = "character",
+    "comp1_some_correct" = "logical",
+    "comp1_some_response" = "character",
+    "comp1_most_correct" = "logical",
+    "comp1_most_response" = "character",
+    "comp2_correct" = "logical",
+    "comp_multi_correct" = "logical",
+    "comp_multi_selected" = "character",
+    "comp3_correct" = "logical",
+    "comp3_selected" = "character",
+    "n_comp_correct" = "integer",
+    "r1_utterance_predicate" = "character",
+    "r1_utterance_quantifier" = "character",
+    "r1_utterance_text" = "character",
+    "r1_effectiveness" = "numeric",
+    "r1_speaker_type" = "character",
+    "r1_rt" = "numeric",
+    "r2_utterance_predicate" = "character",
+    "r2_utterance_quantifier" = "character",
+    "r2_utterance_text" = "character",
+    "r2_effectiveness" = "numeric",
+    "r2_speaker_type" = "character",
+    "r2_rt" = "numeric",
+    "r3_utterance_predicate" = "character",
+    "r3_utterance_quantifier" = "character",
+    "r3_utterance_text" = "character",
+    "r3_effectiveness" = "numeric",
+    "r3_speaker_type" = "character",
+    "r3_rt" = "numeric",
+    "r4_utterance_predicate" = "character",
+    "r4_utterance_quantifier" = "character",
+    "r4_utterance_text" = "character",
+    "r4_effectiveness" = "numeric",
+    "r4_speaker_type" = "character",
+    "r4_rt" = "numeric",
+    "r5_utterance_predicate" = "character",
+    "r5_utterance_quantifier" = "character",
+    "r5_utterance_text" = "character",
+    "r5_effectiveness" = "numeric",
+    "r5_speaker_type" = "character",
+    "r5_rt" = "numeric",
+    "n_rounds_completed" = "integer",
+    "completed_all_rounds" = "logical",
+    "attention_check_passed" = "character",
+    "attention_effectiveness" = "numeric",
+    "attention_speaker_type" = "character",
+    "competence_score" = "numeric",
+    "competence_framing" = "character",
+    "saw_persuasive_reveal" = "logical",
+    "open_speaker_strategy" = "character",
+    "open_estimation_strategy" = "character",
+    "open_feedback" = "character"
+  ))
+
+df_listeners <- df_listeners %>% 
+  filter(completion_status == "completed",
+         attention_check_passed == "True",
+         completed_all_rounds == TRUE) %>%
+  mutate(speaker_sequence = paste(speaker_condition, sequence_idx, sep = "_"))
+
+  #filter(n_comp_correct >= 3)
+```
+
+
+
+```{r}
+df_listeners %>% 
+  filter(completion_status == "completed",
+         attention_check_passed == "True",
+         completed_all_rounds == TRUE) %>%
+  count(comp_multi_correct, comp3_correct)
+```
+
+
+```{r}
+df_listeners %>% 
+  glimpse()
+```
+
+
+
+```{r}
+df_listeners_model <- df_listeners %>%
+  select(participant_id, speaker_condition, listener_belief_condition, sequence_idx, 
+         measure_order, comp1_some_correct, comp1_most_correct, 
+         comp2_correct, comp_multi_correct, comp3_correct, n_comp_correct,
+         matches("^r[1-5]+_(effectiveness|speaker_type)$"), speaker_sequence
+         ) 
+```
+
+
+```{r}
+df_listener_long <- df_listeners_model %>%
+  pivot_longer(
+    cols = matches("^r[1-5]+_(effectiveness|speaker_type)$"),
+    names_to = c("round", ".value"),
+    names_pattern = "r([1-5]+)_(effectiveness|speaker_type)"
+  ) %>%
+  mutate(round = as.integer(round))
+
+
+df_listener_long %>% glimpse()
+```
+
+```{r}
+df_listener_long %>% count(speaker_type)
+```
+
+
+```{r}
+model_eff_inf_0 <- lmer(
+  effectiveness ~ listener_belief_condition* round + (1 | participant_id),
+  data = df_listener_long %>% 
+    filter(speaker_condition == "informative", sequence_idx ==0)
+)
+summary(model_eff_inf_0)
+```
+
+```{r}
+model_eff_inf_1 <- lmer(
+  effectiveness ~ listener_belief_condition* round + (1 | participant_id),
+  data = df_listener_long %>% 
+    filter(speaker_condition == "informative", sequence_idx ==1)
+)
+
+summary(model_eff_inf_1)
+```
+
+
+
+```{r}
+model_eff_persm_0 <- lmer(
+  effectiveness ~ listener_belief_condition* round + (1 | participant_id),
+  data = df_listener_long %>% 
+    filter(speaker_condition == "pers_minus", sequence_idx ==0)
+)
+
+summary(model_eff_persm_0)
+```
+
+
+
+```{r}
+model_eff_persm_1 <- lmer(
+  effectiveness ~ listener_belief_condition* round + (1 | participant_id),
+  data = df_listener_long %>% 
+    filter(speaker_condition == "pers_minus", sequence_idx ==1)
+)
+
+summary(model_eff_persm_1)
+```
+
+
+```{r}
+model_eff_persm_2 <- lmer(
+  effectiveness ~ listener_belief_condition* round + (1 | participant_id),
+  data = df_listener_long %>% 
+    filter(speaker_condition == "pers_minus", sequence_idx ==2)
+)
+
+summary(model_eff_persm_2)
+```
+
+
+
+```{r}
+model_eff_persp_0 <- lmer(
+  effectiveness ~ listener_belief_condition* round + (1 | participant_id),
+  data = df_listener_long %>% 
+    filter(speaker_condition == "pers_plus", sequence_idx ==0)
+)
+
+summary(model_eff_persp_0)
+```
+
+
+```{r}
+model_eff_persp_1 <- lmer(
+  effectiveness ~ listener_belief_condition* round + (1 | participant_id),
+  data = df_listener_long %>% 
+    filter(speaker_condition == "pers_plus", sequence_idx ==1)
+)
+
+summary(model_eff_persp_1)
+```
+
+
+```{r}
+model_eff_persp_2 <- lmer(
+  effectiveness ~ listener_belief_condition* round + (1 | participant_id),
+  data = df_listener_long %>% 
+    filter(speaker_condition == "pers_plus", sequence_idx ==2)
+)
+
+summary(model_eff_persp_2)
+```
+
+
+
+```{r}
+speaker_levels <- c("anti", "neutral", "pro")
+
+df_props <- df_listener_long %>%
+  filter(listener_belief_condition == "vigilant") %>%
+  group_by(speaker_sequence, round) %>%
+  count(speaker_type) %>%
+  complete(speaker_type, fill = list(n = 0)) %>%
+  mutate(prop = n / sum(n))
+```
+
+
+
+
+
+
+```{r}
+df_listener_long %>%
+  filter(
+    listener_belief_condition == "vigilant",
+    speaker_condition == "pers_plus",
+    speaker_type != ""
+  ) %>%
+  ggplot(aes(x = speaker_type, fill = speaker_type)) +
+  geom_bar() +
+  facet_grid(sequence_idx ~ round) +
+  labs(y = "Count") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+```
+
+
+```{r}
+df_listener_long %>%
+  filter(
+    listener_belief_condition == "vigilant",
+    speaker_condition == "pers_minus",
+    speaker_type != ""
+  ) %>%
+  ggplot(aes(x = speaker_type, fill = speaker_type)) +
+  geom_bar() +
+  facet_grid(sequence_idx ~ round) +
+  labs(y = "Count") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+```
+
+
+```{r}
+library(tidyverse)
+
+# Calculate proportions
+plot_data <- df_listener_long %>%
+  filter(speaker_type != "") %>%
+  count(speaker_sequence, round, speaker_type) %>%
+  group_by(speaker_sequence, round) %>%
+  mutate(
+    total = sum(n),
+    percentage = n / total * 100
+  ) %>%
+  ungroup() %>%
+  complete(
+    speaker_sequence, round, speaker_type = c("anti", "neutral", "pro"),
+    fill = list(n = 0, percentage = 0)
+  )
+
+
+# Plot with facet_grid: rows = speaker_sequence, columns = round
+ggplot(plot_data, aes(x = speaker_type, y = percentage, fill = speaker_type)) +
+  geom_col() +
+  facet_grid(speaker_sequence ~ round, 
+             labeller = labeller(round = function(x) paste("Round", x))) +
+  scale_fill_manual(
+    values = c("anti" = "#E74C3C", "neutral" = "#95A5A6", "pro" = "#2ECC71"),
+    name = "Speaker Type"
+  ) +
+  labs(
+    x = "Speaker Type",
+    y = "Percentage (%)",
+    title = "Speaker Type Distribution by Speaker Sequence and Round"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
+    strip.text = element_text(face = "bold", size = 8),
+    legend.position = "bottom"
+  )
+```
+
+
+```{r}
+write.csv(plot_data, "~/Documents/prag_net/prag_net_listener_n1/data_listener_n1/speaker_type.csv")
+
+```
+

@@ -1,0 +1,1050 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={prag\_net\_listener\_n1},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{prag\_net\_listener\_n1}
+\author{}
+\date{\vspace{-2.5em}2026-02-01}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(readr)}
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching core tidyverse packages ------------------------ tidyverse 2.0.0 --
+## v dplyr     1.1.4     v purrr     1.2.1
+## v forcats   1.0.1     v stringr   1.6.0
+## v ggplot2   4.0.1     v tibble    3.3.1
+## v lubridate 1.9.4     v tidyr     1.3.2
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+## i Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(Rcpp)}
+\FunctionTok{library}\NormalTok{(RcppEigen)}
+\FunctionTok{library}\NormalTok{(lme4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: Matrix
+## 
+## Attaching package: 'Matrix'
+## 
+## The following objects are masked from 'package:tidyr':
+## 
+##     expand, pack, unpack
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(emmeans)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Welcome to emmeans.
+## Caution: You lose important information if you filter this package's results.
+## See '? untidy'
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(lmerTest)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lmerTest'
+## 
+## The following object is masked from 'package:lme4':
+## 
+##     lmer
+## 
+## The following object is masked from 'package:stats':
+## 
+##     step
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_listeners }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"\textasciitilde{}/Documents/prag\_net/prag\_net\_listener\_n1/data\_listener\_n1/processed\_listener\_n1\_anonymized.csv"}\NormalTok{, }
+  \AttributeTok{colClasses =} \FunctionTok{c}\NormalTok{(}
+    \StringTok{"participant\_id"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"experiment\_version"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"start\_time"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"completion\_status"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"completion\_time"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"terminated\_early"} \OtherTok{=} \StringTok{"logical"}\NormalTok{,}
+    \StringTok{"termination\_reason"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"total\_duration\_ms"} \OtherTok{=} \StringTok{"integer"}\NormalTok{,}
+    \StringTok{"total\_duration\_min"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"datapipe\_condition"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"cell\_idx"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"speaker\_condition"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"listener\_belief\_condition"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"sequence\_idx"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"measure\_order"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"comp1\_some\_correct"} \OtherTok{=} \StringTok{"logical"}\NormalTok{,}
+    \StringTok{"comp1\_some\_response"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"comp1\_most\_correct"} \OtherTok{=} \StringTok{"logical"}\NormalTok{,}
+    \StringTok{"comp1\_most\_response"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"comp2\_correct"} \OtherTok{=} \StringTok{"logical"}\NormalTok{,}
+    \StringTok{"comp\_multi\_correct"} \OtherTok{=} \StringTok{"logical"}\NormalTok{,}
+    \StringTok{"comp\_multi\_selected"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"comp3\_correct"} \OtherTok{=} \StringTok{"logical"}\NormalTok{,}
+    \StringTok{"comp3\_selected"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"n\_comp\_correct"} \OtherTok{=} \StringTok{"integer"}\NormalTok{,}
+    \StringTok{"r1\_utterance\_predicate"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r1\_utterance\_quantifier"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r1\_utterance\_text"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r1\_effectiveness"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r1\_speaker\_type"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r1\_rt"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r2\_utterance\_predicate"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r2\_utterance\_quantifier"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r2\_utterance\_text"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r2\_effectiveness"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r2\_speaker\_type"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r2\_rt"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r3\_utterance\_predicate"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r3\_utterance\_quantifier"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r3\_utterance\_text"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r3\_effectiveness"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r3\_speaker\_type"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r3\_rt"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r4\_utterance\_predicate"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r4\_utterance\_quantifier"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r4\_utterance\_text"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r4\_effectiveness"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r4\_speaker\_type"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r4\_rt"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r5\_utterance\_predicate"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r5\_utterance\_quantifier"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r5\_utterance\_text"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r5\_effectiveness"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"r5\_speaker\_type"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"r5\_rt"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"n\_rounds\_completed"} \OtherTok{=} \StringTok{"integer"}\NormalTok{,}
+    \StringTok{"completed\_all\_rounds"} \OtherTok{=} \StringTok{"logical"}\NormalTok{,}
+    \StringTok{"attention\_check\_passed"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"attention\_effectiveness"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"attention\_speaker\_type"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"competence\_score"} \OtherTok{=} \StringTok{"numeric"}\NormalTok{,}
+    \StringTok{"competence\_framing"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"saw\_persuasive\_reveal"} \OtherTok{=} \StringTok{"logical"}\NormalTok{,}
+    \StringTok{"open\_speaker\_strategy"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"open\_estimation\_strategy"} \OtherTok{=} \StringTok{"character"}\NormalTok{,}
+    \StringTok{"open\_feedback"} \OtherTok{=} \StringTok{"character"}
+\NormalTok{  ))}
+
+\NormalTok{df\_listeners }\OtherTok{\textless{}{-}}\NormalTok{ df\_listeners }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(completion\_status }\SpecialCharTok{==} \StringTok{"completed"}\NormalTok{,}
+\NormalTok{         attention\_check\_passed }\SpecialCharTok{==} \StringTok{"True"}\NormalTok{,}
+\NormalTok{         completed\_all\_rounds }\SpecialCharTok{==} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{speaker\_sequence =} \FunctionTok{paste}\NormalTok{(speaker\_condition, sequence\_idx, }\AttributeTok{sep =} \StringTok{"\_"}\NormalTok{))}
+
+  \CommentTok{\#filter(n\_comp\_correct \textgreater{}= 3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_listeners }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(completion\_status }\SpecialCharTok{==} \StringTok{"completed"}\NormalTok{,}
+\NormalTok{         attention\_check\_passed }\SpecialCharTok{==} \StringTok{"True"}\NormalTok{,}
+\NormalTok{         completed\_all\_rounds }\SpecialCharTok{==} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(comp\_multi\_correct, comp3\_correct)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   comp_multi_correct comp3_correct   n
+## 1              FALSE         FALSE 134
+## 2              FALSE          TRUE 176
+## 3               TRUE         FALSE  27
+## 4               TRUE          TRUE 272
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_listeners }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{glimpse}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 609
+## Columns: 67
+## $ participant_id            <chr> "P001", "P002", "P003", "P004", "P005", "P00~
+## $ experiment_version        <chr> "1.0.0", "1.0.0", "1.0.0", "1.0.0", "1.0.0",~
+## $ start_time                <chr> "2026-02-01T09:41:04.510Z", "2026-02-01T18:1~
+## $ completion_status         <chr> "completed", "completed", "completed", "comp~
+## $ completion_time           <chr> "2026-02-01T09:48:29.375Z", "2026-02-01T18:2~
+## $ terminated_early          <lgl> FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA~
+## $ termination_reason        <chr> "", "", "", "", "", "", "", "", "", "", "", ~
+## $ total_duration_ms         <int> 444842, 392252, 497649, 594962, 954312, 7042~
+## $ total_duration_min        <dbl> 7.414033, 6.537533, 8.294150, 9.916033, 15.9~
+## $ datapipe_condition        <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ cell_idx                  <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ speaker_condition         <chr> "pers_minus", "informative", "pers_plus", "p~
+## $ listener_belief_condition <chr> "vigilant", "vigilant", "naturalistic", "vig~
+## $ sequence_idx              <dbl> 1, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 1, 2, 1,~
+## $ measure_order             <chr> "speaker_type_first", "speaker_type_first", ~
+## $ comp1_some_correct        <lgl> FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, ~
+## $ comp1_some_response       <chr> "At least one but must not be all.", "At lea~
+## $ comp1_most_correct        <lgl> FALSE, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE,~
+## $ comp1_most_response       <chr> "More than 75% and could be all.", "More tha~
+## $ comp2_correct             <lgl> TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FA~
+## $ comp_multi_correct        <lgl> FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE~
+## $ comp_multi_selected       <chr> "[\"all\"]", "[\"all\",\"some\"]", "[\"all\"~
+## $ comp3_correct             <lgl> FALSE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, ~
+## $ comp3_selected            <chr> "[3,0,2]", "[2,0]", "[2,3,0]", "[0,2]", "[0,~
+## $ n_comp_correct            <int> 1, 4, 3, 4, 4, 4, 4, 3, 0, 4, 2, 1, 3, 2, 2,~
+## $ r1_utterance_predicate    <chr> "Ineffective", "Effective", "Effective", "In~
+## $ r1_utterance_quantifier   <chr> "Most", "Most", "Some", "Most", "Most", "Mos~
+## $ r1_utterance_text         <chr> "The treatment was ineffective for most pati~
+## $ r1_effectiveness          <dbl> 20, 55, 60, 30, 80, 75, 20, 75, 60, 20, 80, ~
+## $ r1_speaker_type           <chr> "anti", "pro", "", "anti", "", "", "anti", "~
+## $ r1_rt                     <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ r2_utterance_predicate    <chr> "Ineffective", "Ineffective", "Effective", "~
+## $ r2_utterance_quantifier   <chr> "Some", "No", "Some", "Some", "No", "No", "S~
+## $ r2_utterance_text         <chr> "The treatment was ineffective for some pati~
+## $ r2_effectiveness          <dbl> 20, 100, 80, 60, 100, 0, 75, 0, 0, 20, 100, ~
+## $ r2_speaker_type           <chr> "neutral", "neutral", "", "pro", "", "", "ne~
+## $ r2_rt                     <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ r3_utterance_predicate    <chr> "Effective", "Effective", "Ineffective", "Ef~
+## $ r3_utterance_quantifier   <chr> "Some", "All", "Some", "Some", "All", "All",~
+## $ r3_utterance_text         <chr> "The treatment was effective for some patien~
+## $ r3_effectiveness          <dbl> 30, 100, 40, 60, 100, 100, 25, 100, 100, 70,~
+## $ r3_speaker_type           <chr> "neutral", "neutral", "", "pro", "", "", "an~
+## $ r3_rt                     <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ r4_utterance_predicate    <chr> "Ineffective", "Ineffective", "Effective", "~
+## $ r4_utterance_quantifier   <chr> "Some", "No", "Some", "Some", "No", "No", "S~
+## $ r4_utterance_text         <chr> "The treatment was ineffective for some pati~
+## $ r4_effectiveness          <dbl> 25, 100, 60, 40, 100, 0, 80, 100, 0, 20, 100~
+## $ r4_speaker_type           <chr> "neutral", "neutral", "", "anti", "", "", "p~
+## $ r4_rt                     <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ r5_utterance_predicate    <chr> "Effective", "Effective", "Effective", "Effe~
+## $ r5_utterance_quantifier   <chr> "Some", "All", "Some", "Some", "All", "All",~
+## $ r5_utterance_text         <chr> "The treatment was effective for some patien~
+## $ r5_effectiveness          <dbl> 30, 100, 80, 60, 80, 100, 20, 100, 100, 70, ~
+## $ r5_speaker_type           <chr> "neutral", "neutral", "", "neutral", "", "",~
+## $ r5_rt                     <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ n_rounds_completed        <int> 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,~
+## $ completed_all_rounds      <lgl> TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TR~
+## $ attention_check_passed    <chr> "True", "True", "True", "True", "True", "Tru~
+## $ attention_effectiveness   <dbl> 100, 100, 100, 100, 100, 100, 100, 100, 100,~
+## $ attention_speaker_type    <chr> "anti", "anti", "", "anti", "", "", "anti", ~
+## $ competence_score          <dbl> 50, 100, 24, 40, 88, 100, 70, 95, 100, 50, 8~
+## $ competence_framing        <chr> "goal_pursuit_effectiveness", "goal_pursuit_~
+## $ saw_persuasive_reveal     <lgl> TRUE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE~
+## $ open_speaker_strategy     <chr> "It was based on the wording they used", "I ~
+## $ open_estimation_strategy  <chr> "", "", "Each one used the \"most\" word, so~
+## $ open_feedback             <chr> "", "", "", "", "The survey was easier to un~
+## $ speaker_sequence          <chr> "pers_minus_1", "informative_0", "pers_plus_~
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_listeners\_model }\OtherTok{\textless{}{-}}\NormalTok{ df\_listeners }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(participant\_id, speaker\_condition, listener\_belief\_condition, sequence\_idx, }
+\NormalTok{         measure\_order, comp1\_some\_correct, comp1\_most\_correct, }
+\NormalTok{         comp2\_correct, comp\_multi\_correct, comp3\_correct, n\_comp\_correct,}
+         \FunctionTok{matches}\NormalTok{(}\StringTok{"\^{}r[1{-}5]+\_(effectiveness|speaker\_type)$"}\NormalTok{), speaker\_sequence}
+\NormalTok{         ) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_listener\_long }\OtherTok{\textless{}{-}}\NormalTok{ df\_listeners\_model }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}
+    \AttributeTok{cols =} \FunctionTok{matches}\NormalTok{(}\StringTok{"\^{}r[1{-}5]+\_(effectiveness|speaker\_type)$"}\NormalTok{),}
+    \AttributeTok{names\_to =} \FunctionTok{c}\NormalTok{(}\StringTok{"round"}\NormalTok{, }\StringTok{".value"}\NormalTok{),}
+    \AttributeTok{names\_pattern =} \StringTok{"r([1{-}5]+)\_(effectiveness|speaker\_type)"}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{round =} \FunctionTok{as.integer}\NormalTok{(round))}
+
+
+\NormalTok{df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{glimpse}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 3,045
+## Columns: 15
+## $ participant_id            <chr> "P001", "P001", "P001", "P001", "P001", "P00~
+## $ speaker_condition         <chr> "pers_minus", "pers_minus", "pers_minus", "p~
+## $ listener_belief_condition <chr> "vigilant", "vigilant", "vigilant", "vigilan~
+## $ sequence_idx              <dbl> 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+## $ measure_order             <chr> "speaker_type_first", "speaker_type_first", ~
+## $ comp1_some_correct        <lgl> FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA~
+## $ comp1_most_correct        <lgl> FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRU~
+## $ comp2_correct             <lgl> TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TR~
+## $ comp_multi_correct        <lgl> FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRU~
+## $ comp3_correct             <lgl> FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRU~
+## $ n_comp_correct            <int> 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3,~
+## $ speaker_sequence          <chr> "pers_minus_1", "pers_minus_1", "pers_minus_~
+## $ round                     <int> 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5,~
+## $ effectiveness             <dbl> 20, 20, 30, 25, 30, 55, 100, 100, 100, 100, ~
+## $ speaker_type              <chr> "anti", "neutral", "neutral", "neutral", "ne~
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{count}\NormalTok{(speaker\_type)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 2
+##   speaker_type     n
+##   <chr>        <int>
+## 1 ""            2035
+## 2 "anti"         277
+## 3 "neutral"      525
+## 4 "pro"          208
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_eff\_inf\_0 }\OtherTok{\textless{}{-}} \FunctionTok{lmer}\NormalTok{(}
+\NormalTok{  effectiveness }\SpecialCharTok{\textasciitilde{}}\NormalTok{ listener\_belief\_condition}\SpecialCharTok{*}\NormalTok{ round }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ participant\_id),}
+  \AttributeTok{data =}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(speaker\_condition }\SpecialCharTok{==} \StringTok{"informative"}\NormalTok{, sequence\_idx }\SpecialCharTok{==}\DecValTok{0}\NormalTok{)}
+\NormalTok{)}
+\FunctionTok{summary}\NormalTok{(model\_eff\_inf\_0)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: 
+## effectiveness ~ listener_belief_condition * round + (1 | participant_id)
+##    Data: df_listener_long %>% filter(speaker_condition == "informative",  
+##     sequence_idx == 0)
+## 
+## REML criterion at convergence: 4212.6
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.7948 -0.1635  0.1531  0.4986  1.8891 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  participant_id (Intercept) 154.9    12.45   
+##  Residual                   431.8    20.78   
+## Number of obs: 465, groups:  participant_id, 93
+## 
+## Fixed effects:
+##                                             Estimate Std. Error       df
+## (Intercept)                                  67.6500     4.5825 375.6804
+## listener_belief_conditionnaturalistic         7.2284     6.1665 375.6804
+## listener_belief_conditionvigilant             0.7731     6.7252 375.6804
+## round                                         5.9167     1.1998 369.0000
+## listener_belief_conditionnaturalistic:round  -1.0923     1.6145 369.0000
+## listener_belief_conditionvigilant:round      -0.7628     1.7608 369.0000
+##                                             t value Pr(>|t|)    
+## (Intercept)                                  14.763  < 2e-16 ***
+## listener_belief_conditionnaturalistic         1.172    0.242    
+## listener_belief_conditionvigilant             0.115    0.909    
+## round                                         4.931 1.24e-06 ***
+## listener_belief_conditionnaturalistic:round  -0.677    0.499    
+## listener_belief_conditionvigilant:round      -0.433    0.665    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##                   (Intr) lstnr_blf_cndtnn lstnr_blf_cndtnv round 
+## lstnr_blf_cndtnn  -0.743                                         
+## lstnr_blf_cndtnv  -0.681  0.506                                  
+## round             -0.785  0.584            0.535                 
+## lstnr_blf_cndtnn:  0.584 -0.785           -0.398           -0.743
+## lstnr_blf_cndtnv:  0.535 -0.398           -0.785           -0.681
+##                   lstnr_blf_cndtnn:
+## lstnr_blf_cndtnn                   
+## lstnr_blf_cndtnv                   
+## round                              
+## lstnr_blf_cndtnn:                  
+## lstnr_blf_cndtnv:  0.506
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_eff\_inf\_1 }\OtherTok{\textless{}{-}} \FunctionTok{lmer}\NormalTok{(}
+\NormalTok{  effectiveness }\SpecialCharTok{\textasciitilde{}}\NormalTok{ listener\_belief\_condition}\SpecialCharTok{*}\NormalTok{ round }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ participant\_id),}
+  \AttributeTok{data =}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(speaker\_condition }\SpecialCharTok{==} \StringTok{"informative"}\NormalTok{, sequence\_idx }\SpecialCharTok{==}\DecValTok{1}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(model\_eff\_inf\_1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: 
+## effectiveness ~ listener_belief_condition * round + (1 | participant_id)
+##    Data: df_listener_long %>% filter(speaker_condition == "informative",  
+##     sequence_idx == 1)
+## 
+## REML criterion at convergence: 4428.8
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.8080 -0.5452 -0.1018  0.3844  4.1829 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  participant_id (Intercept) 192.6    13.88   
+##  Residual                   178.8    13.37   
+## Number of obs: 530, groups:  participant_id, 106
+## 
+## Fixed effects:
+##                                             Estimate Std. Error       df
+## (Intercept)                                  21.2105     3.2009 266.8821
+## listener_belief_conditionnaturalistic         9.9609     4.6228 266.8821
+## listener_belief_conditionvigilant             5.7592     4.6951 266.8821
+## round                                        -4.7368     0.6860 421.0000
+## listener_belief_conditionnaturalistic:round  -1.8917     0.9907 421.0000
+## listener_belief_conditionvigilant:round       0.4944     1.0062 421.0000
+##                                             t value Pr(>|t|)    
+## (Intercept)                                   6.626 1.89e-10 ***
+## listener_belief_conditionnaturalistic         2.155   0.0321 *  
+## listener_belief_conditionvigilant             1.227   0.2210    
+## round                                        -6.905 1.86e-11 ***
+## listener_belief_conditionnaturalistic:round  -1.909   0.0569 .  
+## listener_belief_conditionvigilant:round       0.491   0.6234    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##                   (Intr) lstnr_blf_cndtnn lstnr_blf_cndtnv round 
+## lstnr_blf_cndtnn  -0.692                                         
+## lstnr_blf_cndtnv  -0.682  0.472                                  
+## round             -0.643  0.445            0.438                 
+## lstnr_blf_cndtnn:  0.445 -0.643           -0.304           -0.692
+## lstnr_blf_cndtnv:  0.438 -0.304           -0.643           -0.682
+##                   lstnr_blf_cndtnn:
+## lstnr_blf_cndtnn                   
+## lstnr_blf_cndtnv                   
+## round                              
+## lstnr_blf_cndtnn:                  
+## lstnr_blf_cndtnv:  0.472
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_eff\_persm\_0 }\OtherTok{\textless{}{-}} \FunctionTok{lmer}\NormalTok{(}
+\NormalTok{  effectiveness }\SpecialCharTok{\textasciitilde{}}\NormalTok{ listener\_belief\_condition}\SpecialCharTok{*}\NormalTok{ round }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ participant\_id),}
+  \AttributeTok{data =}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(speaker\_condition }\SpecialCharTok{==} \StringTok{"pers\_minus"}\NormalTok{, sequence\_idx }\SpecialCharTok{==}\DecValTok{0}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(model\_eff\_persm\_0)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: 
+## effectiveness ~ listener_belief_condition * round + (1 | participant_id)
+##    Data: df_listener_long %>% filter(speaker_condition == "pers_minus",  
+##     sequence_idx == 0)
+## 
+## REML criterion at convergence: 2456.9
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -2.66096 -0.66520 -0.09236  0.66170  2.79362 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  participant_id (Intercept) 122.1    11.05   
+##  Residual                   235.5    15.34   
+## Number of obs: 290, groups:  participant_id, 58
+## 
+## Fixed effects:
+##                                             Estimate Std. Error       df
+## (Intercept)                                  47.4706     4.7346 202.7067
+## listener_belief_conditionnaturalistic         4.2199     6.3690 202.7067
+## listener_belief_conditionvigilant             2.2044     6.4398 202.7067
+## round                                         0.4118     1.1769 229.0000
+## listener_belief_conditionnaturalistic:round  -0.1022     1.5831 229.0000
+## listener_belief_conditionvigilant:round      -1.3868     1.6007 229.0000
+##                                             t value Pr(>|t|)    
+## (Intercept)                                  10.026   <2e-16 ***
+## listener_belief_conditionnaturalistic         0.663    0.508    
+## listener_belief_conditionvigilant             0.342    0.732    
+## round                                         0.350    0.727    
+## listener_belief_conditionnaturalistic:round  -0.065    0.949    
+## listener_belief_conditionvigilant:round      -0.866    0.387    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##                   (Intr) lstnr_blf_cndtnn lstnr_blf_cndtnv round 
+## lstnr_blf_cndtnn  -0.743                                         
+## lstnr_blf_cndtnv  -0.735  0.547                                  
+## round             -0.746  0.554            0.548                 
+## lstnr_blf_cndtnn:  0.554 -0.746           -0.408           -0.743
+## lstnr_blf_cndtnv:  0.548 -0.408           -0.746           -0.735
+##                   lstnr_blf_cndtnn:
+## lstnr_blf_cndtnn                   
+## lstnr_blf_cndtnv                   
+## round                              
+## lstnr_blf_cndtnn:                  
+## lstnr_blf_cndtnv:  0.547
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_eff\_persm\_1 }\OtherTok{\textless{}{-}} \FunctionTok{lmer}\NormalTok{(}
+\NormalTok{  effectiveness }\SpecialCharTok{\textasciitilde{}}\NormalTok{ listener\_belief\_condition}\SpecialCharTok{*}\NormalTok{ round }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ participant\_id),}
+  \AttributeTok{data =}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(speaker\_condition }\SpecialCharTok{==} \StringTok{"pers\_minus"}\NormalTok{, sequence\_idx }\SpecialCharTok{==}\DecValTok{1}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(model\_eff\_persm\_1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: 
+## effectiveness ~ listener_belief_condition * round + (1 | participant_id)
+##    Data: df_listener_long %>% filter(speaker_condition == "pers_minus",  
+##     sequence_idx == 1)
+## 
+## REML criterion at convergence: 2501.4
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.3891 -0.7395 -0.1984  0.7064  2.8984 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  participant_id (Intercept)  14.98    3.87   
+##  Residual                   339.87   18.44   
+## Number of obs: 290, groups:  participant_id, 58
+## 
+## Fixed effects:
+##                                             Estimate Std. Error       df
+## (Intercept)                                  30.0455     5.9454 283.2980
+## listener_belief_conditionnaturalistic         0.8241     7.2287 283.2980
+## listener_belief_conditionvigilant            10.6420     7.1798 283.2980
+## round                                         5.9545     1.7578 229.0000
+## listener_belief_conditionnaturalistic:round  -1.3458     2.1371 229.0000
+## listener_belief_conditionvigilant:round      -3.1004     2.1227 229.0000
+##                                             t value Pr(>|t|)    
+## (Intercept)                                   5.054 7.79e-07 ***
+## listener_belief_conditionnaturalistic         0.114  0.90931    
+## listener_belief_conditionvigilant             1.482  0.13939    
+## round                                         3.388  0.00083 ***
+## listener_belief_conditionnaturalistic:round  -0.630  0.52949    
+## listener_belief_conditionvigilant:round      -1.461  0.14550    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##                   (Intr) lstnr_blf_cndtnn lstnr_blf_cndtnv round 
+## lstnr_blf_cndtnn  -0.822                                         
+## lstnr_blf_cndtnv  -0.828  0.681                                  
+## round             -0.887  0.729            0.734                 
+## lstnr_blf_cndtnn:  0.729 -0.887           -0.604           -0.822
+## lstnr_blf_cndtnv:  0.734 -0.604           -0.887           -0.828
+##                   lstnr_blf_cndtnn:
+## lstnr_blf_cndtnn                   
+## lstnr_blf_cndtnv                   
+## round                              
+## lstnr_blf_cndtnn:                  
+## lstnr_blf_cndtnv:  0.681
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_eff\_persm\_2 }\OtherTok{\textless{}{-}} \FunctionTok{lmer}\NormalTok{(}
+\NormalTok{  effectiveness }\SpecialCharTok{\textasciitilde{}}\NormalTok{ listener\_belief\_condition}\SpecialCharTok{*}\NormalTok{ round }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ participant\_id),}
+  \AttributeTok{data =}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(speaker\_condition }\SpecialCharTok{==} \StringTok{"pers\_minus"}\NormalTok{, sequence\_idx }\SpecialCharTok{==}\DecValTok{2}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(model\_eff\_persm\_2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: 
+## effectiveness ~ listener_belief_condition * round + (1 | participant_id)
+##    Data: df_listener_long %>% filter(speaker_condition == "pers_minus",  
+##     sequence_idx == 2)
+## 
+## REML criterion at convergence: 2850.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.3173 -0.7072 -0.1339  0.7116  2.6099 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  participant_id (Intercept)  20.28    4.503  
+##  Residual                   292.15   17.092  
+## Number of obs: 335, groups:  participant_id, 67
+## 
+## Fixed effects:
+##                                             Estimate Std. Error      df t value
+## (Intercept)                                   25.500      3.773 326.324   6.759
+## listener_belief_conditionnaturalistic          4.525      5.596 326.324   0.809
+## listener_belief_conditionvigilant              7.217      5.393 326.324   1.338
+## round                                          5.750      1.103 265.000   5.212
+## listener_belief_conditionnaturalistic:round   -1.175      1.636 265.000  -0.718
+## listener_belief_conditionvigilant:round       -1.337      1.577 265.000  -0.848
+##                                             Pr(>|t|)    
+## (Intercept)                                 6.42e-11 ***
+## listener_belief_conditionnaturalistic          0.419    
+## listener_belief_conditionvigilant              0.182    
+## round                                       3.77e-07 ***
+## listener_belief_conditionnaturalistic:round    0.473    
+## listener_belief_conditionvigilant:round        0.397    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##                   (Intr) lstnr_blf_cndtnn lstnr_blf_cndtnv round 
+## lstnr_blf_cndtnn  -0.674                                         
+## lstnr_blf_cndtnv  -0.700  0.472                                  
+## round             -0.877  0.591            0.614                 
+## lstnr_blf_cndtnn:  0.591 -0.877           -0.414           -0.674
+## lstnr_blf_cndtnv:  0.614 -0.414           -0.877           -0.700
+##                   lstnr_blf_cndtnn:
+## lstnr_blf_cndtnn                   
+## lstnr_blf_cndtnv                   
+## round                              
+## lstnr_blf_cndtnn:                  
+## lstnr_blf_cndtnv:  0.472
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_eff\_persp\_0 }\OtherTok{\textless{}{-}} \FunctionTok{lmer}\NormalTok{(}
+\NormalTok{  effectiveness }\SpecialCharTok{\textasciitilde{}}\NormalTok{ listener\_belief\_condition}\SpecialCharTok{*}\NormalTok{ round }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ participant\_id),}
+  \AttributeTok{data =}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(speaker\_condition }\SpecialCharTok{==} \StringTok{"pers\_plus"}\NormalTok{, sequence\_idx }\SpecialCharTok{==}\DecValTok{0}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(model\_eff\_persp\_0)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: 
+## effectiveness ~ listener_belief_condition * round + (1 | participant_id)
+##    Data: df_listener_long %>% filter(speaker_condition == "pers_plus",  
+##     sequence_idx == 0)
+## 
+## REML criterion at convergence: 3428.8
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -2.96184 -0.56660 -0.07003  0.62647  2.90305 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  participant_id (Intercept)  89.5     9.46   
+##  Residual                   237.3    15.41   
+## Number of obs: 405, groups:  participant_id, 81
+## 
+## Fixed effects:
+##                                              Estimate Std. Error        df
+## (Intercept)                                  37.94231    3.67194 321.18242
+## listener_belief_conditionnaturalistic        10.02321    5.05683 321.18242
+## listener_belief_conditionvigilant             5.26923    5.19291 321.18242
+## round                                         2.13462    0.95542 321.00000
+## listener_belief_conditionnaturalistic:round  -1.54841    1.31576 321.00000
+## listener_belief_conditionvigilant:round       0.07692    1.35116 321.00000
+##                                             t value Pr(>|t|)    
+## (Intercept)                                  10.333   <2e-16 ***
+## listener_belief_conditionnaturalistic         1.982   0.0483 *  
+## listener_belief_conditionvigilant             1.015   0.3110    
+## round                                         2.234   0.0262 *  
+## listener_belief_conditionnaturalistic:round  -1.177   0.2401    
+## listener_belief_conditionvigilant:round       0.057   0.9546    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##                   (Intr) lstnr_blf_cndtnn lstnr_blf_cndtnv round 
+## lstnr_blf_cndtnn  -0.726                                         
+## lstnr_blf_cndtnv  -0.707  0.513                                  
+## round             -0.781  0.567            0.552                 
+## lstnr_blf_cndtnn:  0.567 -0.781           -0.401           -0.726
+## lstnr_blf_cndtnv:  0.552 -0.401           -0.781           -0.707
+##                   lstnr_blf_cndtnn:
+## lstnr_blf_cndtnn                   
+## lstnr_blf_cndtnv                   
+## round                              
+## lstnr_blf_cndtnn:                  
+## lstnr_blf_cndtnv:  0.513
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_eff\_persp\_1 }\OtherTok{\textless{}{-}} \FunctionTok{lmer}\NormalTok{(}
+\NormalTok{  effectiveness }\SpecialCharTok{\textasciitilde{}}\NormalTok{ listener\_belief\_condition}\SpecialCharTok{*}\NormalTok{ round }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ participant\_id),}
+  \AttributeTok{data =}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(speaker\_condition }\SpecialCharTok{==} \StringTok{"pers\_plus"}\NormalTok{, sequence\_idx }\SpecialCharTok{==}\DecValTok{1}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(model\_eff\_persp\_1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: 
+## effectiveness ~ listener_belief_condition * round + (1 | participant_id)
+##    Data: df_listener_long %>% filter(speaker_condition == "pers_plus",  
+##     sequence_idx == 1)
+## 
+## REML criterion at convergence: 3524.2
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -2.37850 -0.69750 -0.04632  0.83908  2.33364 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  participant_id (Intercept)  25.38    5.038  
+##  Residual                   311.20   17.641  
+## Number of obs: 410, groups:  participant_id, 82
+## 
+## Fixed effects:
+##                                             Estimate Std. Error       df
+## (Intercept)                                  64.6667     3.6903 399.3586
+## listener_belief_conditionnaturalistic         0.6852     5.2189 399.3586
+## listener_belief_conditionvigilant            -5.2202     5.1721 399.3586
+## round                                        -4.2222     1.0736 325.0000
+## listener_belief_conditionnaturalistic:round  -0.8704     1.5183 325.0000
+## listener_belief_conditionvigilant:round       1.5258     1.5047 325.0000
+##                                             t value Pr(>|t|)    
+## (Intercept)                                  17.523  < 2e-16 ***
+## listener_belief_conditionnaturalistic         0.131 0.895613    
+## listener_belief_conditionvigilant            -1.009 0.313439    
+## round                                        -3.933 0.000103 ***
+## listener_belief_conditionnaturalistic:round  -0.573 0.566863    
+## listener_belief_conditionvigilant:round       1.014 0.311314    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##                   (Intr) lstnr_blf_cndtnn lstnr_blf_cndtnv round 
+## lstnr_blf_cndtnn  -0.707                                         
+## lstnr_blf_cndtnv  -0.714  0.505                                  
+## round             -0.873  0.617            0.623                 
+## lstnr_blf_cndtnn:  0.617 -0.873           -0.440           -0.707
+## lstnr_blf_cndtnv:  0.623 -0.440           -0.873           -0.714
+##                   lstnr_blf_cndtnn:
+## lstnr_blf_cndtnn                   
+## lstnr_blf_cndtnv                   
+## round                              
+## lstnr_blf_cndtnn:                  
+## lstnr_blf_cndtnv:  0.505
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_eff\_persp\_2 }\OtherTok{\textless{}{-}} \FunctionTok{lmer}\NormalTok{(}
+\NormalTok{  effectiveness }\SpecialCharTok{\textasciitilde{}}\NormalTok{ listener\_belief\_condition}\SpecialCharTok{*}\NormalTok{ round }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ participant\_id),}
+  \AttributeTok{data =}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{filter}\NormalTok{(speaker\_condition }\SpecialCharTok{==} \StringTok{"pers\_plus"}\NormalTok{, sequence\_idx }\SpecialCharTok{==}\DecValTok{2}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(model\_eff\_persp\_2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: 
+## effectiveness ~ listener_belief_condition * round + (1 | participant_id)
+##    Data: df_listener_long %>% filter(speaker_condition == "pers_plus",  
+##     sequence_idx == 2)
+## 
+## REML criterion at convergence: 2773.2
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.2869 -0.7369  0.1216  0.7284  2.5478 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  participant_id (Intercept)  27.85    5.277  
+##  Residual                   340.97   18.465  
+## Number of obs: 320, groups:  participant_id, 64
+## 
+## Fixed effects:
+##                                             Estimate Std. Error       df
+## (Intercept)                                  67.6957     4.1855 310.1462
+## listener_belief_conditionnaturalistic         4.5938     6.2229 310.1462
+## listener_belief_conditionvigilant            -7.1275     5.9860 310.1462
+## round                                        -5.5652     1.2176 253.0000
+## listener_belief_conditionnaturalistic:round  -0.6716     1.8103 253.0000
+## listener_belief_conditionvigilant:round       4.0425     1.7414 253.0000
+##                                             t value Pr(>|t|)    
+## (Intercept)                                  16.174  < 2e-16 ***
+## listener_belief_conditionnaturalistic         0.738   0.4609    
+## listener_belief_conditionvigilant            -1.191   0.2347    
+## round                                        -4.571 7.61e-06 ***
+## listener_belief_conditionnaturalistic:round  -0.371   0.7109    
+## listener_belief_conditionvigilant:round       2.321   0.0211 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##                   (Intr) lstnr_blf_cndtnn lstnr_blf_cndtnv round 
+## lstnr_blf_cndtnn  -0.673                                         
+## lstnr_blf_cndtnv  -0.699  0.470                                  
+## round             -0.873  0.587            0.610                 
+## lstnr_blf_cndtnn:  0.587 -0.873           -0.410           -0.673
+## lstnr_blf_cndtnv:  0.610 -0.410           -0.873           -0.699
+##                   lstnr_blf_cndtnn:
+## lstnr_blf_cndtnn                   
+## lstnr_blf_cndtnv                   
+## round                              
+## lstnr_blf_cndtnn:                  
+## lstnr_blf_cndtnv:  0.470
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{speaker\_levels }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"anti"}\NormalTok{, }\StringTok{"neutral"}\NormalTok{, }\StringTok{"pro"}\NormalTok{)}
+
+\NormalTok{df\_props }\OtherTok{\textless{}{-}}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(listener\_belief\_condition }\SpecialCharTok{==} \StringTok{"vigilant"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(speaker\_sequence, round) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(speaker\_type) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{complete}\NormalTok{(speaker\_type, }\AttributeTok{fill =} \FunctionTok{list}\NormalTok{(}\AttributeTok{n =} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{prop =}\NormalTok{ n }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(n))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}
+\NormalTok{    listener\_belief\_condition }\SpecialCharTok{==} \StringTok{"vigilant"}\NormalTok{,}
+\NormalTok{    speaker\_condition }\SpecialCharTok{==} \StringTok{"pers\_plus"}\NormalTok{,}
+\NormalTok{    speaker\_type }\SpecialCharTok{!=} \StringTok{""}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ speaker\_type, }\AttributeTok{fill =}\NormalTok{ speaker\_type)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{facet\_grid}\NormalTok{(sequence\_idx }\SpecialCharTok{\textasciitilde{}}\NormalTok{ round) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{y =} \StringTok{"Count"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{),}
+    \AttributeTok{legend.position =} \StringTok{"none"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{prag_net_listener_n1_files/figure-latex/unnamed-chunk-17-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}
+\NormalTok{    listener\_belief\_condition }\SpecialCharTok{==} \StringTok{"vigilant"}\NormalTok{,}
+\NormalTok{    speaker\_condition }\SpecialCharTok{==} \StringTok{"pers\_minus"}\NormalTok{,}
+\NormalTok{    speaker\_type }\SpecialCharTok{!=} \StringTok{""}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ speaker\_type, }\AttributeTok{fill =}\NormalTok{ speaker\_type)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{facet\_grid}\NormalTok{(sequence\_idx }\SpecialCharTok{\textasciitilde{}}\NormalTok{ round) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{y =} \StringTok{"Count"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{),}
+    \AttributeTok{legend.position =} \StringTok{"none"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{prag_net_listener_n1_files/figure-latex/unnamed-chunk-18-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyverse)}
+
+\CommentTok{\# Calculate proportions}
+\NormalTok{plot\_data }\OtherTok{\textless{}{-}}\NormalTok{ df\_listener\_long }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(speaker\_type }\SpecialCharTok{!=} \StringTok{""}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(speaker\_sequence, round, speaker\_type) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(speaker\_sequence, round) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{total =} \FunctionTok{sum}\NormalTok{(n),}
+    \AttributeTok{percentage =}\NormalTok{ n }\SpecialCharTok{/}\NormalTok{ total }\SpecialCharTok{*} \DecValTok{100}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ungroup}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{complete}\NormalTok{(}
+\NormalTok{    speaker\_sequence, round, }\AttributeTok{speaker\_type =} \FunctionTok{c}\NormalTok{(}\StringTok{"anti"}\NormalTok{, }\StringTok{"neutral"}\NormalTok{, }\StringTok{"pro"}\NormalTok{),}
+    \AttributeTok{fill =} \FunctionTok{list}\NormalTok{(}\AttributeTok{n =} \DecValTok{0}\NormalTok{, }\AttributeTok{percentage =} \DecValTok{0}\NormalTok{)}
+\NormalTok{  )}
+
+
+\CommentTok{\# Plot with facet\_grid: rows = speaker\_sequence, columns = round}
+\FunctionTok{ggplot}\NormalTok{(plot\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ speaker\_type, }\AttributeTok{y =}\NormalTok{ percentage, }\AttributeTok{fill =}\NormalTok{ speaker\_type)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_col}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{facet\_grid}\NormalTok{(speaker\_sequence }\SpecialCharTok{\textasciitilde{}}\NormalTok{ round, }
+             \AttributeTok{labeller =} \FunctionTok{labeller}\NormalTok{(}\AttributeTok{round =} \ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{paste}\NormalTok{(}\StringTok{"Round"}\NormalTok{, x))) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}
+    \AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"anti"} \OtherTok{=} \StringTok{"\#E74C3C"}\NormalTok{, }\StringTok{"neutral"} \OtherTok{=} \StringTok{"\#95A5A6"}\NormalTok{, }\StringTok{"pro"} \OtherTok{=} \StringTok{"\#2ECC71"}\NormalTok{),}
+    \AttributeTok{name =} \StringTok{"Speaker Type"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{x =} \StringTok{"Speaker Type"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Percentage (\%)"}\NormalTok{,}
+    \AttributeTok{title =} \StringTok{"Speaker Type Distribution by Speaker Sequence and Round"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{, }\AttributeTok{size =} \DecValTok{7}\NormalTok{),}
+    \AttributeTok{strip.text =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{face =} \StringTok{"bold"}\NormalTok{, }\AttributeTok{size =} \DecValTok{8}\NormalTok{),}
+    \AttributeTok{legend.position =} \StringTok{"bottom"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{prag_net_listener_n1_files/figure-latex/unnamed-chunk-19-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{write.csv}\NormalTok{(plot\_data, }\StringTok{"\textasciitilde{}/Documents/prag\_net/prag\_net\_listener\_n1/data\_listener\_n1/speaker\_type.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}
