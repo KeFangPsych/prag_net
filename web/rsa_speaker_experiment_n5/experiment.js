@@ -923,8 +923,6 @@ function createBlock(blockIdx) {
       experimentState.currentSeqIdx = Math.floor(Math.random() * seqs.length);
       experimentState.currentSequence = seqs[experimentState.currentSeqIdx];
       experimentState.attentionCheckAfterRound = attentionCheckAfterRound;
-      // Counterbalance: randomly choose whether to show descriptions in original or reverse order
-      experimentState.reverseDescriptionOrder = Math.random() < 0.5;
     },
   });
 
