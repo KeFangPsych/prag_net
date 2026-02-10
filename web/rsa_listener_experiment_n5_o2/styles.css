@@ -1,0 +1,775 @@
+/**
+ * styles.css - Study 1: Known Goal Discounting
+ * Based on original listener experiment styles, extended for new UI components.
+ */
+
+/* =========================================================================
+   GENERAL
+   ========================================================================= */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+.jspsych-content {
+  max-width: 900px;
+  font-size: 18px;
+}
+
+/* =========================================================================
+   WELCOME & CONSENT
+   ========================================================================= */
+.welcome-container,
+.consent-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.welcome-container h1 {
+  font-size: 1.8em;
+  color: #333;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+.welcome-container p {
+  margin: 15px 0;
+  line-height: 1.6;
+}
+
+.welcome-container .subtitle {
+  font-size: 1.1em;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.press-space {
+  font-size: 1.1em;
+  color: #888;
+  margin-top: 40px;
+}
+
+.consent-container {
+  text-align: left;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 40px;
+}
+
+.consent-container h2 {
+  text-align: center;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.consent-container p {
+  margin: 12px 0;
+  font-size: 0.95em;
+  line-height: 1.6;
+}
+
+.consent-section {
+  margin: 15px 0;
+}
+
+.consent-section strong {
+  color: #333;
+}
+
+/* =========================================================================
+   INSTRUCTIONS
+   ========================================================================= */
+.instructions-container {
+  padding: 30px;
+  text-align: left;
+}
+
+.instructions-container h2 {
+  color: #2196f3;
+  border-bottom: 2px solid #2196f3;
+  padding-bottom: 10px;
+  margin-bottom: 25px;
+}
+
+.instructions-container h3 {
+  color: #555;
+  margin-top: 25px;
+}
+
+.example-box {
+  background: #f5f5f5;
+  border-left: 4px solid #2196f3;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+
+.example-box.correct {
+  border-left-color: #4caf50;
+  background: #e8f5e9;
+}
+
+.example-box.incorrect {
+  border-left-color: #f44336;
+  background: #ffebee;
+}
+
+.definition-box {
+  background: #fff3e0;
+  border: 1px solid #ff9800;
+  padding: 15px 20px;
+  margin: 15px 0;
+  border-radius: 4px;
+}
+
+.definition-box strong {
+  color: #e65100;
+}
+
+/* Regulations box — distinct from definition-box */
+.regulations-box {
+  background: #f3e5f5;
+  border: 2px solid #9c27b0;
+  padding: 20px 25px;
+  margin: 20px 0;
+  border-radius: 6px;
+}
+
+.regulations-box strong {
+  color: #6a1b9a;
+}
+
+/* =========================================================================
+   STIMULUS DISPLAY
+   ========================================================================= */
+.stimulus-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.stimulus-image {
+  max-width: 450px;
+  width: 100%;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stimulus-caption {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* =========================================================================
+   TRIAL LAYOUT
+   ========================================================================= */
+.trial-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.trial-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.round-indicator {
+  background: #2196f3;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.response-section {
+  background: #f9f9f9;
+  padding: 25px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  min-width: 600px;
+  max-width: 750px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Goal reminder banner */
+.goal-reminder {
+  text-align: left;
+  font-size: 1em;
+  margin: 15px 0;
+  padding: 12px 15px;
+  border-radius: 4px;
+}
+
+/* Utterance display (for Block 2 — what the speaker said) */
+.utterance-display {
+  background: #f0f7ff;
+  border: 1px solid #b3d4fc;
+  border-radius: 8px;
+  padding: 15px 20px;
+  text-align: center;
+}
+
+.utterance-display .label {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.utterance-display .utterance-text {
+  font-size: 1.15em;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* =========================================================================
+   BUTTONS
+   ========================================================================= */
+.submit-btn {
+  display: block;
+  margin: 0 auto;
+  padding: 12px 40px;
+  font-size: 1.1em;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #1976d2;
+}
+
+.submit-btn:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.jspsych-btn {
+  margin: 5px;
+  padding: 12px 30px;
+  font-size: 16px;
+}
+
+/* =========================================================================
+   COMPREHENSION CHECKS
+   ========================================================================= */
+.comprehension-container {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.comprehension-container h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* True/False buttons */
+.tf-btn {
+  padding: 15px 50px;
+  font-size: 1.2em;
+  border: 2px solid;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tf-btn.true-btn {
+  border-color: #4caf50;
+  color: #4caf50;
+  background: white;
+}
+.tf-btn.true-btn:hover {
+  background: #4caf50;
+  color: white;
+}
+
+.tf-btn.false-btn {
+  border-color: #f44336;
+  color: #f44336;
+  background: white;
+}
+.tf-btn.false-btn:hover {
+  background: #f44336;
+  color: white;
+}
+
+/* Checkbox options (images — module 3b) */
+.checkbox-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.checkbox-option {
+  border: 3px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  position: relative;
+}
+
+.checkbox-option:hover {
+  border-color: #2196f3;
+}
+.checkbox-option.selected {
+  border-color: #2196f3;
+  background: #e3f2fd;
+}
+
+.checkbox-option img {
+  max-width: 180px;
+  display: block;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.checkbox-marker {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.checkbox-option.selected .checkbox-marker {
+  background: #2196f3;
+  border-color: #2196f3;
+  color: white;
+}
+.checkbox-option.selected .checkbox-marker::after {
+  content: "✓";
+  font-weight: bold;
+}
+
+/* Checkbox options (text — module 3a, identification) */
+.checkbox-option-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 8px 0;
+}
+
+.checkbox-option-text:hover {
+  border-color: #2196f3;
+  background: #f5f9ff;
+}
+.checkbox-option-text.selected {
+  border-color: #2196f3;
+  background: #e3f2fd;
+}
+
+.checkbox-option-text .checkbox-marker {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.checkbox-option-text.selected .checkbox-marker {
+  background: #2196f3;
+  border-color: #2196f3;
+  color: white;
+}
+.checkbox-option-text.selected .checkbox-marker::after {
+  content: "✓";
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* =========================================================================
+   UTTERANCE OPTIONS (radio-style for production task)
+   ========================================================================= */
+.utterance-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.utterance-option {
+  display: block;
+  padding: 15px 20px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-size: 1.05em;
+}
+
+.utterance-option:hover {
+  border-color: #2196f3;
+  background: #f5f9ff;
+}
+.utterance-option.selected {
+  border-color: #2196f3;
+  background: #e3f2fd;
+}
+
+.utterance-option input[type="radio"] {
+  display: none;
+}
+
+/* =========================================================================
+   BLOCK 1 — IDENTIFICATION TASK
+   ========================================================================= */
+
+/* Utterance checkbox grid for the identification task */
+.id-utterance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 15px 0;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.id-utterance-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95em;
+}
+
+.id-utterance-item:hover {
+  border-color: #2196f3;
+  background: #f5f9ff;
+}
+
+.id-utterance-item.selected {
+  border-color: #2196f3;
+  background: #e3f2fd;
+}
+
+.id-utterance-item .id-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #bbb;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.id-utterance-item.selected .id-checkbox {
+  background: #2196f3;
+  border-color: #2196f3;
+}
+
+.id-utterance-item.selected .id-checkbox::after {
+  content: "✓";
+  color: white;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+/* Identification feedback styles */
+.id-feedback-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  margin: 6px 0;
+  border-radius: 6px;
+  font-size: 0.95em;
+}
+
+.id-feedback-item.correct {
+  background: #e8f5e9;
+  border-left: 4px solid #4caf50;
+}
+
+.id-feedback-item.incorrect {
+  background: #ffebee;
+  border-left: 4px solid #f44336;
+}
+
+.id-feedback-item.missed {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+}
+
+/* =========================================================================
+   BLOCK 2 — OBSERVATION INFERENCE
+   ========================================================================= */
+
+.observation-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.observation-card {
+  border: 3px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  text-align: center;
+}
+
+.observation-card:hover {
+  border-color: #2196f3;
+  transform: scale(1.03);
+}
+
+.observation-card.selected {
+  border-color: #2196f3;
+  background: #e3f2fd;
+  box-shadow: 0 0 0 2px #2196f3;
+}
+
+.observation-card img {
+  max-width: 100px;
+  display: block;
+}
+
+.observation-card .obs-label {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* =========================================================================
+   BLOCK 2 — PREDICTIVE POSTERIOR BUTTONS
+   ========================================================================= */
+
+.prediction-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.prediction-btn {
+  width: 52px;
+  height: 52px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prediction-btn:hover {
+  border-color: #2196f3;
+  background: #f5f9ff;
+}
+
+.prediction-btn.selected {
+  border-color: #2196f3;
+  background: #2196f3;
+  color: white;
+}
+
+/* =========================================================================
+   WAITING / SPINNER
+   ========================================================================= */
+.waiting-container {
+  text-align: center;
+  padding: 60px;
+}
+
+.waiting-container h2 {
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #2196f3;
+  border-radius: 50%;
+  margin: 30px auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================================
+   COMPLETION, FEEDBACK, DEBRIEF
+   ========================================================================= */
+.completion-container {
+  text-align: center;
+  padding: 50px;
+}
+
+.completion-container h2 {
+  color: #4caf50;
+  margin-bottom: 20px;
+}
+
+.feedback-container,
+.debrief-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.debrief-container {
+  text-align: center;
+}
+
+.debrief-container h2 {
+  color: #4caf50;
+}
+
+/* Listener / speaker intro container */
+.intro-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.intro-container h2 {
+  color: #2196f3;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* =========================================================================
+   SLIDER (reused from original)
+   ========================================================================= */
+.slider-container {
+  max-width: 500px;
+}
+
+.slider-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.slider-wrapper input[type="range"] {
+  flex: 1;
+  height: 8px;
+  -webkit-appearance: none;
+  background: #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+
+.slider-wrapper input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #2196f3;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider-wrapper input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #2196f3;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.slider-label {
+  font-size: 0.9em;
+  color: #666;
+  min-width: 60px;
+}
+.slider-label.left {
+  text-align: right;
+}
+.slider-label.right {
+  text-align: left;
+}
+
+.slider-value {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #2196f3;
+  margin-top: 10px;
+}
+
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+@media (max-width: 700px) {
+  .id-utterance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .observation-options {
+    gap: 8px;
+  }
+
+  .observation-card img {
+    max-width: 70px;
+  }
+
+  .prediction-buttons {
+    gap: 6px;
+  }
+
+  .prediction-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1em;
+  }
+}
