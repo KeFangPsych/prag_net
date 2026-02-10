@@ -297,7 +297,7 @@ const consent = {
       </div>
       
       <div class="consent-section">
-        <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>\${CONFIG.base_payment}</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>\${CONFIG.bonus_max}</strong> based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent.</p>
+        <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>${CONFIG.base_payment}</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>${CONFIG.bonus_max}</strong> based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent.</p>
       </div>
       
       <div class="consent-section">
