@@ -945,7 +945,7 @@ const block1IdentificationIntro = {
   stimulus: `
     <div class="intro-container">
       <h2>Practice: Identifying Permitted Descriptions</h2>
-      <p>Before being paired with a speaker, you'll first practice identifying which descriptions are <strong>permitted under the Reporting Regulations</strong> for different trial results.</p>
+      <p>Before being paired with a speaker, you'll first practice identifying which descriptions are <strong>permitted under the Regulations</strong> for different trial results.</p>
       <p>For each trial result, you will see all 8 possible descriptions. Your job is to select <strong>all descriptions that are permitted</strong>.</p>
       <p>You will receive feedback after each round.</p>
     </div>`,
@@ -1078,7 +1078,7 @@ const identificationFeedbackTemplate = {
     experimentState.idRoundScores.push(nCorrect);
 
     // Compute potential bonus for this round
-    const roundBonus = (nCorrect / 8 * 1.00).toFixed(2);
+    const roundBonus = ((nCorrect / 8) * 1.0).toFixed(2);
 
     let header;
     if (allCorrect) {
@@ -1582,7 +1582,7 @@ const block1CompletionIdentification = {
     const scores = experimentState.idRoundScores;
     const selectedRound = Math.floor(Math.random() * scores.length);
     const nCorrect = scores[selectedRound];
-    const bonus = (nCorrect / 8 * 1.00).toFixed(2);
+    const bonus = ((nCorrect / 8) * 1.0).toFixed(2);
 
     // Store for data recording
     experimentState._idBonusRound = selectedRound;
@@ -1605,7 +1605,8 @@ const block1CompletionIdentification = {
     // Record the bonus info
     jsPsych.data.addProperties({
       id_bonus_round: experimentState._idBonusRound + 1,
-      id_bonus_score: experimentState.idRoundScores[experimentState._idBonusRound],
+      id_bonus_score:
+        experimentState.idRoundScores[experimentState._idBonusRound],
       id_bonus_amount: experimentState._idBonusAmount,
     });
     updateProgress();
@@ -1623,7 +1624,7 @@ const transitionIdentification = {
       <h2>Your Role: Listener</h2>
       <p>You will now be paired with a <strong>participant</strong> who is playing the speaker.</p>
       <p>The speaker will receive 6 trial results and send you a description for each result.</p>
-      <p>After receiving each description, you will predict how effective the treatment is for the next round.</p>
+      <p>After receiving each description, you will predict how many effective cases there are for speaker in the next round.</p>
       <p>Your best strategy is to base each prediction on <strong>all the descriptions you have seen at that point</strong>, not just the current one.</p>
     </div>`,
   choices: ["Find a Speaker"],
@@ -1637,7 +1638,7 @@ const transitionProduction = {
       <h2>Your New Role: Listener</h2>
       <p>You will now be paired with a <strong>different participant</strong> who is playing the speaker.</p>
       <p>The speaker will receive 6 trial results and send you a description for each result.</p>
-      <p>After receiving each description, you will predict how effective the treatment is for the next round.</p>
+      <p>After receiving each description, you will predict how many effective cases there are for speaker in the next round.</p>
       <p>Your best strategy is to base each prediction on <strong>all the descriptions you have seen at that point</strong>, not just the current one.</p>
     </div>`,
   choices: ["Find a Speaker"],
@@ -1741,7 +1742,7 @@ const block2TrialTemplate = {
         </div>
 
         <div class="response-section">
-          <h4 style="text-align:center;">If 5 <strong>new</strong> patients received this treatment, how many effective cases would you expect? <span style="font-weight:normal;font-size:0.9em;">(use all the descriptions you have seen at that point)</span></h4>
+          <h4 style="text-align:center;">If 5 <strong>new</strong> patients received this treatment, how many effective cases would you expect? (Hint: use all the descriptions you have seen at that point)<span style="font-weight:normal;font-size:0.9em;"></span></h4>
           <div class="observation-options">${imgHtml}</div>
 
           <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
@@ -1855,7 +1856,7 @@ const block2AttentionCheck = {
         </div>
 
         <div class="response-section">
-          <h4 style="text-align:center;">If 5 <strong>new</strong> patients received this treatment, how many effective cases would you expect? <span style="font-weight:normal;font-size:0.9em;">(use all the descriptions you have seen at that point)</span></h4>
+          <h4 style="text-align:center;">If 5 <strong>new</strong> patients received this treatment, how many effective cases would you expect? (Hint: use all the descriptions you have seen at that point)<span style="font-weight:normal;font-size:0.9em;"></span></h4>
           <div class="observation-options">${imgHtml}</div>
 
           <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
@@ -1997,14 +1998,14 @@ const block2ListenerBonus = {
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
       <p>After each round, you will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment for the next round.</p>
-      <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how close your prediction is to the true outcome:</p>
+      <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how close your prediction is to the true outcome that the speaker gets next:</p>
       <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
         <p style="margin:0;font-size:1.1em;"><strong>$0.20 for each correct prediction out of 5 patients</strong></p>
         <p style="margin:8px 0 0 0;color:#666;">The closer your prediction, the higher your bonus (up to $1.00)</p>
         <p style="margin:8px 0 0 0;color:#666;">For example: if the true outcome is 3 effective and you predict 3 → $1.00<br>
         If you predict 4 (off by 1) → $0.80 &nbsp;|&nbsp; If you predict 1 (off by 2) → $0.60</p>
       </div>
-      <p>For each round, think carefully about the speaker's goal and <strong>all the descriptions you have seen at that point</strong> to make the best prediction.</p>
+      <p>For each round, think carefully about <strong>the speaker's goal</strong> and <strong>all the descriptions you have seen at that point</strong> to make the best prediction.</p>
     </div>`;
   },
   choices: ["Got it — Start Listening"],
