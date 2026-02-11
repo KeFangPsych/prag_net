@@ -452,7 +452,7 @@ const instructionPages = [
       <li><strong>MOST</strong> — permitted when <strong>3, 4, or 5 patients</strong> had that outcome (more than half)</li>
       <li><strong>ALL</strong> — permitted only when <strong>all 5 patients</strong> had that outcome</li>
     </ul>
-    <p>The speaker must choose a description that satisfies the Regulations — they cannot make false reports. However, for any given trial result, the Regulations often <strong>permit multiple descriptions at the same time</strong>. The speaker <strong>chooses</strong> which permitted description to give you.</p>
+    <p>The speaker must choose a description that satisfies the Regulations — they cannot violate the Regulations. However, for any given trial result, the Regulations often <strong>permit multiple descriptions at the same time</strong>. The speaker <strong>chooses</strong> which permitted description to give you.</p>
   </div>`,
 ];
 
@@ -1939,7 +1939,7 @@ const block1IdentificationBonus = {
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
       <p>After you complete all practice rounds, <strong>one round will be randomly selected</strong> to determine your bonus.</p>
-      <p>For that round, you will earn a bonus based on how many of the 8 descriptions you correctly classified as permitted or not permitted:</p>
+      <p>For that round, you will earn a bonus based on how many out of the 8 descriptions you correctly classified as permitted or not permitted:</p>
       <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
         <p style="margin:0;font-size:1.1em;"><strong>Bonus = (number correct / 8) × $1.00</strong></p>
         <p style="margin:8px 0 0 0;color:#666;">For example: 6 correct out of 8 = $0.75 bonus</p>
@@ -1971,7 +1971,7 @@ const block1ProductionBonus = {
         <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome.</p>
         <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus is based on the listener's prediction for that round:</p>
         <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
-          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of effective patients the listener predicted</strong></p>
+          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of EFFECTIVE patients the listener predicted</strong></p>
           <p style="margin:8px 0 0 0;color:#666;">For example: listener predicts 4 effective → you earn $0.80</p>
         </div>
         <p>The more effective the listener thinks the treatment is, the higher your bonus!</p>`;
@@ -1981,7 +1981,7 @@ const block1ProductionBonus = {
         <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome.</p>
         <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus is based on the listener's prediction for that round:</p>
         <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
-          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of ineffective patients the listener predicted</strong></p>
+          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of INEFFECTIVE patients the listener predicted</strong></p>
           <p style="margin:8px 0 0 0;color:#666;">For example: listener predicts 1 effective (= 4 ineffective) → you earn $0.80</p>
         </div>
         <p>The less effective the listener thinks the treatment is, the higher your bonus!</p>`;
