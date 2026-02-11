@@ -38,26 +38,42 @@ const CONFIG = {
   grounding_conditions: ["identification", "production"],
 
   // --------------------------------------------------------------------------
-  // GOAL DESCRIPTIONS (bare functional, no role labels)
+  // GOAL DESCRIPTIONS
+  // Each goal has 4 contexts: speaker, speaker_round, listener, listener_round
+  // Each has a colored phrase (_color suffix) for partial coloring
   // --------------------------------------------------------------------------
   goal_descriptions: {
     informative: {
-      speaker:
-        "give the listener the most INFORMATIVE description of each trial result",
-      listener:
-        "give you the most INFORMATIVE description of each trial result",
+      speaker: "give the listener the most INFORMATIVE description of each trial result",
+      speaker_color: "most INFORMATIVE",
+      speaker_round: "describe this trial result as INFORMATIVE as possible",
+      speaker_round_color: "as INFORMATIVE as possible",
+      listener: "give you the most INFORMATIVE description of each trial result",
+      listener_color: "most INFORMATIVE",
+      listener_round: "describe the trial result as INFORMATIVE as possible",
+      listener_round_color: "as INFORMATIVE as possible",
       short: "be INFORMATIVE",
     },
     pers_plus: {
-      speaker:
-        "make the treatment sound as EFFECTIVE as possible to the listener",
+      speaker: "make the treatment sound as EFFECTIVE as possible to the listener",
+      speaker_color: "as EFFECTIVE as possible",
+      speaker_round: "make the treatment sound as EFFECTIVE as possible",
+      speaker_round_color: "as EFFECTIVE as possible",
       listener: "make the treatment sound as EFFECTIVE as possible",
+      listener_color: "as EFFECTIVE as possible",
+      listener_round: "make the treatment sound as EFFECTIVE as possible to you",
+      listener_round_color: "as EFFECTIVE as possible",
       short: "make the treatment sound EFFECTIVE",
     },
     pers_minus: {
-      speaker:
-        "make the treatment sound as INEFFECTIVE as possible to the listener",
+      speaker: "make the treatment sound as INEFFECTIVE as possible to the listener",
+      speaker_color: "as INEFFECTIVE as possible",
+      speaker_round: "make the treatment sound as INEFFECTIVE as possible",
+      speaker_round_color: "as INEFFECTIVE as possible",
       listener: "make the treatment sound as INEFFECTIVE as possible",
+      listener_color: "as INEFFECTIVE as possible",
+      listener_round: "make the treatment sound as INEFFECTIVE as possible to you",
+      listener_round_color: "as INEFFECTIVE as possible",
       short: "make the treatment sound INEFFECTIVE",
     },
   },
@@ -175,11 +191,9 @@ const CONFIG = {
   // Disguised as round N+1. Uses "Ineffective for Most" → possible obs: 0, 1, 2 effective
   // --------------------------------------------------------------------------
   block2_attention_check: {
-    fake_utterance: { predicate: "Ineffective", quantifier: "Most" },
-    correct_observation: 1,
-    correct_prediction: 3,
+    correct_prediction: 5,
     instruction_text:
-      "Please select the trial result with one effective case and predict three out of five.",
+      "Please select the trial result with five out of five.",
   },
 
   // --------------------------------------------------------------------------
@@ -281,9 +295,27 @@ function getImagePath(numEffective) {
   return `stimuli_emoji_n5m1/effective_${numEffective}_v0.png`;
 }
 
-/** Get goal description for a given goal and perspective */
-function getGoalDescription(goal, perspective) {
-  return CONFIG.goal_descriptions[goal][perspective];
+/** Get goal description plain text for a given goal and context */
+function getGoalDescription(goal, context) {
+  return CONFIG.goal_descriptions[goal][context];
+}
+
+/**
+ * Render goal description as HTML with only the key phrase colored.
+ * @param {string} goal - informative|pers_plus|pers_minus
+ * @param {string} context - speaker|speaker_round|listener|listener_round
+ * @returns {string} HTML string with partial coloring
+ */
+function renderGoalHtml(goal, context) {
+  const color = CONFIG.goal_colors[goal];
+  const desc = CONFIG.goal_descriptions[goal];
+  const text = desc[context];
+  const colorPhrase = desc[context + "_color"];
+  if (!colorPhrase) return `<strong style="color:${color};">${text}</strong>`;
+  return text.replace(
+    colorPhrase,
+    `<strong style="color:${color};">${colorPhrase}</strong>`
+  );
 }
 
 /** Get all observations (0–5) for which a given utterance is literally true */

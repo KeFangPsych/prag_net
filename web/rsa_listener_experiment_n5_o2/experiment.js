@@ -83,6 +83,12 @@ const experimentState = {
   comp3a_options: [],
   comp3b_options: [],
 
+  // Identification round scores (for bonus calculation)
+  idRoundScores: [],
+
+  // Block 2 image order counterbalance (true = 5→0, false = 0→5)
+  imageOrderReversed: false,
+
   // Timer state
   inactivityTimer: null,
   inactivityStartTime: null,
@@ -452,7 +458,7 @@ const instructionPages = [
       <li><strong>MOST</strong> — permitted when <strong>3, 4, or 5 patients</strong> had that outcome (more than half)</li>
       <li><strong>ALL</strong> — permitted only when <strong>all 5 patients</strong> had that outcome</li>
     </ul>
-    <p>The speaker must choose a description that satisfies the Regulations — they cannot violate the Regulations. However, for any given trial result, the Regulations often <strong>permit multiple descriptions at the same time</strong>. The speaker <strong>chooses</strong> which permitted description to give you.</p>
+    <p>The speaker must choose a description that satisfies the Regulations — they cannot make false reports. However, for any given trial result, the Regulations often <strong>permit multiple descriptions at the same time</strong>. The speaker <strong>chooses</strong> which permitted description to give you.</p>
   </div>`,
 ];
 
@@ -896,6 +902,9 @@ const assignConditions = {
     );
     experimentState.block2Sequence = b2Pool[experimentState.block2SequenceIdx];
 
+    // Counterbalance image order in Block 2 (0→5 or 5→0)
+    experimentState.imageOrderReversed = Math.random() < 0.5;
+
     // Compute total progress steps
     const b1Len = experimentState.block1Sequence.length;
     const b2Len = experimentState.block2Sequence.length;
@@ -916,6 +925,7 @@ const assignConditions = {
       block2_sequence_idx: experimentState.block2SequenceIdx,
       block1_sequence: JSON.stringify(experimentState.block1Sequence),
       block2_sequence: JSON.stringify(experimentState.block2Sequence),
+      image_order_reversed: experimentState.imageOrderReversed,
     });
 
     console.log(
@@ -1064,6 +1074,12 @@ const identificationFeedbackTemplate = {
     const nCorrect = results.filter((r) => r.correct).length;
     const allCorrect = nCorrect === 8;
 
+    // Store score for this round
+    experimentState.idRoundScores.push(nCorrect);
+
+    // Compute potential bonus for this round
+    const roundBonus = (nCorrect / 8 * 1.00).toFixed(2);
+
     let header;
     if (allCorrect) {
       header = `<h2 style="color:#4CAF50;">✓ All Correct! (${nCorrect}/8)</h2>`;
@@ -1105,11 +1121,17 @@ const identificationFeedbackTemplate = {
       </div>`;
     }
 
+    // Bonus info for this round
+    const bonusHtml = `<div style="text-align:center;margin-top:15px;padding:10px;background:#f5f5f5;border-radius:6px;">
+      <p style="margin:0;color:#555;">If this round is selected, you will earn <strong>$${roundBonus}</strong></p>
+    </div>`;
+
     return `<div class="comprehension-container">
       ${header}
       ${imgHtml}
       <div style="max-width:650px;margin:0 auto;">${feedbackHtml}</div>
       ${reviewBtn}
+      ${bonusHtml}
     </div>`;
   },
   choices: ["Continue"],
@@ -1152,12 +1174,12 @@ const block1GoalAssignment = {
   stimulus: function () {
     const goal = experimentState.goalCondition;
     const color = CONFIG.goal_colors[goal];
-    const desc = getGoalDescription(goal, "speaker");
+    const descHtml = renderGoalHtml(goal, "speaker");
     return `
       <div class="intro-container">
         <h2>Your Goal</h2>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;padding:20px;margin:20px 0;text-align:center;">
-          <p style="font-size:1.15em;">Your goal is to <strong style="color:${color};">${desc}</strong>.</p>
+          <p style="font-size:1.15em;">Your goal is to ${descHtml}.</p>
         </div>
         <p>Remember: you can only use descriptions that satisfy the Reporting Regulations, but you <strong>choose</strong> which permitted description to give your listener.</p>
       </div>`;
@@ -1267,19 +1289,19 @@ const block1GoalCompFeedback = {
       .values()[0];
     const goal = experimentState.goalCondition;
     const color = CONFIG.goal_colors[goal];
-    const desc = getGoalDescription(goal, "speaker");
+    const descHtml = renderGoalHtml(goal, "speaker");
 
     if (d.goal_comp_correct) {
       return `<div class="comprehension-container">
         <h2 style="color:#4CAF50;">✓ Correct</h2>
         <p>Your goal is to:</p>
-        <p style="font-weight:bold;color:${color};">${desc}</p>
+        <p style="font-size:1.05em;">${descHtml}</p>
       </div>`;
     }
     return `<div class="comprehension-container">
       <h2 style="color:#f44336;">✗ Not quite</h2>
       <p>Your goal is actually to:</p>
-      <p style="font-weight:bold;color:${color};">${desc}</p>
+      <p style="font-size:1.05em;">${descHtml}</p>
       <p style="margin-top:15px;color:#666;">Remember this goal as you describe the trial results.</p>
     </div>`;
   },
@@ -1306,14 +1328,14 @@ const block1ListenerMatched = {
   stimulus: function () {
     const goal = experimentState.goalCondition;
     const color = CONFIG.goal_colors[goal];
-    const desc = getGoalDescription(goal, "speaker");
+    const descHtml = renderGoalHtml(goal, "speaker");
     return `
       <div class="intro-container" style="text-align:center;">
         <h2 style="color:#4CAF50;">✓ Listener Matched</h2>
         <p>You are now connected with a listener.</p>
         <p style="margin-top:15px;">You will describe <strong>${experimentState.block1Sequence.length} trial results</strong> to this listener.</p>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;padding:12px;margin:15px auto;max-width:500px;">
-          <p style="margin:0;">Your goal: <strong style="color:${color};">${desc}</strong></p>
+          <p style="margin:0;">Your goal: ${descHtml}</p>
         </div>
       </div>`;
   },
@@ -1332,7 +1354,7 @@ const productionTrialTemplate = {
 
     const goal = experimentState.goalCondition;
     const color = CONFIG.goal_colors[goal];
-    const desc = getGoalDescription(goal, "speaker");
+    const descHtml = renderGoalHtml(goal, "speaker_round");
 
     // Get permitted (true) utterances and shuffle
     const trueUtts = TruthChecker.getTrueUtterances(numEff);
@@ -1356,7 +1378,7 @@ const productionTrialTemplate = {
           <img src="${imgData.path}" class="stimulus-image" style="max-width:400px;">
         </div>
         <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;padding:8px 15px;min-height:auto;margin:10px auto 15px auto;max-width:700px;">
-          Your goal: <strong style="color:${color};">${desc}</strong>
+          Your goal: ${descHtml}
         </div>
         <div class="response-section">
           <p style="text-align:center;font-weight:500;margin-bottom:15px;">Choose a permitted description to send:</p>
@@ -1433,7 +1455,6 @@ const block1AttentionCheck = {
     const seqLen = experimentState.block1Sequence.length;
     const goal = experimentState.goalCondition;
     const color = CONFIG.goal_colors[goal];
-    const desc = getGoalDescription(goal, "speaker");
 
     // Fixed 3 utterances (matching original speaker experiment)
     const attentionUtterances = [
@@ -1478,7 +1499,7 @@ const block1AttentionCheck = {
           <div style="width:400px;height:92px;background:white;border:2px solid #ddd;border-radius:8px;margin:0 auto;"></div>
         </div>
         <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;padding:8px 15px;min-height:auto;margin:10px auto 15px auto;max-width:700px;">
-          Your goal: <strong style="color:${color};">${desc}</strong>
+          Your goal: ${renderGoalHtml(goal, "speaker_round")}
         </div>
         <div class="response-section" style="min-width:500px;max-width:600px;">
           <p style="text-align:center;font-weight:500;margin-bottom:15px;">Please select exactly this description: "${requiredDisplayText}"</p>
@@ -1557,14 +1578,38 @@ const block1ProductionStrategy = {
 
 const block1CompletionIdentification = {
   type: jsPsychHtmlButtonResponse,
-  stimulus: `
-    <div class="completion-container">
-      <h2>✓ Practice Complete</h2>
-      <p>Great — you've completed the practice rounds on identifying permitted descriptions.</p>
-      <p>Now you're ready to play the actual communication game.</p>
-    </div>`,
+  stimulus: function () {
+    const scores = experimentState.idRoundScores;
+    const selectedRound = Math.floor(Math.random() * scores.length);
+    const nCorrect = scores[selectedRound];
+    const bonus = (nCorrect / 8 * 1.00).toFixed(2);
+
+    // Store for data recording
+    experimentState._idBonusRound = selectedRound;
+    experimentState._idBonusAmount = parseFloat(bonus);
+
+    return `
+      <div class="completion-container">
+        <h2>✓ Practice Complete</h2>
+        <p>Great — you've completed the practice rounds on identifying permitted descriptions.</p>
+        <div style="background:#f0f7ff;border:2px solid #2196F3;border-radius:8px;padding:15px;margin:20px 0;text-align:center;">
+          <p style="margin:0 0 8px 0;">Round <strong>${selectedRound + 1}</strong> was randomly selected for your bonus.</p>
+          <p style="margin:0;font-size:1.2em;">You scored ${nCorrect}/8 correct → Bonus: <strong style="color:#4CAF50;">$${bonus}</strong></p>
+        </div>
+        <p>Now you're ready to play the actual communication game.</p>
+      </div>`;
+  },
   choices: ["Continue"],
-  on_finish: updateProgress,
+  data: { task: "block1_identification_completion" },
+  on_finish: function () {
+    // Record the bonus info
+    jsPsych.data.addProperties({
+      id_bonus_round: experimentState._idBonusRound + 1,
+      id_bonus_score: experimentState.idRoundScores[experimentState._idBonusRound],
+      id_bonus_amount: experimentState._idBonusAmount,
+    });
+    updateProgress();
+  },
 };
 
 // ============================================================================
@@ -1576,8 +1621,10 @@ const transitionIdentification = {
   stimulus: `
     <div class="intro-container">
       <h2>Your Role: Listener</h2>
-      <p>You will now be paired with a <strong>speaker</strong> who will describe trial results to you.</p>
-      <p>After receiving each description, you will estimate what trial result the speaker saw and how effective the treatment is.</p>
+      <p>You will now be paired with a <strong>participant</strong> who is playing the speaker.</p>
+      <p>The speaker will receive 6 trial results and send you a description for each result.</p>
+      <p>After receiving each description, you will predict how effective the treatment is for the next round.</p>
+      <p>Your best strategy is to base each prediction on <strong>all the descriptions you have seen at that point</strong>, not just the current one.</p>
     </div>`,
   choices: ["Find a Speaker"],
   on_finish: updateProgress,
@@ -1588,8 +1635,10 @@ const transitionProduction = {
   stimulus: `
     <div class="intro-container">
       <h2>Your New Role: Listener</h2>
-      <p>You will now be paired with a <strong>different participant</strong> who is playing the speaker role.</p>
-      <p>After receiving each description, you will estimate what trial result the speaker saw and how effective the treatment is.</p>
+      <p>You will now be paired with a <strong>different participant</strong> who is playing the speaker.</p>
+      <p>The speaker will receive 6 trial results and send you a description for each result.</p>
+      <p>After receiving each description, you will predict how effective the treatment is for the next round.</p>
+      <p>Your best strategy is to base each prediction on <strong>all the descriptions you have seen at that point</strong>, not just the current one.</p>
     </div>`,
   choices: ["Find a Speaker"],
   on_finish: updateProgress,
@@ -1618,17 +1667,15 @@ const block2SpeakerMatched = {
   stimulus: function () {
     const goal = experimentState.goalCondition;
     const color = CONFIG.goal_colors[goal];
-    const desc = getGoalDescription(goal, "listener");
-    const b2Len = experimentState.block2Sequence.length;
+    const descHtml = renderGoalHtml(goal, "listener");
     return `
       <div class="intro-container" style="text-align:center;">
         <h2 style="color:#4CAF50;">✓ Speaker Matched</h2>
         <p>You are now connected with a speaker whose goal is:</p>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;padding:12px;margin:15px auto;max-width:500px;">
-          <p style="margin:0;">Speaker's goal: <strong style="color:${color};">${desc}</strong></p>
+          <p style="margin:0;">Your speaker's goal: ${descHtml}</p>
         </div>
         <p>Remember: the speaker can only use descriptions that satisfy the Reporting Regulations, but the speaker <strong>chooses</strong> which permitted description to give you.</p>
-        <p>You will receive <strong>${b2Len} descriptions</strong> from this speaker.</p>
       </div>`;
   },
   choices: ["Continue"],
@@ -1656,7 +1703,7 @@ const block2SpeakerWait = {
     randomInt(CONFIG.inter_trial_wait_min, CONFIG.inter_trial_wait_max),
 };
 
-// --- Block 2 trial template (observation inference + predictive posterior) ---
+// --- Block 2 trial template (predictive posterior only, 6 image options) ---
 const block2TrialTemplate = {
   type: jsPsychHtmlButtonResponse,
   stimulus: function () {
@@ -1665,27 +1712,22 @@ const block2TrialTemplate = {
     const fmtUtt = formatUtterance(utt);
     const goal = experimentState.goalCondition;
     const color = CONFIG.goal_colors[goal];
-    const desc = getGoalDescription(goal, "listener");
+    const descHtml = renderGoalHtml(goal, "listener_round");
     const b2Len = experimentState.block2Sequence.length;
 
-    // Compute possible observations
-    const possibleObs = getPossibleObservations(utt.predicate, utt.quantifier);
+    // Generate 6 image cards (counterbalanced order)
+    const order = experimentState.imageOrderReversed
+      ? [5, 4, 3, 2, 1, 0]
+      : [0, 1, 2, 3, 4, 5];
 
-    // Observation cards
-    let obsHtml = "";
-    possibleObs.forEach((k) => {
+    let imgHtml = "";
+    order.forEach((k) => {
       const imgPath = Stimuli.getImagePath(k, 0);
-      obsHtml += `<div class="observation-card" data-obs="${k}" id="obs-card-${k}">
+      imgHtml += `<div class="observation-card" data-pred="${k}" id="pred-card-${k}">
         <img src="${imgPath}">
         <div class="obs-label">${k} effective</div>
       </div>`;
     });
-
-    // Prediction buttons
-    let predHtml = "";
-    for (let p = 0; p <= 5; p++) {
-      predHtml += `<button class="prediction-btn" data-pred="${p}" id="pred-btn-${p}">${p}</button>`;
-    }
 
     return `
       <div class="trial-container">
@@ -1693,26 +1735,20 @@ const block2TrialTemplate = {
           <span class="round-indicator">Round ${round + 1} of ${b2Len}</span>
         </div>
 
-        <div class="utterance-display" style="margin-bottom:10px;">
+        <div class="utterance-display" style="margin-bottom:20px;">
           <div class="label">The speaker described the trial result as:</div>
           <div class="utterance-text">${fmtUtt.displayText}</div>
         </div>
 
-        <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin-bottom:20px;">
-          Speaker's goal: <strong style="color:${color};">${desc}</strong>
-        </div>
-
         <div class="response-section">
-          <h4 style="text-align:center;">Which trial result do you think the speaker saw for the 5 patients?</h4>
-          <div class="observation-options">${obsHtml}</div>
+          <h4 style="text-align:center;">If 5 <strong>new</strong> patients received this treatment, how many effective cases would you expect? <span style="font-weight:normal;font-size:0.9em;">(use all the descriptions you have seen at that point)</span></h4>
+          <div class="observation-options">${imgHtml}</div>
 
-          <hr style="margin:20px 0;border:none;border-top:1px solid #ddd;">
+          <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
+            Your speaker's goal: ${descHtml}
+          </div>
 
-          <h4 style="text-align:center;">If 5 new patients received this treatment, how many would have an effective outcome?</h4>
-          <div class="prediction-buttons">${predHtml}</div>
-
-          <button id="b2-submit" class="submit-btn" disabled style="margin-top:25px;">Submit Response</button>
-          <p style="margin-top:8px;font-size:0.85em;color:#888;text-align:center;">Select a trial result and a prediction to continue.</p>
+          <button id="b2-submit" class="submit-btn" disabled style="margin-top:15px;">Submit Response</button>
         </div>
       </div>`;
   },
@@ -1722,14 +1758,9 @@ const block2TrialTemplate = {
     startInactivityTimer();
 
     const btn = document.getElementById("b2-submit");
-    let selectedObs = null;
     let selectedPred = null;
 
-    function checkSubmit() {
-      btn.disabled = selectedObs === null || selectedPred === null;
-    }
-
-    // Observation card handlers
+    // Image card handlers
     document.querySelectorAll(".observation-card").forEach((card) => {
       card.addEventListener("click", () => {
         resetInactivityTimer();
@@ -1737,21 +1768,8 @@ const block2TrialTemplate = {
           .querySelectorAll(".observation-card")
           .forEach((c) => c.classList.remove("selected"));
         card.classList.add("selected");
-        selectedObs = parseInt(card.dataset.obs);
-        checkSubmit();
-      });
-    });
-
-    // Prediction button handlers
-    document.querySelectorAll(".prediction-btn").forEach((pbtn) => {
-      pbtn.addEventListener("click", () => {
-        resetInactivityTimer();
-        document
-          .querySelectorAll(".prediction-btn")
-          .forEach((b) => b.classList.remove("selected"));
-        pbtn.classList.add("selected");
-        selectedPred = parseInt(pbtn.dataset.pred);
-        checkSubmit();
+        selectedPred = parseInt(card.dataset.pred);
+        btn.disabled = false;
       });
     });
 
@@ -1774,8 +1792,8 @@ const block2TrialTemplate = {
         utterance_quantifier: utt.quantifier,
         utterance_text: formatUtterance(utt).text,
         possible_observations: JSON.stringify(possibleObs),
-        selected_observation: selectedObs,
         predictive_posterior: selectedPred,
+        image_order_reversed: experimentState.imageOrderReversed,
       });
     });
   },
@@ -1809,27 +1827,21 @@ const block2AttentionCheck = {
     const ac = CONFIG.block2_attention_check;
     const goal = experimentState.goalCondition;
     const color = CONFIG.goal_colors[goal];
-    const desc = getGoalDescription(goal, "listener");
+    const descHtml = renderGoalHtml(goal, "listener_round");
 
-    // Possible observations for "Ineffective for Most" → 0, 1, 2 effective
-    const possibleObs = getPossibleObservations(
-      ac.fake_utterance.predicate,
-      ac.fake_utterance.quantifier,
-    );
+    // Same 6 images as regular trials, counterbalanced order
+    const order = experimentState.imageOrderReversed
+      ? [5, 4, 3, 2, 1, 0]
+      : [0, 1, 2, 3, 4, 5];
 
-    let obsHtml = "";
-    possibleObs.forEach((k) => {
+    let imgHtml = "";
+    order.forEach((k) => {
       const imgPath = Stimuli.getImagePath(k, 0);
-      obsHtml += `<div class="observation-card" data-obs="${k}" id="ac-obs-${k}">
+      imgHtml += `<div class="observation-card" data-pred="${k}" id="ac-pred-${k}">
         <img src="${imgPath}">
         <div class="obs-label">${k} effective</div>
       </div>`;
     });
-
-    let predHtml = "";
-    for (let p = 0; p <= 5; p++) {
-      predHtml += `<button class="prediction-btn" data-pred="${p}" id="ac-pred-${p}">${p}</button>`;
-    }
 
     return `
       <div class="trial-container">
@@ -1837,23 +1849,20 @@ const block2AttentionCheck = {
           <span class="round-indicator">Round ${b2Len + 1} of ${b2Len + 1}</span>
         </div>
 
-        <div class="utterance-display" style="margin-bottom:10px;">
+        <div class="utterance-display" style="margin-bottom:20px;">
           <div class="label">The speaker described the trial result as:</div>
           <div class="utterance-text">${ac.instruction_text}</div>
         </div>
 
-        <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin-bottom:20px;">
-          Speaker's goal: <strong style="color:${color};">${desc}</strong>
-        </div>
-
         <div class="response-section">
-          <h4 style="text-align:center;">Which trial result do you think the speaker saw for the 5 patients?</h4>
-          <div class="observation-options">${obsHtml}</div>
-          <hr style="margin:20px 0;border:none;border-top:1px solid #ddd;">
-          <h4 style="text-align:center;">If 5 new patients received this treatment, how many would have an effective outcome?</h4>
-          <div class="prediction-buttons">${predHtml}</div>
-          <button id="ac-submit" class="submit-btn" disabled style="margin-top:25px;">Submit Response</button>
-          <p style="margin-top:8px;font-size:0.85em;color:#888;text-align:center;">Select a trial result and a prediction to continue.</p>
+          <h4 style="text-align:center;">If 5 <strong>new</strong> patients received this treatment, how many effective cases would you expect? <span style="font-weight:normal;font-size:0.9em;">(use all the descriptions you have seen at that point)</span></h4>
+          <div class="observation-options">${imgHtml}</div>
+
+          <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
+            Your speaker's goal: ${descHtml}
+          </div>
+
+          <button id="ac-submit" class="submit-btn" disabled style="margin-top:15px;">Submit Response</button>
         </div>
       </div>`;
   },
@@ -1863,12 +1872,7 @@ const block2AttentionCheck = {
     startInactivityTimer();
 
     const btn = document.getElementById("ac-submit");
-    let selectedObs = null;
     let selectedPred = null;
-
-    function checkSubmit() {
-      btn.disabled = selectedObs === null || selectedPred === null;
-    }
 
     document.querySelectorAll(".observation-card").forEach((card) => {
       card.addEventListener("click", () => {
@@ -1877,36 +1881,21 @@ const block2AttentionCheck = {
           .querySelectorAll(".observation-card")
           .forEach((c) => c.classList.remove("selected"));
         card.classList.add("selected");
-        selectedObs = parseInt(card.dataset.obs);
-        checkSubmit();
-      });
-    });
-
-    document.querySelectorAll(".prediction-btn").forEach((pbtn) => {
-      pbtn.addEventListener("click", () => {
-        resetInactivityTimer();
-        document
-          .querySelectorAll(".prediction-btn")
-          .forEach((b) => b.classList.remove("selected"));
-        pbtn.classList.add("selected");
-        selectedPred = parseInt(pbtn.dataset.pred);
-        checkSubmit();
+        selectedPred = parseInt(card.dataset.pred);
+        btn.disabled = false;
       });
     });
 
     btn.addEventListener("click", () => {
       clearInactivityTimer();
       const ac = CONFIG.block2_attention_check;
-      const obsPassed = selectedObs === ac.correct_observation;
       const predPassed = selectedPred === ac.correct_prediction;
 
       jsPsych.finishTrial({
         task: "block2_attention_check",
-        observation_selected: selectedObs,
         prediction_selected: selectedPred,
-        observation_correct: obsPassed,
         prediction_correct: predPassed,
-        attention_check_passed: obsPassed && predPassed,
+        attention_check_passed: predPassed,
       });
     });
   },
@@ -1939,7 +1928,7 @@ const block1IdentificationBonus = {
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
       <p>After you complete all practice rounds, <strong>one round will be randomly selected</strong> to determine your bonus.</p>
-      <p>For that round, you will earn a bonus based on how many out of the 8 descriptions you correctly classified as permitted or not permitted:</p>
+      <p>For that round, you will earn a bonus based on how many of the 8 descriptions you correctly classified as permitted or not permitted:</p>
       <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
         <p style="margin:0;font-size:1.1em;"><strong>Bonus = (number correct / 8) × $1.00</strong></p>
         <p style="margin:8px 0 0 0;color:#666;">For example: 6 correct out of 8 = $0.75 bonus</p>
@@ -1959,19 +1948,21 @@ const block1ProductionBonus = {
     let bonusExplanation;
     if (goal === "informative") {
       bonusExplanation = `
-        <p>After each round, the listener will try to guess <strong>which trial result</strong> you saw.</p>
-        <p>After all rounds, <strong>one round will be randomly selected</strong>. If the listener correctly identified the trial result for that round, you earn:</p>
-        <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
-          <p style="margin:0;font-size:1.1em;"><strong>$1.00 if the listener guessed correctly</strong></p>
-          <p style="margin:8px 0 0 0;color:#666;">$0.00 if the listener guessed incorrectly</p>
+        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome.</p>
+        <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus is based on how close the listener's prediction is to the actual trial result you saw:</p>
+        <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
+          <p style="margin:0;font-size:1.1em;"><strong>$0.20 for each correct prediction out of 5 patients</strong></p>
+          <p style="margin:8px 0 0 0;color:#666;">The closer the listener's prediction to the truth, the higher your bonus (up to $1.00)</p>
+          <p style="margin:8px 0 0 0;color:#666;">For example: you saw 3 effective and listener predicts 3 → $1.00<br>
+          Listener predicts 4 (off by 1) → $0.80 &nbsp;|&nbsp; Listener predicts 1 (off by 2) → $0.60</p>
         </div>
-        <p>The more informative your descriptions, the more likely the listener can identify the correct result!</p>`;
+        <p>The more informative your descriptions, the more accurate the listener's predictions will be!</p>`;
     } else if (goal === "pers_plus") {
       bonusExplanation = `
         <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome.</p>
         <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus is based on the listener's prediction for that round:</p>
-        <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
-          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of EFFECTIVE patients the listener predicted</strong></p>
+        <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
+          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of effective patients the listener predicted</strong></p>
           <p style="margin:8px 0 0 0;color:#666;">For example: listener predicts 4 effective → you earn $0.80</p>
         </div>
         <p>The more effective the listener thinks the treatment is, the higher your bonus!</p>`;
@@ -1980,8 +1971,8 @@ const block1ProductionBonus = {
       bonusExplanation = `
         <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome.</p>
         <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus is based on the listener's prediction for that round:</p>
-        <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
-          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of INEFFECTIVE patients the listener predicted</strong></p>
+        <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
+          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of ineffective patients the listener predicted</strong></p>
           <p style="margin:8px 0 0 0;color:#666;">For example: listener predicts 1 effective (= 4 ineffective) → you earn $0.80</p>
         </div>
         <p>The less effective the listener thinks the treatment is, the higher your bonus!</p>`;
@@ -1999,19 +1990,23 @@ const block1ProductionBonus = {
 
 const block2ListenerBonus = {
   type: jsPsychHtmlButtonResponse,
-  stimulus: `
+  stimulus: function () {
+    const goal = experimentState.goalCondition;
+    const color = CONFIG.goal_colors[goal];
+    return `
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
-      <p>After each round, you will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+      <p>After each round, you will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment for the next round.</p>
       <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how close your prediction is to the true outcome:</p>
-      <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
-        <p style="margin:0;font-size:1.1em;"><strong>$0.20 × (5 − prediction error)</strong></p>
+      <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
+        <p style="margin:0;font-size:1.1em;"><strong>$0.20 for each correct prediction out of 5 patients</strong></p>
         <p style="margin:8px 0 0 0;color:#666;">The closer your prediction, the higher your bonus (up to $1.00)</p>
-        <p style="margin:8px 0 0 0;color:#666;">For example: if the true outcome is 3 and you predict 3 → $1.00<br>
+        <p style="margin:8px 0 0 0;color:#666;">For example: if the true outcome is 3 effective and you predict 3 → $1.00<br>
         If you predict 4 (off by 1) → $0.80 &nbsp;|&nbsp; If you predict 1 (off by 2) → $0.60</p>
       </div>
-      <p>Think carefully about the speaker's goal and description to make the best prediction!</p>
-    </div>`,
+      <p>For each round, think carefully about the speaker's goal and <strong>all the descriptions you have seen at that point</strong> to make the best prediction.</p>
+    </div>`;
+  },
   choices: ["Got it — Start Listening"],
   on_finish: updateProgress,
 };
@@ -2026,7 +2021,7 @@ const listenerStrategyQuestion = {
   questions: [
     {
       prompt:
-        "How did you use the speaker's goal and descriptions to estimate the treatment's effectiveness and identify which trial result the speaker saw?",
+        "How did you use the speaker's goal and descriptions to predict how effective the treatment was?",
       name: "listener_strategy",
       rows: 5,
       required: false,
@@ -2202,12 +2197,12 @@ timeline.push({
     experimentState.groundingCondition === "production",
 });
 
-// Production attention check + completion + strategy
+// Production attention check + strategy + completion
 timeline.push({
   timeline: [
     block1AttentionCheck,
-    block1CompletionProduction,
     block1ProductionStrategy,
+    block1CompletionProduction,
   ],
   conditional_function: () =>
     experimentState.groundingCondition === "production",
