@@ -458,7 +458,7 @@ const instructionPages = [
       <li><strong>MOST</strong> — permitted when <strong>3, 4, or 5 patients</strong> had that outcome (more than half)</li>
       <li><strong>ALL</strong> — permitted only when <strong>all 5 patients</strong> had that outcome</li>
     </ul>
-    <p>The speaker must choose a description that satisfies the Regulations — they cannot make false reports. However, for any given trial result, the Regulations often <strong>permit multiple descriptions at the same time</strong>. The speaker <strong>chooses</strong> which permitted description to give you.</p>
+    <p>The speaker must choose a description that satisfies the Regulations — they cannot violate the Regulations. However, for any given trial result, the Regulations often <strong>permit multiple descriptions at the same time</strong>. The speaker <strong>chooses</strong> which permitted description to give you.</p>
   </div>`,
 ];
 
