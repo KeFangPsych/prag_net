@@ -7,6 +7,8 @@
 // ============================================================================
 // DATAPIPE CONFIGURATION
 // ============================================================================
+// IMPORTANT: Set number_of_conditions = 6 in the DataPipe admin panel
+// Conditions 0–5 map to the 6 cells of the 3×2 design (see CONDITION_MAP)
 const DATAPIPE_CONFIG = {
   experiment_id: "REPLACE_WITH_YOUR_ID",
   enabled: true,
@@ -16,8 +18,8 @@ const DATAPIPE_CONFIG = {
 // PAYMENT CONFIGURATION
 // ============================================================================
 const PAYMENT = {
-  base: "$1.00",
-  bonus_max: "$1.00",
+  base: "$1.50",
+  bonus_max: "$2.00",
   bonus_per_patient: "$0.20",
   bonus_per_utterance: "$0.125",
 };
@@ -44,35 +46,41 @@ const CONFIG = {
   // --------------------------------------------------------------------------
   goal_descriptions: {
     informative: {
-      speaker: "give the listener the most INFORMATIVE description of each trial result",
+      speaker:
+        "give the listener the most INFORMATIVE description of each trial result",
       speaker_color: "most INFORMATIVE",
       speaker_round: "describe this trial result as INFORMATIVE as possible",
       speaker_round_color: "as INFORMATIVE as possible",
-      listener: "give you the most INFORMATIVE description of each trial result",
+      listener:
+        "give you the most INFORMATIVE description of each trial result",
       listener_color: "most INFORMATIVE",
       listener_round: "describe the trial result as INFORMATIVE as possible",
       listener_round_color: "as INFORMATIVE as possible",
       short: "be INFORMATIVE",
     },
     pers_plus: {
-      speaker: "make the treatment sound as EFFECTIVE as possible to the listener",
+      speaker:
+        "make the treatment sound as EFFECTIVE as possible to the listener",
       speaker_color: "as EFFECTIVE as possible",
       speaker_round: "make the treatment sound as EFFECTIVE as possible",
       speaker_round_color: "as EFFECTIVE as possible",
       listener: "make the treatment sound as EFFECTIVE as possible",
       listener_color: "as EFFECTIVE as possible",
-      listener_round: "make the treatment sound as EFFECTIVE as possible to you",
+      listener_round:
+        "make the treatment sound as EFFECTIVE as possible to you",
       listener_round_color: "as EFFECTIVE as possible",
       short: "make the treatment sound EFFECTIVE",
     },
     pers_minus: {
-      speaker: "make the treatment sound as INEFFECTIVE as possible to the listener",
+      speaker:
+        "make the treatment sound as INEFFECTIVE as possible to the listener",
       speaker_color: "as INEFFECTIVE as possible",
       speaker_round: "make the treatment sound as INEFFECTIVE as possible",
       speaker_round_color: "as INEFFECTIVE as possible",
       listener: "make the treatment sound as INEFFECTIVE as possible",
       listener_color: "as INEFFECTIVE as possible",
-      listener_round: "make the treatment sound as INEFFECTIVE as possible to you",
+      listener_round:
+        "make the treatment sound as INEFFECTIVE as possible to you",
       listener_round_color: "as INEFFECTIVE as possible",
       short: "make the treatment sound INEFFECTIVE",
     },
@@ -90,13 +98,13 @@ const CONFIG = {
   // --------------------------------------------------------------------------
   pairing_wait_min: 5000,
   pairing_wait_max: 10000,
-  inter_trial_wait_min: 2500,
-  inter_trial_wait_max: 5000,
+  inter_trial_wait_min: 3000,
+  inter_trial_wait_max: 5500,
 
   // Inactivity timeout (ms) — 3-tier: warning → urgent → terminate
-  inactivity_warning_1: 45000,
-  inactivity_warning_2: 60000,
-  inactivity_timeout: 90000,
+  inactivity_warning_1: 60000,
+  inactivity_warning_2: 90000,
+  inactivity_timeout: 120000,
 
   // --------------------------------------------------------------------------
   // BLOCK 1 SEQUENCES
@@ -132,8 +140,8 @@ const CONFIG = {
   block2_sequences: {
     informative: [
       [
+        { predicate: "Effective", quantifier: "All" },
         { predicate: "Effective", quantifier: "Most" },
-        { predicate: "Ineffective", quantifier: "No" },
         { predicate: "Effective", quantifier: "All" },
         { predicate: "Ineffective", quantifier: "No" },
         { predicate: "Effective", quantifier: "Most" },
@@ -144,8 +152,8 @@ const CONFIG = {
         { predicate: "Ineffective", quantifier: "All" },
         { predicate: "Effective", quantifier: "No" },
         { predicate: "Ineffective", quantifier: "Most" },
-        { predicate: "Ineffective", quantifier: "All" },
         { predicate: "Effective", quantifier: "No" },
+        { predicate: "Ineffective", quantifier: "All" },
       ],
     ],
     pers_plus: [
@@ -192,8 +200,7 @@ const CONFIG = {
   // --------------------------------------------------------------------------
   block2_attention_check: {
     correct_prediction: 5,
-    instruction_text:
-      "Please select the trial result with five out of five.",
+    instruction_text: "Please select the trial result with five out of five.",
   },
 
   // --------------------------------------------------------------------------
@@ -314,7 +321,7 @@ function renderGoalHtml(goal, context) {
   if (!colorPhrase) return `<strong style="color:${color};">${text}</strong>`;
   return text.replace(
     colorPhrase,
-    `<strong style="color:${color};">${colorPhrase}</strong>`
+    `<strong style="color:${color};">${colorPhrase}</strong>`,
   );
 }
 

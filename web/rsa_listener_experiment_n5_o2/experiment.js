@@ -8,7 +8,7 @@
  * Block 1 — Identification: identify all permitted utterances for each observation.
  *           Production: produce utterances under assigned goal (speaker task).
  * Block 2 — Receive pre-scripted utterances from a speaker with the known goal.
- *           Two measures per round: observation inference + predictive posterior.
+ *           Predictive posterior measured each round.
  */
 
 // ============================================================================
@@ -30,7 +30,6 @@ function generateSubjectId() {
 const subjectId = generateSubjectId();
 
 const PROLIFIC_COMPLETION_CODE = "CXXXXXXX"; // Replace with actual code
-const PROLIFIC_SCREENING_CODE = "CYYYYYYYY"; // Replace with actual code
 
 // ============================================================================
 // 2. JSPSYCH INITIALIZATION
@@ -57,6 +56,44 @@ jsPsych.data.addProperties({
 });
 
 // ============================================================================
+// 2b. COPY/PASTE PREVENTION
+// ============================================================================
+
+(function () {
+  // Prevent copying, cutting, and context menu on the document
+  // but allow normal interaction with text inputs and textareas
+  document.addEventListener("copy", function (e) {
+    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener("cut", function (e) {
+    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener("contextmenu", function (e) {
+    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+      e.preventDefault();
+    }
+  });
+  // Disable text selection via CSS
+  document.documentElement.style.userSelect = "none";
+  document.documentElement.style.webkitUserSelect = "none";
+  document.documentElement.style.msUserSelect = "none";
+
+  // Re-enable selection inside text inputs and textareas
+  const style = document.createElement("style");
+  style.textContent = `
+    input, textarea {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+// ============================================================================
 // 3. EXPERIMENT STATE
 // ============================================================================
 
@@ -64,6 +101,7 @@ const experimentState = {
   // Condition assignments
   goalCondition: null, // "informative" | "pers_plus" | "pers_minus"
   groundingCondition: null, // "identification" | "production"
+  _datapipeCondition: null, // 0–5, assigned by DataPipe
 
   // Sequences (selected at assignment time)
   block1Sequence: [],
@@ -77,7 +115,6 @@ const experimentState = {
 
   // Current-round scratch (written by trial on_load, read by feedback)
   currentStimulus: null, // { path, variant, positions }
-  identificationSelections: null, // Map of utterance key → bool
 
   // Comprehension check scratch
   comp3a_options: [],
@@ -219,7 +256,7 @@ function getTerminationMessage(reason) {
   const redirect = isProlific
     ? `<div style="margin-top:25px;padding:20px;background:#e3f2fd;border:2px solid #2196F3;border-radius:8px;text-align:center;">
         <p style="margin:0 0 15px;color:#1565c0;"><strong>Click below to return to Prolific:</strong></p>
-        <button onclick="window.location.href='https://app.prolific.com/submissions/complete?cc=${PROLIFIC_SCREENING_CODE}'"
+        <button onclick="window.location.href='https://app.prolific.com/submissions/complete?cc=${PROLIFIC_COMPLETION_CODE}'"
           style="padding:12px 30px;font-size:16px;background:#2196F3;color:white;border:none;border-radius:6px;cursor:pointer;">
           Return to Prolific</button></div>`
     : "";
@@ -277,7 +314,7 @@ const welcome = {
     <div class="welcome-container">
       <h1>Welcome</h1>
       <p class="subtitle">This is a study about how we communicate and interpret information.</p>
-      <p>This study takes approximately <strong>12–16 minutes</strong> to complete.</p>
+      <p>This study takes approximately <strong>8–10 minutes</strong> to complete.</p>
       <p class="press-space">Press <strong>SPACE</strong> to continue</p>
     </div>`,
   choices: [" "],
@@ -316,7 +353,7 @@ const consent = {
         <p><em>Independent Contact:</em> If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at 650-723-2480 or toll free at 1-866-680-2906, or email at irbnonmed@stanford.edu. You can also write to the Stanford IRB, Stanford University, 1705 El Camino Real, Palo Alto, CA 94306.</p>
       </div>
       
-      <p style="margin-top: 20px; font-style: italic;">Please save or print a copy of this page for your records.</p>
+      <p style="margin-top: 20px; font-style: italic;">Please save or print a copy of this page for your records (Ctrl or Command + P).</p>
       
       <p style="margin-top: 20px; font-weight: bold; text-align: center;">
         If you agree to participate in this research, please click "I Consent".
@@ -389,6 +426,8 @@ const instructionPages = [
           <div style="display: flex; gap: 8px; flex: 1; align-items: center; justify-content: center;">
             <span style="font-size: 0.9em; color: #4CAF50; font-weight: 500;">More likely</span>
             <span style="font-size: 1.2em; color: #888; margin: 0 10px;">→</span>
+            <span style="font-size: 0.9em; color: #f5a623; font-weight: 500;">Moderately likely</span>
+            <span style="font-size: 1.2em; color: #888; margin: 0 10px;">→</span>
             <span style="font-size: 0.9em; color: #f57c00; font-weight: 500;">Less likely</span>
           </div>
         </div>
@@ -415,10 +454,10 @@ const instructionPages = [
               <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 130px;">
             </div>
             <div style="text-align: center; padding: 4px 8px; background: #fff3e0; border-radius: 4px;">
-              <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 130px;">
+              <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 130px;">
             </div>
             <div style="text-align: center; padding: 4px 8px; background: #ffebee; border-radius: 4px;">
-              <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 130px;">
+              <img src="stimuli_emoji_n5m1/effective_0_v0.png" alt="0 effective" style="max-width: 130px;">
             </div>
           </div>
         </div>
@@ -579,11 +618,13 @@ const comp2 = {
   choices: [],
   data: { task: "comp2" },
   on_load: function () {
+    const trialStartTime = performance.now();
     document.getElementById("btn-true").addEventListener("click", () => {
       jsPsych.finishTrial({
         task: "comp2",
         response: true,
         comp_correct: true,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
     document.getElementById("btn-false").addEventListener("click", () => {
@@ -591,6 +632,7 @@ const comp2 = {
         task: "comp2",
         response: false,
         comp_correct: false,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
@@ -682,6 +724,7 @@ const comp3a = {
   choices: [],
   data: { task: "comp3a" },
   on_load: function () {
+    const trialStartTime = performance.now();
     const sel = new Set();
     const opts = document.querySelectorAll(".checkbox-option-text");
     const btn = document.getElementById("c3a-submit");
@@ -710,6 +753,7 @@ const comp3a = {
         task: "comp3a",
         selected: Array.from(sel).map((i) => shuffled[i].id),
         comp_correct: isCorrect,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
@@ -799,6 +843,7 @@ const comp3b = {
   choices: [],
   data: { task: "comp3b" },
   on_load: function () {
+    const trialStartTime = performance.now();
     const sel = new Set();
     const opts = document.querySelectorAll(".checkbox-option");
     opts.forEach((el, i) => {
@@ -825,6 +870,7 @@ const comp3b = {
         task: "comp3b",
         selected: Array.from(sel).map((i) => shuffled[i].numEffective),
         comp_correct: isCorrect,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
@@ -863,19 +909,98 @@ const comp3b_feedback = {
 };
 
 // ============================================================================
-// 10. CONDITION ASSIGNMENT
+// 10. CONDITION ASSIGNMENT (DataPipe balanced)
 // ============================================================================
+
+// Comprehension summary: compute total correct across all 5 checks
+const comprehensionSummary = {
+  type: jsPsychCallFunction,
+  func: function () {
+    const allData = jsPsych.data.get();
+    const comp1a = allData.filter({ task: "comp1a" }).last(1).values()[0];
+    const comp1b = allData.filter({ task: "comp1b" }).last(1).values()[0];
+    const comp2 = allData.filter({ task: "comp2" }).last(1).values()[0];
+    const comp3a = allData.filter({ task: "comp3a" }).last(1).values()[0];
+    const comp3b = allData.filter({ task: "comp3b" }).last(1).values()[0];
+
+    const results = [
+      comp1a?.comp_correct,
+      comp1b?.comp_correct,
+      comp2?.comp_correct,
+      comp3a?.comp_correct,
+      comp3b?.comp_correct,
+    ];
+    const totalCorrect = results.filter((r) => r === true).length;
+
+    jsPsych.data.addProperties({
+      comp_total_correct: totalCorrect,
+      comp_total_items: 5,
+      comp_passed: totalCorrect >= 4, // fail threshold: more than 1 wrong
+      comp_results: JSON.stringify(results),
+    });
+  },
+};
+
+// Condition mapping: 6 cells (0–5)
+// 0: informative × identification   1: informative × production
+// 2: pers_plus × identification      3: pers_plus × production
+// 4: pers_minus × identification     5: pers_minus × production
+const CONDITION_MAP = [
+  { goal: "informative", grounding: "identification" },
+  { goal: "informative", grounding: "production" },
+  { goal: "pers_plus", grounding: "identification" },
+  { goal: "pers_plus", grounding: "production" },
+  { goal: "pers_minus", grounding: "identification" },
+  { goal: "pers_minus", grounding: "production" },
+];
+
+// DataPipe condition assignment (fetched early for balanced allocation)
+const fetchCondition = {
+  type: jsPsychPipe,
+  action: "condition",
+  experiment_id: DATAPIPE_CONFIG.experiment_id,
+  data: { task: "condition_assignment" },
+  on_finish: function (data) {
+    // DataPipe returns condition as integer 0–5
+    const condNum = data.condition;
+    if (
+      condNum !== undefined &&
+      condNum !== null &&
+      condNum >= 0 &&
+      condNum < 6
+    ) {
+      experimentState._datapipeCondition = condNum;
+    } else {
+      // Fallback to random if DataPipe fails
+      experimentState._datapipeCondition = Math.floor(Math.random() * 6);
+      console.warn(
+        "DataPipe condition assignment failed, using random fallback:",
+        condNum,
+      );
+    }
+  },
+};
+
+// Fallback for when DataPipe is disabled (e.g., local testing)
+const fetchConditionFallback = {
+  type: jsPsychCallFunction,
+  func: function () {
+    experimentState._datapipeCondition = Math.floor(Math.random() * 6);
+    console.log(
+      "DataPipe disabled — random condition:",
+      experimentState._datapipeCondition,
+    );
+  },
+};
 
 const assignConditions = {
   type: jsPsychCallFunction,
   func: function () {
-    // Random assignment
-    const goals = CONFIG.goal_conditions;
-    const grounds = CONFIG.grounding_conditions;
-    experimentState.goalCondition =
-      goals[Math.floor(Math.random() * goals.length)];
-    experimentState.groundingCondition =
-      grounds[Math.floor(Math.random() * grounds.length)];
+    // Use DataPipe-assigned condition number
+    const condNum = experimentState._datapipeCondition;
+    const cond = CONDITION_MAP[condNum];
+    experimentState.goalCondition = cond.goal;
+    experimentState.groundingCondition = cond.grounding;
 
     // Select Block 1 sequence
     let b1Pool;
@@ -919,6 +1044,7 @@ const assignConditions = {
 
     // Add properties to all data
     jsPsych.data.addProperties({
+      condition_number: condNum,
       goal_condition: experimentState.goalCondition,
       grounding_condition: experimentState.groundingCondition,
       block1_sequence_idx: experimentState.block1SequenceIdx,
@@ -929,8 +1055,10 @@ const assignConditions = {
     });
 
     console.log(
-      "Assigned:",
+      "Assigned condition",
+      condNum + ":",
       experimentState.goalCondition,
+      "×",
       experimentState.groundingCondition,
     );
   },
@@ -998,12 +1126,15 @@ const identificationTrialTemplate = {
   choices: [],
   data: { task: "block1_identification" },
   on_load: function () {
+    const trialStartTime = performance.now();
+    startInactivityTimer();
     const sel = new Set();
     const items = document.querySelectorAll(".id-utterance-item");
     const btn = document.getElementById("id-submit");
 
     items.forEach((el, i) => {
       el.addEventListener("click", () => {
+        resetInactivityTimer();
         if (sel.has(i)) {
           sel.delete(i);
           el.classList.remove("selected");
@@ -1016,6 +1147,7 @@ const identificationTrialTemplate = {
     });
 
     btn.addEventListener("click", () => {
+      clearInactivityTimer();
       const round = experimentState.block1Round;
       const numEff = experimentState.block1Sequence[round];
       const shuffled = experimentState._idShuffledUtterances;
@@ -1056,11 +1188,14 @@ const identificationTrialTemplate = {
         n_correct: nCorrect,
         n_total: 8,
         all_correct: nCorrect === 8,
-        rt: performance.now(),
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
-  on_finish: updateProgress,
+  on_finish: function () {
+    clearInactivityTimer();
+    updateProgress();
+  },
 };
 
 // --- Identification feedback template ---
@@ -1252,6 +1387,7 @@ const block1GoalCompCheck = {
   choices: [],
   data: { task: "goal_comprehension" },
   on_load: function () {
+    const trialStartTime = performance.now();
     const options = document.querySelectorAll(".utterance-option");
     const btn = document.getElementById("goal-comp-btn");
     let selectedIdx = -1;
@@ -1273,6 +1409,7 @@ const block1GoalCompCheck = {
         goal_condition: experimentState.goalCondition,
         selected_option: experimentState._goalCompOptions[selectedIdx].text,
         goal_comp_correct: isCorrect,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
@@ -1390,6 +1527,7 @@ const productionTrialTemplate = {
   choices: [],
   data: { task: "block1_production" },
   on_load: function () {
+    const trialStartTime = performance.now();
     startInactivityTimer();
     const opts = document.querySelectorAll(".utterance-option");
     const btn = document.getElementById("prod-submit");
@@ -1426,6 +1564,7 @@ const productionTrialTemplate = {
         utterance: chosen.text,
         display_order: JSON.stringify(shuffled.map((u) => u.text)),
         selected_position: selected,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
@@ -1513,6 +1652,7 @@ const block1AttentionCheck = {
   choices: [],
   data: { task: "block1_attention_check" },
   on_load: function () {
+    const trialStartTime = performance.now();
     startInactivityTimer();
     const requiredText = "The treatment was effective for some patients.";
     const options = document.querySelectorAll(".utterance-option");
@@ -1538,6 +1678,7 @@ const block1AttentionCheck = {
         required_description: requiredText,
         selected_description: selectedText,
         attention_check_passed: passed,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
@@ -1624,7 +1765,7 @@ const transitionIdentification = {
       <h2>Your Role: Listener</h2>
       <p>You will now be paired with a <strong>participant</strong> who is playing the speaker.</p>
       <p>The speaker will receive 6 trial results and send you a description for each result.</p>
-      <p>After receiving each description, you will predict how many effective cases there are for speaker in the next round.</p>
+      <p>After receiving each description, you will predict how many out of 5 new patients would have an effective outcome with this treatment.</p>
       <p>Your best strategy is to base each prediction on <strong>all the descriptions you have seen at that point</strong>, not just the current one.</p>
     </div>`,
   choices: ["Find a Speaker"],
@@ -1638,7 +1779,7 @@ const transitionProduction = {
       <h2>Your New Role: Listener</h2>
       <p>You will now be paired with a <strong>different participant</strong> who is playing the speaker.</p>
       <p>The speaker will receive 6 trial results and send you a description for each result.</p>
-      <p>After receiving each description, you will predict how many effective cases there are for speaker in the next round.</p>
+      <p>After receiving each description, you will predict how many out of 5 new patients would have an effective outcome with this treatment.</p>
       <p>Your best strategy is to base each prediction on <strong>all the descriptions you have seen at that point</strong>, not just the current one.</p>
     </div>`,
   choices: ["Find a Speaker"],
@@ -1742,7 +1883,8 @@ const block2TrialTemplate = {
         </div>
 
         <div class="response-section">
-          <h4 style="text-align:center;">If 5 <strong>new</strong> patients received this treatment, how many effective cases would you expect? (Hint: use all the descriptions you have seen at that point)<span style="font-weight:normal;font-size:0.9em;"></span></h4>
+          <p style="text-align:center;color:#555;margin-bottom:6px;font-size:0.95em;">Think about the <strong>speaker's goal</strong> and <strong>all the descriptions you've received so far</strong>.</p>
+          <p style="text-align:center;">For the <strong>next round</strong>, how many out of <strong>5 new patients</strong> would have an effective outcome?</p>
           <div class="observation-options">${imgHtml}</div>
 
           <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
@@ -1756,6 +1898,7 @@ const block2TrialTemplate = {
   choices: [],
   data: { task: "block2_trial" },
   on_load: function () {
+    const trialStartTime = performance.now();
     startInactivityTimer();
 
     const btn = document.getElementById("b2-submit");
@@ -1795,6 +1938,7 @@ const block2TrialTemplate = {
         possible_observations: JSON.stringify(possibleObs),
         predictive_posterior: selectedPred,
         image_order_reversed: experimentState.imageOrderReversed,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
@@ -1856,7 +2000,8 @@ const block2AttentionCheck = {
         </div>
 
         <div class="response-section">
-          <h4 style="text-align:center;">If 5 <strong>new</strong> patients received this treatment, how many effective cases would you expect? (Hint: use all the descriptions you have seen at that point)<span style="font-weight:normal;font-size:0.9em;"></span></h4>
+          <p style="text-align:center;color:#555;margin-bottom:6px;font-size:0.95em;">Think about the <strong>speaker's goal</strong> and <strong>all the descriptions you've received so far</strong>.</p>
+          <p style="text-align:center;">For the <strong>next round</strong>, how many out of <strong>5 new patients</strong> would have an effective outcome?</p>
           <div class="observation-options">${imgHtml}</div>
 
           <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
@@ -1870,6 +2015,7 @@ const block2AttentionCheck = {
   choices: [],
   data: { task: "block2_attention_check" },
   on_load: function () {
+    const trialStartTime = performance.now();
     startInactivityTimer();
 
     const btn = document.getElementById("ac-submit");
@@ -1897,6 +2043,7 @@ const block2AttentionCheck = {
         prediction_selected: selectedPred,
         prediction_correct: predPassed,
         attention_check_passed: predPassed,
+        rt: Math.round(performance.now() - trialStartTime),
       });
     });
   },
@@ -1906,7 +2053,7 @@ const block2AttentionCheck = {
   },
 };
 
-// Record attention check result (no termination, just record)
+// Record attention check result and add to global data properties
 const block2AttentionCheckRecord = {
   type: jsPsychCallFunction,
   func: function () {
@@ -1915,7 +2062,22 @@ const block2AttentionCheckRecord = {
       .filter({ task: "block2_attention_check" })
       .last(1)
       .values()[0];
-    console.log("Attention check passed:", d.attention_check_passed);
+
+    // Also check block1 attention check if production condition
+    let b1Passed = null;
+    if (experimentState.groundingCondition === "production") {
+      const b1d = jsPsych.data
+        .get()
+        .filter({ task: "block1_attention_check" })
+        .last(1)
+        .values()[0];
+      b1Passed = b1d ? b1d.attention_check_passed : null;
+    }
+
+    jsPsych.data.addProperties({
+      block1_attention_passed: b1Passed,
+      block2_attention_passed: d ? d.attention_check_passed : null,
+    });
   },
 };
 
@@ -1929,10 +2091,10 @@ const block1IdentificationBonus = {
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
       <p>After you complete all practice rounds, <strong>one round will be randomly selected</strong> to determine your bonus.</p>
-      <p>For that round, you will earn a bonus based on how many of the 8 descriptions you correctly classified as permitted or not permitted:</p>
+      <p>For that round, your bonus depends on how many of the 8 descriptions you correctly classified:</p>
       <div class="regulations-box" style="text-align:center;padding:15px;margin:15px 0;">
-        <p style="margin:0;font-size:1.1em;"><strong>Bonus = (number correct / 8) × $1.00</strong></p>
-        <p style="margin:8px 0 0 0;color:#666;">For example: 6 correct out of 8 = $0.75 bonus</p>
+        <p style="margin:0;font-size:1.1em;"><strong>You earn $0.125 for each description you classify correctly</strong></p>
+        <p style="margin:8px 0 0 0;color:#666;">8 out of 8 correct → <strong>$1.00</strong> &nbsp;|&nbsp; 6 out of 8 → <strong>$0.75</strong> &nbsp;|&nbsp; 4 out of 8 → <strong>$0.50</strong></p>
       </div>
       <p>Try to be as accurate as possible on every round!</p>
     </div>`,
@@ -1949,32 +2111,31 @@ const block1ProductionBonus = {
     let bonusExplanation;
     if (goal === "informative") {
       bonusExplanation = `
-        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome.</p>
-        <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus is based on how close the listener's prediction is to the actual trial result you saw:</p>
+        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+        <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how accurate the listener's prediction is:</p>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
-          <p style="margin:0;font-size:1.1em;"><strong>$0.20 for each correct prediction out of 5 patients</strong></p>
-          <p style="margin:8px 0 0 0;color:#666;">The closer the listener's prediction to the truth, the higher your bonus (up to $1.00)</p>
-          <p style="margin:8px 0 0 0;color:#666;">For example: you saw 3 effective and listener predicts 3 → $1.00<br>
-          Listener predicts 4 (off by 1) → $0.80 &nbsp;|&nbsp; Listener predicts 1 (off by 2) → $0.60</p>
+          <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each patient the listener predicts correctly</strong></p>
+          <p style="margin:8px 0 0 0;color:#666;">You saw 3 effective and listener predicts 3 → <strong>$1.00</strong> (5 out of 5 correct)</p>
+          <p style="margin:4px 0 0 0;color:#666;">Predicts 4 (off by 1) → <strong>$0.80</strong> &nbsp;|&nbsp; Predicts 5 (off by 2) → <strong>$0.60</strong></p>
         </div>
         <p>The more informative your descriptions, the more accurate the listener's predictions will be!</p>`;
     } else if (goal === "pers_plus") {
       bonusExplanation = `
-        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome.</p>
-        <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus is based on the listener's prediction for that round:</p>
+        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+        <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on the listener's prediction for that round:</p>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
-          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of effective patients the listener predicted</strong></p>
-          <p style="margin:8px 0 0 0;color:#666;">For example: listener predicts 4 effective → you earn $0.80</p>
+          <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each effective patient the listener predicts</strong></p>
+          <p style="margin:8px 0 0 0;color:#666;">Listener predicts 5 effective → <strong>$1.00</strong> &nbsp;|&nbsp; Predicts 4 → <strong>$0.80</strong> &nbsp;|&nbsp; Predicts 2 → <strong>$0.40</strong></p>
         </div>
         <p>The more effective the listener thinks the treatment is, the higher your bonus!</p>`;
     } else {
       // pers_minus
       bonusExplanation = `
-        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome.</p>
-        <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus is based on the listener's prediction for that round:</p>
+        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+        <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on the listener's prediction for that round:</p>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
-          <p style="margin:0;font-size:1.1em;"><strong>$0.20 × number of ineffective patients the listener predicted</strong></p>
-          <p style="margin:8px 0 0 0;color:#666;">For example: listener predicts 1 effective (= 4 ineffective) → you earn $0.80</p>
+          <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each ineffective patient the listener predicts</strong></p>
+          <p style="margin:8px 0 0 0;color:#666;">Listener predicts 0 effective (= 5 ineffective) → <strong>$1.00</strong> &nbsp;|&nbsp; Predicts 1 effective → <strong>$0.80</strong> &nbsp;|&nbsp; Predicts 3 effective → <strong>$0.40</strong></p>
         </div>
         <p>The less effective the listener thinks the treatment is, the higher your bonus!</p>`;
     }
@@ -1997,15 +2158,14 @@ const block2ListenerBonus = {
     return `
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
-      <p>After each round, you will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment for the next round.</p>
-      <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how close your prediction is to the true outcome that the speaker gets next:</p>
+      <p>After each round, you will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+      <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how accurate your prediction is:</p>
       <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
-        <p style="margin:0;font-size:1.1em;"><strong>$0.20 for each correct prediction out of 5 patients</strong></p>
-        <p style="margin:8px 0 0 0;color:#666;">The closer your prediction, the higher your bonus (up to $1.00)</p>
-        <p style="margin:8px 0 0 0;color:#666;">For example: if the true outcome is 3 effective and you predict 3 → $1.00<br>
-        If you predict 4 (off by 1) → $0.80 &nbsp;|&nbsp; If you predict 1 (off by 2) → $0.60</p>
+        <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each patient you predict correctly</strong></p>
+        <p style="margin:8px 0 0 0;color:#666;">True outcome is 3 effective and you predict 3 → <strong>$1.00</strong> (5 out of 5 correct)</p>
+        <p style="margin:4px 0 0 0;color:#666;">Predict 4 (off by 1) → <strong>$0.80</strong> &nbsp;|&nbsp; Predict 5 (off by 2) → <strong>$0.60</strong></p>
       </div>
-      <p>For each round, think carefully about <strong>the speaker's goal</strong> and <strong>all the descriptions you have seen at that point</strong> to make the best prediction.</p>
+      <p>For each round, think carefully about <strong>the speaker's goal</strong> and <strong>all the descriptions you have received at that point</strong> to make the best prediction.</p>
     </div>`;
   },
   choices: ["Got it — Start Listening"],
@@ -2109,6 +2269,13 @@ timeline.push({
 timeline.push(welcome);
 timeline.push(consent);
 
+// --- DataPipe Condition Assignment (fetch early for balanced allocation) ---
+if (DATAPIPE_CONFIG.enabled) {
+  timeline.push(fetchCondition);
+} else {
+  timeline.push(fetchConditionFallback);
+}
+
 // --- Instructions ---
 timeline.push(instructions);
 
@@ -2125,6 +2292,9 @@ timeline.push(comp3a_feedback);
 timeline.push(explanationMultipleResults);
 timeline.push(comp3b);
 timeline.push(comp3b_feedback);
+
+// --- Comprehension Summary ---
+timeline.push(comprehensionSummary);
 
 // --- Condition Assignment ---
 timeline.push(assignConditions);
