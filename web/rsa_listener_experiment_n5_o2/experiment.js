@@ -63,26 +63,17 @@ jsPsych.data.addProperties({
   // Prevent copying, cutting, and context menu on the document
   // but allow normal interaction with text inputs and textareas
   document.addEventListener("copy", function (e) {
-    if (
-      e.target.tagName !== "INPUT" &&
-      e.target.tagName !== "TEXTAREA"
-    ) {
+    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
       e.preventDefault();
     }
   });
   document.addEventListener("cut", function (e) {
-    if (
-      e.target.tagName !== "INPUT" &&
-      e.target.tagName !== "TEXTAREA"
-    ) {
+    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
       e.preventDefault();
     }
   });
   document.addEventListener("contextmenu", function (e) {
-    if (
-      e.target.tagName !== "INPUT" &&
-      e.target.tagName !== "TEXTAREA"
-    ) {
+    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
       e.preventDefault();
     }
   });
@@ -362,7 +353,7 @@ const consent = {
         <p><em>Independent Contact:</em> If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at 650-723-2480 or toll free at 1-866-680-2906, or email at irbnonmed@stanford.edu. You can also write to the Stanford IRB, Stanford University, 1705 El Camino Real, Palo Alto, CA 94306.</p>
       </div>
       
-      <p style="margin-top: 20px; font-style: italic;">Please save or print a copy of this page for your records.</p>
+      <p style="margin-top: 20px; font-style: italic;">Please save or print a copy of this page for your records (Ctrl or Command + P).</p>
       
       <p style="margin-top: 20px; font-weight: bold; text-align: center;">
         If you agree to participate in this research, please click "I Consent".
@@ -979,9 +970,20 @@ const fetchCondition = {
     } else {
       // Fallback to random if DataPipe fails
       experimentState._datapipeCondition = Math.floor(Math.random() * 6);
-      console.warn("DataPipe condition assignment failed, using random fallback. Raw data:", raw_condition, raw_result);
+      console.warn(
+        "DataPipe condition assignment failed, using random fallback. Raw data:",
+        raw_condition,
+        raw_result,
+      );
     }
-    console.log("DataPipe raw: condition=", raw_condition, "result=", raw_result, "→ using", experimentState._datapipeCondition);
+    console.log(
+      "DataPipe raw: condition=",
+      raw_condition,
+      "result=",
+      raw_result,
+      "→ using",
+      experimentState._datapipeCondition,
+    );
   },
 };
 
@@ -990,7 +992,10 @@ const fetchConditionFallback = {
   type: jsPsychCallFunction,
   func: function () {
     experimentState._datapipeCondition = Math.floor(Math.random() * 6);
-    console.log("DataPipe disabled — random condition:", experimentState._datapipeCondition);
+    console.log(
+      "DataPipe disabled — random condition:",
+      experimentState._datapipeCondition,
+    );
   },
 };
 
@@ -1057,7 +1062,8 @@ const assignConditions = {
     });
 
     console.log(
-      "Assigned condition", condNum + ":",
+      "Assigned condition",
+      condNum + ":",
       experimentState.goalCondition,
       "×",
       experimentState.groundingCondition,
