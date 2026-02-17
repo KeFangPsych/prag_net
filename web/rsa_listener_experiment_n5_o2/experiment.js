@@ -29,7 +29,7 @@ function generateSubjectId() {
 
 const subjectId = generateSubjectId();
 
-const PROLIFIC_COMPLETION_CODE = "CXXXXXXX"; // Replace with actual code
+const PROLIFIC_COMPLETION_CODE = "C14LE684"; // Replace with actual code
 
 // ============================================================================
 // 2. JSPSYCH INITIALIZATION
