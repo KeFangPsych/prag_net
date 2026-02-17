@@ -1891,7 +1891,7 @@ const block2TrialTemplate = {
 
         <div class="response-section">
           <p style="text-align:center;color:#555;margin-bottom:6px;font-size:0.95em;">Think about the <strong>speaker's goal</strong> and <strong>all the descriptions you've received so far</strong>.</p>
-          <h4 style="text-align:center;">For the 5 new patients the speaker will see next round, how many effective cases do you think there would be (the more accurate your guess, the higher your bonus)?</h4>
+          <h4 style="text-align:center;">For the 5 new patients the speaker will see next round, how many effective cases do you think there would be?</h4>
           <div class="observation-options">${imgHtml}</div>
 
           <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
@@ -2008,7 +2008,7 @@ const block2AttentionCheck = {
 
         <div class="response-section">
           <p style="text-align:center;color:#555;margin-bottom:6px;font-size:0.95em;">Think about the <strong>speaker's goal</strong> and <strong>all the descriptions you've received so far</strong>.</p>
-          <h4 style="text-align:center;">For the 5 new patients the speaker will see next round, how many effective cases do you think there would be (the more accurate your guess, the higher your bonus)?</h4>
+          <h4 style="text-align:center;">For the 5 new patients the speaker will see next round, how many effective cases do you think there would be?</h4>
           <div class="observation-options">${imgHtml}</div>
 
           <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
