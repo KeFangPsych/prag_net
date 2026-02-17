@@ -29,7 +29,7 @@ function generateSubjectId() {
 
 const subjectId = generateSubjectId();
 
-const PROLIFIC_COMPLETION_CODE = "CXXXXXXX"; // Replace with actual code
+const PROLIFIC_COMPLETION_CODE = "C14LE684"; // Replace with actual code
 
 // ============================================================================
 // 2. JSPSYCH INITIALIZATION
@@ -2158,7 +2158,7 @@ const block2ListenerBonus = {
     return `
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
-      <p>After each round, you will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+      <p>After each round, you will predict <strong>how many effective cases the speaker will see for the next 5 new patients</strong>.</p>
       <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how accurate your prediction is:</p>
       <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
         <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each patient you predict correctly</strong></p>
