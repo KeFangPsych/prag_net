@@ -29,7 +29,8 @@ function generateSubjectId() {
 
 const subjectId = generateSubjectId();
 
-const PROLIFIC_COMPLETION_CODE = "C14LE684"; // Replace with actual code
+const PROLIFIC_COMPLETION_CODE = "C14LE684"; // Successful completion
+const PROLIFIC_SCREENING_CODE = "CERAK4BX"; // Replace with Prolific screening/no-code value
 
 // ============================================================================
 // 2. JSPSYCH INITIALIZATION
@@ -253,11 +254,12 @@ function resetInactivityTimer() {
 
 function getTerminationMessage(reason) {
   const isProlific = !!prolificPID;
+  // Use screening code for terminated participants — NOT the completion code
   const redirect = isProlific
-    ? `<div style="margin-top:25px;padding:20px;background:#e3f2fd;border:2px solid #2196F3;border-radius:8px;text-align:center;">
-        <p style="margin:0 0 15px;color:#1565c0;"><strong>Click below to return to Prolific:</strong></p>
-        <button onclick="window.location.href='https://app.prolific.com/submissions/complete?cc=${PROLIFIC_COMPLETION_CODE}'"
-          style="padding:12px 30px;font-size:16px;background:#2196F3;color:white;border:none;border-radius:6px;cursor:pointer;">
+    ? `<div style="margin-top:25px;padding:20px;background:#fff3e0;border:2px solid #ff9800;border-radius:8px;text-align:center;">
+        <p style="margin:0 0 15px;color:#e65100;"><strong>Click below to return to Prolific:</strong></p>
+        <button onclick="window.location.href='https://app.prolific.com/submissions/complete?cc=${PROLIFIC_SCREENING_CODE}'"
+          style="padding:12px 30px;font-size:16px;background:#ff9800;color:white;border:none;border-radius:6px;cursor:pointer;">
           Return to Prolific</button></div>`
     : "";
 
@@ -270,7 +272,7 @@ function getTerminationMessage(reason) {
 
   return `<div class="debrief-container">
     ${messages[reason] || '<h2 style="color:#f44336;">Study Ended</h2><p>The study has ended unexpectedly.</p>'}
-    <p style="margin-top:15px;color:#666;">Thank you for your participation.</p>
+    <p style="margin-top:15px;color:#666;">Thank you for your participation. You will not receive payment for this session.</p>
     ${redirect}
   </div>`;
 }
