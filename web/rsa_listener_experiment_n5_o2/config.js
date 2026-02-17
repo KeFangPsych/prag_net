@@ -10,7 +10,7 @@
 // IMPORTANT: Set number_of_conditions = 6 in the DataPipe admin panel
 // Conditions 0–5 map to the 6 cells of the 3×2 design (see CONDITION_MAP)
 const DATAPIPE_CONFIG = {
-  experiment_id: "MnTOW77Z37XE",
+  experiment_id: "1nikrykH0HRT",
   enabled: true,
 };
 
