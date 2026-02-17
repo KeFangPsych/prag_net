@@ -29,7 +29,7 @@ function generateSubjectId() {
 
 const subjectId = generateSubjectId();
 
-const PROLIFIC_COMPLETION_CODE = "C14LE684"; // Replace with actual code
+const PROLIFIC_COMPLETION_CODE = "CXXXXXXX"; // Replace with actual code
 
 // ============================================================================
 // 2. JSPSYCH INITIALIZATION
@@ -63,17 +63,26 @@ jsPsych.data.addProperties({
   // Prevent copying, cutting, and context menu on the document
   // but allow normal interaction with text inputs and textareas
   document.addEventListener("copy", function (e) {
-    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+    if (
+      e.target.tagName !== "INPUT" &&
+      e.target.tagName !== "TEXTAREA"
+    ) {
       e.preventDefault();
     }
   });
   document.addEventListener("cut", function (e) {
-    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+    if (
+      e.target.tagName !== "INPUT" &&
+      e.target.tagName !== "TEXTAREA"
+    ) {
       e.preventDefault();
     }
   });
   document.addEventListener("contextmenu", function (e) {
-    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+    if (
+      e.target.tagName !== "INPUT" &&
+      e.target.tagName !== "TEXTAREA"
+    ) {
       e.preventDefault();
     }
   });
@@ -353,7 +362,7 @@ const consent = {
         <p><em>Independent Contact:</em> If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at 650-723-2480 or toll free at 1-866-680-2906, or email at irbnonmed@stanford.edu. You can also write to the Stanford IRB, Stanford University, 1705 El Camino Real, Palo Alto, CA 94306.</p>
       </div>
       
-      <p style="margin-top: 20px; font-style: italic;">Please save or print a copy of this page for your records (Ctrl or Command + P).</p>
+      <p style="margin-top: 20px; font-style: italic;">Please save or print a copy of this page for your records.</p>
       
       <p style="margin-top: 20px; font-weight: bold; text-align: center;">
         If you agree to participate in this research, please click "I Consent".
@@ -961,23 +970,18 @@ const fetchCondition = {
   experiment_id: DATAPIPE_CONFIG.experiment_id,
   data: { task: "condition_assignment" },
   on_finish: function (data) {
-    // DataPipe returns condition as integer 0–5
-    const condNum = data.condition;
-    if (
-      condNum !== undefined &&
-      condNum !== null &&
-      condNum >= 0 &&
-      condNum < 6
-    ) {
+    // jsPsychPipe may store condition in data.condition or data.result depending on version
+    const raw_condition = data.condition;
+    const raw_result = data.result;
+    const condNum = parseInt(data.condition ?? data.result);
+    if (!isNaN(condNum) && condNum >= 0 && condNum < 6) {
       experimentState._datapipeCondition = condNum;
     } else {
       // Fallback to random if DataPipe fails
       experimentState._datapipeCondition = Math.floor(Math.random() * 6);
-      console.warn(
-        "DataPipe condition assignment failed, using random fallback:",
-        condNum,
-      );
+      console.warn("DataPipe condition assignment failed, using random fallback. Raw data:", raw_condition, raw_result);
     }
+    console.log("DataPipe raw: condition=", raw_condition, "result=", raw_result, "→ using", experimentState._datapipeCondition);
   },
 };
 
@@ -986,10 +990,7 @@ const fetchConditionFallback = {
   type: jsPsychCallFunction,
   func: function () {
     experimentState._datapipeCondition = Math.floor(Math.random() * 6);
-    console.log(
-      "DataPipe disabled — random condition:",
-      experimentState._datapipeCondition,
-    );
+    console.log("DataPipe disabled — random condition:", experimentState._datapipeCondition);
   },
 };
 
@@ -1044,6 +1045,7 @@ const assignConditions = {
 
     // Add properties to all data
     jsPsych.data.addProperties({
+      datapipe_raw_condition: experimentState._datapipeCondition,
       condition_number: condNum,
       goal_condition: experimentState.goalCondition,
       grounding_condition: experimentState.groundingCondition,
@@ -1055,8 +1057,7 @@ const assignConditions = {
     });
 
     console.log(
-      "Assigned condition",
-      condNum + ":",
+      "Assigned condition", condNum + ":",
       experimentState.goalCondition,
       "×",
       experimentState.groundingCondition,
@@ -1883,8 +1884,8 @@ const block2TrialTemplate = {
         </div>
 
         <div class="response-section">
-          <p style="text-align:center;color:#555;margin-bottom:6px;font-size:0.95em;">Think about the <strong>speaker's goal</strong> and <strong>all the descriptions you've received so far</strong>.</p>
-          <p style="text-align:center;">For the <strong>next round</strong>, how many out of <strong>5 new patients</strong> would have an effective outcome?</p>
+          <p style="text-align:center;color:#555;margin-bottom:6px;font-size:0.95em;">Think about the speaker's goal and all the descriptions you've received so far.</p>
+          <h4 style="text-align:center;">How many out of 5 new patients would have an effective outcome?</h4>
           <div class="observation-options">${imgHtml}</div>
 
           <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
@@ -2000,8 +2001,8 @@ const block2AttentionCheck = {
         </div>
 
         <div class="response-section">
-          <p style="text-align:center;color:#555;margin-bottom:6px;font-size:0.95em;">Think about the <strong>speaker's goal</strong> and <strong>all the descriptions you've received so far</strong>.</p>
-          <p style="text-align:center;">For the <strong>next round</strong>, how many out of <strong>5 new patients</strong> would have an effective outcome?</p>
+          <p style="text-align:center;color:#555;margin-bottom:6px;font-size:0.95em;">Think about the speaker's goal and all the descriptions you've received so far.</p>
+          <h4 style="text-align:center;">How many out of 5 new patients would have an effective outcome?</h4>
           <div class="observation-options">${imgHtml}</div>
 
           <div class="goal-reminder" style="background:${color}11;border:2px solid ${color};text-align:center;font-size:0.95em;padding:8px 12px;margin:20px auto 10px auto;max-width:520px;">
@@ -2158,7 +2159,7 @@ const block2ListenerBonus = {
     return `
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
-      <p>After each round, you will predict <strong>how many effective cases the speaker will see for the next 5 new patients</strong>.</p>
+      <p>After each round, you will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
       <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how accurate your prediction is:</p>
       <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
         <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each patient you predict correctly</strong></p>
