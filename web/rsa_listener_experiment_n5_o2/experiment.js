@@ -935,7 +935,7 @@ const comprehensionSummary = {
     jsPsych.data.addProperties({
       comp_total_correct: totalCorrect,
       comp_total_items: 5,
-      comp_passed: totalCorrect >= 4, // fail threshold: more than 1 wrong
+      comp_passed: totalCorrect >= 3, // fail threshold: more than 2 wrong
       comp_results: JSON.stringify(results),
     });
   },
