@@ -1080,7 +1080,7 @@ const block1IdentificationIntro = {
   stimulus: `
     <div class="intro-container">
       <h2>Practice: Identifying Permitted Descriptions</h2>
-      <p>Before being paired with a speaker, you'll first practice identifying which descriptions are <strong>permitted under the Regulations</strong> for different trial results.</p>
+      <p>Before being paired with another participant, you'll first practice identifying which descriptions are <strong>permitted under the Regulations</strong> for different trial results.</p>
       <p>For each trial result, you will see all 8 possible descriptions. Your job is to select <strong>all descriptions that are permitted</strong>.</p>
       <p>You will receive feedback after each round.</p>
     </div>`,
@@ -2118,7 +2118,7 @@ const block1ProductionBonus = {
     let bonusExplanation;
     if (goal === "informative") {
       bonusExplanation = `
-        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+        <p>After each round, the listener will predict <strong>how many out of the next 5 new patients</strong> would have an effective outcome.</p>
         <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how accurate the listener's prediction is:</p>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
           <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each patient the listener predicts correctly</strong></p>
@@ -2128,7 +2128,7 @@ const block1ProductionBonus = {
         <p>The more informative your descriptions, the more accurate the listener's predictions will be!</p>`;
     } else if (goal === "pers_plus") {
       bonusExplanation = `
-        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+        <p>After each round, the listener will predict <strong>how many out of the next 5 new patients</strong> would have an effective outcome.</p>
         <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on the listener's prediction for that round:</p>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
           <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each effective patient the listener predicts</strong></p>
@@ -2138,7 +2138,7 @@ const block1ProductionBonus = {
     } else {
       // pers_minus
       bonusExplanation = `
-        <p>After each round, the listener will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+        <p>After each round, the listener will predict <strong>how many out of the next 5 new patients</strong> would have an effective outcome.</p>
         <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on the listener's prediction for that round:</p>
         <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
           <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each ineffective patient the listener predicts</strong></p>
@@ -2165,7 +2165,7 @@ const block2ListenerBonus = {
     return `
     <div class="intro-container">
       <h2>Bonus for This Task</h2>
-      <p>After each round, you will predict <strong>how many out of 5 new patients</strong> would have an effective outcome with this treatment.</p>
+      <p>After each round, you will predict how many out of the <strong>next 5 new patients the speaker will see</strong> would have an effective outcome.</p>
       <p>After all rounds, <strong>one round will be randomly selected</strong>. Your bonus depends on how accurate your prediction is:</p>
       <div style="background:${color}11;border:2px solid ${color};border-radius:8px;text-align:center;padding:15px;margin:15px 0;">
         <p style="margin:0;font-size:1.1em;"><strong>You earn $0.20 for each patient you predict correctly</strong></p>
