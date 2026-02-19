@@ -316,7 +316,7 @@ const welcome = {
     <div class="welcome-container">
       <h1>Welcome</h1>
       <p class="subtitle">This is a study about how we communicate and interpret information.</p>
-      <p>This study takes approximately <strong>8–10 minutes</strong> to complete.</p>
+      <p>This study takes approximately <strong>10–15 minutes</strong> to complete.</p>
       <p class="press-space">Press <strong>SPACE</strong> to continue</p>
     </div>`,
   choices: [" "],

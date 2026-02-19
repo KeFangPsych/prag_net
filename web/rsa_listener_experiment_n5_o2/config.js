@@ -18,7 +18,7 @@ const DATAPIPE_CONFIG = {
 // PAYMENT CONFIGURATION
 // ============================================================================
 const PAYMENT = {
-  base: "$1.50",
+  base: "$2.50",
   bonus_max: "$2.00",
   bonus_per_patient: "$0.20",
   bonus_per_utterance: "$0.125",
