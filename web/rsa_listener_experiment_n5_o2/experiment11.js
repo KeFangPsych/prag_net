@@ -343,7 +343,7 @@ const consent = {
       
       <div class="consent-section">
         <p><strong>PAYMENTS:</strong> You will receive a base payment of <strong>${CONFIG.base_payment}</strong> for completing this study. Additionally, you may earn bonus payments of up to <strong>${CONFIG.bonus_max}</strong> based on your performance as described in the instructions. If you do not complete this study, you will receive prorated payment based on the time that you have spent.</p>
-        <p style="margin-top:10px;"><strong>ATTENTION CHECKS:</strong> This study includes attention checks in each part. If you fail <strong>one</strong> attention check, the bonus for that part will not be awarded. If you fail <strong>both</strong> attention checks, your submission may be rejected.</p>
+        <p style="margin-top:10px;"><strong>ATTENTION CHECKS:</strong> This study includes attention checks in each part. If you fail <strong>one</strong> attention check, <strong>the bonus for that part will not be awarded.</strong> If you fail <strong>both</strong> attention checks, <strong>your submission may be rejected.</strong></p>
       </div>
       
       <div class="consent-section">
@@ -422,61 +422,66 @@ const instructionPages = [
   // Page 3: Treatment effectiveness — in between
   `<div class="instructions-container">
     <h2>Treatment Effectiveness (continued)</h2>
-    <p>Treatment effectiveness can also fall <strong>in between</strong> 0% and 100%. Because each patient responds independently, the <strong>same effectiveness level can produce different trial results</strong> each time.</p>
-
-    <div class="example-box" style="margin-top: 20px;">
-      <p><strong>20% Effectiveness</strong> — the treatment rarely works, so most patients will not improve.</p>
-      <p style="color:#666;font-size:0.92em;">Outcomes with fewer effective patients are more likely, but occasionally more patients improve by chance.</p>
-      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px;">
-        <div style="text-align: center; padding: 6px 10px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9;">
-          <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #4CAF50; font-weight: 500; margin-top: 4px;">More likely</div>
-        </div>
-        <div style="text-align: center; padding: 6px 10px; background: #fff3e0; border-radius: 6px; border: 1px solid #ffe0b2;">
-          <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #f5a623; font-weight: 500; margin-top: 4px;">Moderately likely</div>
-        </div>
-        <div style="text-align: center; padding: 6px 10px; background: #ffebee; border-radius: 6px; border: 1px solid #ffcdd2;">
-          <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #f57c00; font-weight: 500; margin-top: 4px;">Less likely</div>
-        </div>
-      </div>
-    </div>
+    <p><strong>In Between: The same effectiveness level can produce different results</strong></p>
+    <p style="color: #666; margin-bottom: 15px;">Here are some possible outcomes at different effectiveness levels:</p>
     
-    <div class="example-box" style="margin-top: 15px;">
-      <p><strong>50% Effectiveness</strong> — the treatment works about half the time, so results are mixed.</p>
-      <p style="color:#666;font-size:0.92em;">Results near 2–3 effective are most common, but more extreme outcomes (0 or 5) can still happen.</p>
-      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px;">
-        <div style="text-align: center; padding: 6px 10px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9;">
-          <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #4CAF50; font-weight: 500; margin-top: 4px;">More likely</div>
+    <div class="example-box">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Header row with axis -->
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 8px 12px 8px;">
+          <span style="min-width: 120px;"></span>
+          <div style="display: flex; gap: 8px; flex: 1; align-items: center; justify-content: center;">
+            <span style="font-size: 0.9em; color: #4CAF50; font-weight: 500;">More likely</span>
+            <span style="font-size: 1.2em; color: #888; margin: 0 10px;">→</span>
+            <span style="font-size: 0.9em; color: #f5a623; font-weight: 500;">Moderately likely</span>
+            <span style="font-size: 1.2em; color: #888; margin: 0 10px;">→</span>
+            <span style="font-size: 0.9em; color: #f57c00; font-weight: 500;">Less likely</span>
+          </div>
         </div>
-        <div style="text-align: center; padding: 6px 10px; background: #fff3e0; border-radius: 6px; border: 1px solid #ffe0b2;">
-          <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #f5a623; font-weight: 500; margin-top: 4px;">Moderately likely</div>
+        
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #f5f5f5; border-radius: 6px;">
+          <span style="min-width: 120px; font-weight: 500;">20% Effectiveness:</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; justify-content: center;">
+            <div style="text-align: center; padding: 4px 8px; background: #e8f5e9; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 130px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #fff3e0; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 130px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #ffebee; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 130px;">
+            </div>
+          </div>
         </div>
-        <div style="text-align: center; padding: 6px 10px; background: #ffebee; border-radius: 6px; border: 1px solid #ffcdd2;">
-          <img src="stimuli_emoji_n5m1/effective_0_v0.png" alt="0 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #f57c00; font-weight: 500; margin-top: 4px;">Less likely</div>
+        
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #f5f5f5; border-radius: 6px;">
+          <span style="min-width: 120px; font-weight: 500;">50% Effectiveness:</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; justify-content: center;">
+            <div style="text-align: center; padding: 4px 8px; background: #e8f5e9; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 130px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #fff3e0; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 130px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #ffebee; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_0_v0.png" alt="0 effective" style="max-width: 130px;">
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    
-    <div class="example-box" style="margin-top: 15px;">
-      <p><strong>70% Effectiveness</strong> — the treatment usually works, so most patients will improve.</p>
-      <p style="color:#666;font-size:0.92em;">Outcomes with more effective patients are most likely, but sometimes fewer patients respond.</p>
-      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px;">
-        <div style="text-align: center; padding: 6px 10px; background: #e8f5e9; border-radius: 6px; border: 1px solid #c8e6c9;">
-          <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #4CAF50; font-weight: 500; margin-top: 4px;">More likely</div>
-        </div>
-        <div style="text-align: center; padding: 6px 10px; background: #fff3e0; border-radius: 6px; border: 1px solid #ffe0b2;">
-          <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #f5a623; font-weight: 500; margin-top: 4px;">Moderately likely</div>
-        </div>
-        <div style="text-align: center; padding: 6px 10px; background: #ffebee; border-radius: 6px; border: 1px solid #ffcdd2;">
-          <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 120px;">
-          <div style="font-size: 0.85em; color: #f57c00; font-weight: 500; margin-top: 4px;">Less likely</div>
+        
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #f5f5f5; border-radius: 6px;">
+          <span style="min-width: 120px; font-weight: 500;">70% Effectiveness:</span>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; justify-content: center;">
+            <div style="text-align: center; padding: 4px 8px; background: #e8f5e9; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_4_v0.png" alt="4 effective" style="max-width: 130px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #fff3e0; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_2_v0.png" alt="2 effective" style="max-width: 130px;">
+            </div>
+            <div style="text-align: center; padding: 4px 8px; background: #ffebee; border-radius: 4px;">
+              <img src="stimuli_emoji_n5m1/effective_1_v0.png" alt="1 effective" style="max-width: 130px;">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2184,9 +2189,9 @@ const block2ListenerBonus = {
 // Listener comprehension check: predict next 5, not infer current
 const listenerCompOptions = {
   correct:
-    "Based on <strong>all descriptions up to this round</strong>, how many of the 5 patients <strong>will</strong> have effective outcomes in <strong>the upcoming trial</strong>?",
+    "Based on <strong>all descriptions up to this round</strong>, how many of the five patients <strong>will</strong> have effective outcomes in <strong>the upcoming trial</strong>?",
   incorrect:
-    "Based on <strong>the description of this round</strong>, how many of the 5 patients <strong>had</strong> effective outcomes in <strong>the trial just described</strong>?",
+    "Based on <strong>the description of this round</strong>, how many of the five patients <strong>had</strong> effective outcomes in <strong>the trial just described</strong>?",
 };
 let listenerCompCorrectIndex = 0; // will be set at runtime
 

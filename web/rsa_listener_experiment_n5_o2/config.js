@@ -10,7 +10,7 @@
 // IMPORTANT: Set number_of_conditions = 6 in the DataPipe admin panel
 // Conditions 0–5 map to the 6 cells of the 3×2 design (see CONDITION_MAP)
 const DATAPIPE_CONFIG = {
-  experiment_id: "MnTOW77Z37XE",
+  experiment_id: "2JUAaiZ5oNW0",
   enabled: true,
 };
 
@@ -200,7 +200,8 @@ const CONFIG = {
   // --------------------------------------------------------------------------
   block2_attention_check: {
     correct_prediction: 5,
-    instruction_text: "Please select the trial result with five out of five.",
+    instruction_text:
+      "Please select the result with five out of five effective.",
   },
 
   // --------------------------------------------------------------------------
