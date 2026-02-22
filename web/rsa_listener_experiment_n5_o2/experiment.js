@@ -947,6 +947,8 @@ const comprehensionSummary = {
 // 0: informative × identification   1: informative × production
 // 2: pers_plus × identification      3: pers_plus × production
 // 4: pers_minus × identification     5: pers_minus × production
+// Condition number lookup: maps goal × grounding back to original 0–5 codes
+// so output data remains compatible with the main collection
 const CONDITION_MAP = [
   { goal: "informative", grounding: "identification" },
   { goal: "informative", grounding: "production" },
@@ -956,24 +958,29 @@ const CONDITION_MAP = [
   { goal: "pers_minus", grounding: "production" },
 ];
 
-// DataPipe condition assignment (fetched early for balanced allocation)
+function getConditionNumber(goal, grounding) {
+  return CONDITION_MAP.findIndex(
+    (c) => c.goal === goal && c.grounding === grounding,
+  );
+}
+
+// DataPipe condition assignment (single condition mode for supplemental recruitment)
 const fetchCondition = {
   type: jsPsychPipe,
   action: "condition",
   experiment_id: DATAPIPE_CONFIG.experiment_id,
   data: { task: "condition_assignment" },
   on_finish: function (data) {
-    // jsPsychPipe may store condition in data.condition or data.result depending on version
     const raw_condition = data.condition;
     const raw_result = data.result;
     const condNum = parseInt(data.condition ?? data.result);
-    if (!isNaN(condNum) && condNum >= 0 && condNum < 6) {
+    // In supplemental mode, DataPipe always returns 0
+    if (!isNaN(condNum) && condNum >= 0 && condNum < 1) {
       experimentState._datapipeCondition = condNum;
     } else {
-      // Fallback to random if DataPipe fails
-      experimentState._datapipeCondition = Math.floor(Math.random() * 6);
+      experimentState._datapipeCondition = 0;
       console.warn(
-        "DataPipe condition assignment failed, using random fallback. Raw data:",
+        "DataPipe condition assignment unexpected value, defaulting to 0. Raw data:",
         raw_condition,
         raw_result,
       );
@@ -983,8 +990,7 @@ const fetchCondition = {
       raw_condition,
       "result=",
       raw_result,
-      "→ using",
-      experimentState._datapipeCondition,
+      "→ using RECRUITMENT_CELL override",
     );
   },
 };
@@ -993,10 +999,9 @@ const fetchCondition = {
 const fetchConditionFallback = {
   type: jsPsychCallFunction,
   func: function () {
-    experimentState._datapipeCondition = Math.floor(Math.random() * 6);
+    experimentState._datapipeCondition = 0;
     console.log(
-      "DataPipe disabled — random condition:",
-      experimentState._datapipeCondition,
+      "DataPipe disabled — using RECRUITMENT_CELL override",
     );
   },
 };
@@ -1004,36 +1009,32 @@ const fetchConditionFallback = {
 const assignConditions = {
   type: jsPsychCallFunction,
   func: function () {
-    // Use DataPipe-assigned condition number
-    const condNum = experimentState._datapipeCondition;
-    const cond = CONDITION_MAP[condNum];
-    experimentState.goalCondition = cond.goal;
-    experimentState.groundingCondition = cond.grounding;
+    // Use RECRUITMENT_CELL to determine all assignments
+    const cell = RECRUITMENT_CELL;
+    const condNum = getConditionNumber(cell.goal, cell.grounding);
+    experimentState.goalCondition = cell.goal;
+    experimentState.groundingCondition = cell.grounding;
 
-    // Select Block 1 sequence
-    let b1Pool;
-    if (experimentState.groundingCondition === "identification") {
-      b1Pool = CONFIG.block1_sequences.identification;
+    // Select Block 1 sequence using the specified speaker_seq
+    if (cell.grounding === "identification") {
       experimentState.block1SequenceIdx = 0; // only one template
       // Shuffle the [0,1,2,3,4,5] outcomes randomly for this participant
-      experimentState.block1Sequence = shuffleArray([...b1Pool[0]]);
+      experimentState.block1Sequence = shuffleArray([
+        ...CONFIG.block1_sequences.identification[0],
+      ]);
     } else {
-      b1Pool =
-        CONFIG.block1_sequences.production[experimentState.goalCondition];
-      experimentState.block1SequenceIdx = Math.floor(
-        Math.random() * b1Pool.length,
-      );
+      const b1Pool =
+        CONFIG.block1_sequences.production[cell.goal];
+      experimentState.block1SequenceIdx = cell.speaker_seq;
       experimentState.block1Sequence = [
-        ...b1Pool[experimentState.block1SequenceIdx],
+        ...b1Pool[cell.speaker_seq],
       ];
     }
 
-    // Select Block 2 sequence
-    const b2Pool = CONFIG.block2_sequences[experimentState.goalCondition];
-    experimentState.block2SequenceIdx = Math.floor(
-      Math.random() * b2Pool.length,
-    );
-    experimentState.block2Sequence = b2Pool[experimentState.block2SequenceIdx];
+    // Select Block 2 sequence using the specified listener_seq
+    const b2Pool = CONFIG.block2_sequences[cell.goal];
+    experimentState.block2SequenceIdx = cell.listener_seq;
+    experimentState.block2Sequence = b2Pool[cell.listener_seq];
 
     // Counterbalance image order in Block 2 (0→5 or 5→0)
     experimentState.imageOrderReversed = Math.random() < 0.5;

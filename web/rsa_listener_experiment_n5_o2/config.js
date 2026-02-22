@@ -7,11 +7,29 @@
 // ============================================================================
 // DATAPIPE CONFIGURATION
 // ============================================================================
-// IMPORTANT: Set number_of_conditions = 6 in the DataPipe admin panel
-// Conditions 0–5 map to the 6 cells of the 3×2 design (see CONDITION_MAP)
+// Supplemental recruitment mode: conditions = 1 in DataPipe admin panel.
+// All participants receive condition 0; the actual cell is set below.
 const DATAPIPE_CONFIG = {
   experiment_id: "2JUAaiZ5oNW0",
   enabled: true,
+};
+
+// ============================================================================
+// RECRUITMENT CELL — change this between Prolific batches
+// ============================================================================
+// Each batch targets one specific cell. Update these values and recruit
+// exactly the number of participants needed (delta_N) for that cell.
+//
+//   goal:          "informative" | "pers_plus" | "pers_minus"
+//   grounding:     "identification" | "production"
+//   speaker_seq:   0 (only option for identification) | 0 or 1 (for production)
+//   listener_seq:  0 or 1
+//
+const RECRUITMENT_CELL = {
+  goal: "pers_plus",
+  grounding: "identification",
+  speaker_seq: 0,
+  listener_seq: 1,
 };
 
 // ============================================================================
