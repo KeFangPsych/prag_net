@@ -974,8 +974,8 @@ const fetchCondition = {
     const raw_condition = data.condition;
     const raw_result = data.result;
     const condNum = parseInt(data.condition ?? data.result);
-    // In supplemental mode, DataPipe always returns 0
-    if (!isNaN(condNum) && condNum >= 0 && condNum < 1) {
+    // In supplemental mode, DataPipe returns 0 or 1 (both map to same cell)
+    if (!isNaN(condNum) && condNum >= 0 && condNum < 2) {
       experimentState._datapipeCondition = condNum;
     } else {
       experimentState._datapipeCondition = 0;
