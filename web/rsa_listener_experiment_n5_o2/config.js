@@ -27,9 +27,9 @@ const DATAPIPE_CONFIG = {
 //
 const RECRUITMENT_CELL = {
   goal: "pers_minus",
-  grounding: "production",
+  grounding: "identification",
   speaker_seq: 0,
-  listener_seq: 1,
+  listener_seq: 0,
 };
 
 // ============================================================================
