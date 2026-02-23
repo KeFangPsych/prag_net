@@ -26,10 +26,10 @@ const DATAPIPE_CONFIG = {
 //   listener_seq:  0 or 1
 //
 const RECRUITMENT_CELL = {
-  goal: "pers_minus",
+  goal: "informative",
   grounding: "identification",
   speaker_seq: 0,
-  listener_seq: 0,
+  listener_seq: 1,
 };
 
 // ============================================================================
