@@ -2239,7 +2239,7 @@ class PragmaticSpeaker_obs_2plus:
             result = log_M_product(
                 obs_log_likelihood_theta_values,       # [n_O, n_theta]
                 reshaped_log_joint,         # [n_theta, n_psi*n_alpha]
-                precise= precision
+                precise= USE_PRECISE_LOGSPACE
             )
 
             # Reshape result back to [n_O, n_psi, n_alpha]
@@ -2278,7 +2278,7 @@ class PragmaticSpeaker_obs_2plus:
 
             un_log_P_O_psi_alpha_given_u = log_P_u_given_O_psi_alpha + log_prob_O_psi_alpha
 
-            un_log_P_O_given_u = spacious_logsumexp(
+            un_log_P_O_given_u = logsumexp(
                 un_log_P_O_psi_alpha_given_u,
                 axis = (2,3))
 
@@ -2321,12 +2321,12 @@ class PragmaticSpeaker_obs_2plus:
             Second: log_persuasiveness - DataFrame with log-persuasiveness for each utterance and observation
         """
         try:
-            unnormalized_log_P_theta_given_u = spacious_logsumexp(
+            unnormalized_log_P_theta_given_u = logsumexp(
                 theta_psi_alpha_log_post_utterance_values,
                 axis = (2,3))
 
             log_P_theta_given_u = pd.DataFrame(
-                (unnormalized_log_P_theta_given_u - spacious_logsumexp(unnormalized_log_P_theta_given_u, axis = 1, keepdims = True)).T,
+                (unnormalized_log_P_theta_given_u - logsumexp(unnormalized_log_P_theta_given_u, axis = 1, keepdims = True)).T,
                 columns= self.world.utterances,
                 index = self.world.theta_values)
 
@@ -2338,7 +2338,7 @@ class PragmaticSpeaker_obs_2plus:
                 log_M_product(
                     log_theta_values[np.newaxis, :],
                     log_P_theta_given_u.values,
-                    precise= precision),
+                    precise= USE_PRECISE_LOGSPACE),
                 columns=self.world.utterances)
 
             # Compute persuasiveness based on psi (speaker) type
@@ -2357,7 +2357,7 @@ class PragmaticSpeaker_obs_2plus:
                 values = log_M_product(
                     log_one_minus_theta_values[np.newaxis, :],
                     log_P_theta_given_u.values,
-                    precise= precision
+                    precise= USE_PRECISE_LOGSPACE
                     ).flatten()
 
             # Purely informative
@@ -2464,7 +2464,7 @@ class PragmaticSpeaker_obs_2plus:
                 log_column_softmax(
                     self.utility.values,
                     alpha,
-                    precise= precision),
+                    precise= USE_PRECISE_LOGSPACE),
                 index=self.utility.index,
                 columns=self.utility.columns
             )
