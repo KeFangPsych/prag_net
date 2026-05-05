@@ -914,7 +914,8 @@ class LiteralSpeaker:
     def __init__(
         self,
         world: 'World',
-        initial_beliefs_theta: Optional[np.ndarray] = None
+        initial_beliefs_theta: Optional[np.ndarray] = None,
+        rng: Optional[np.random.Generator] = None
     ) -> None:
         """
         Initialize the literal speaker.
@@ -926,8 +927,12 @@ class LiteralSpeaker:
         initial_beliefs_theta : np.ndarray, optional
             1D array of prior probabilities over theta values (must sum to 1).
             If None, a uniform prior is assumed.
+        rng : np.random.Generator, optional
+            Random generator used for utterance sampling. If None, a fresh
+            unseeded default_rng is created.
         """
         self.world = world
+        self.rng = rng if rng is not None else np.random.default_rng()
 
         # Process or initialize the log-prior over theta
         self.un_current_log_belief = self._process_initial_beliefs(
@@ -1061,7 +1066,7 @@ class LiteralSpeaker:
             uttrs_true = uttrs.index[uttrs.iloc[:, 0] == 1].tolist()
             if not uttrs_true:
                 raise RuntimeError(f"No valid utterances for observation {observation}")
-            return np.random.choice(uttrs_true)
+            return self.rng.choice(uttrs_true)
         except Exception as e:
             raise RuntimeError(f"Utterance sampling failed: {e}")
 
@@ -1373,9 +1378,16 @@ class PragmaticSpeaker_obs:
         update_internal: bool,
         alpha: Union[float, str],
         beta: float = 0.0,
-        initial_beliefs_theta: Optional[np.ndarray] = None
+        initial_beliefs_theta: Optional[np.ndarray] = None,
+        rng: Optional[np.random.Generator] = None
     ) -> None:
-        """Initialize the pragmatic speaker."""
+        """Initialize the pragmatic speaker.
+
+        rng : np.random.Generator, optional
+            Random generator used for utterance sampling. If None, a fresh
+            unseeded default_rng is created. Internal sub-speakers always get
+            their own fresh RNG, so this only governs this speaker's draws.
+        """
         if omega not in self.VALID_OMEGA_TYPES:
             raise ValueError(
                 f"omega must be one of {self.VALID_OMEGA_TYPES}, got '{omega}'"
@@ -1386,6 +1398,7 @@ class PragmaticSpeaker_obs:
             )
 
         self.world = world
+        self.rng = rng if rng is not None else np.random.default_rng()
         self.omega = omega
 
         if self.omega == "coop" and psi != "inf":
@@ -1638,7 +1651,7 @@ class PragmaticSpeaker_obs:
 
             # Sample utterance according to P(u|O)
             utterance_log_probs = self.utterance_log_prob_obs.loc[:, [observation]]
-            selected_utterance = np.random.choice(
+            selected_utterance = self.rng.choice(
                 utterance_log_probs.index,
                 p=np.exp(utterance_log_probs.values.flatten())
             )
@@ -2130,9 +2143,16 @@ class PragmaticSpeaker_obs_2plus:
         # for modeling the internal level-1 prag listener
         initial_beliefs_psi: Optional[np.ndarray] = None,
         alpha_vals: Optional[List[Union[float, str]]] = None,
-        initial_beliefs_alpha: Optional[np.ndarray] = None
+        initial_beliefs_alpha: Optional[np.ndarray] = None,
+        rng: Optional[np.random.Generator] = None
     ) -> None:
-        """Initialize the level-2 pragmatic speaker."""
+        """Initialize the level-2 pragmatic speaker.
+
+        rng : np.random.Generator, optional
+            Random generator used for utterance sampling. If None, a fresh
+            unseeded default_rng is created. Internal sub-speakers always get
+            their own fresh RNG, so this only governs this speaker's draws.
+        """
         if omega not in self.VALID_OMEGA_TYPES:
             raise ValueError(f"omega must be one of {self.VALID_OMEGA_TYPES}, got '{omega}'")
         if psi not in self.VALID_PSI_TYPES:
@@ -2141,6 +2161,7 @@ class PragmaticSpeaker_obs_2plus:
             raise ValueError(f"level must be an integer ≥ 2, got {level}")
 
         self.world = world
+        self.rng = rng if rng is not None else np.random.default_rng()
         self.level = level
         self.omega = omega
 
@@ -2480,7 +2501,7 @@ class PragmaticSpeaker_obs_2plus:
 
             # Sample utterance according to P(u|O)
             utterance_log_probs = self.utterance_log_prob_obs.loc[:, [observation]]
-            selected_utterance = np.random.choice(
+            selected_utterance = self.rng.choice(
                 utterance_log_probs.index,
                 p=np.exp(utterance_log_probs.values.flatten())
             )
@@ -2515,16 +2536,17 @@ def create_speaker(
     level: int,
     # Required parameters for pragmatic speakers (level ≥ 1)
     omega: Optional[str] = None,
-    psi: Optional[str] = None, 
+    psi: Optional[str] = None,
     update_internal: Optional[bool] = None,
     alpha: Optional[Union[float, str]] = None,
     # Optional parameters (have meaningful defaults)
     beta: float = 0.0,
     initial_beliefs_theta: Optional[np.ndarray] = None,
-    # Parameters for higher-order speakers (level ≥ 2) 
+    # Parameters for higher-order speakers (level ≥ 2)
     initial_beliefs_psi: Optional[np.ndarray] = None,
     alpha_vals: Optional[List[Union[float, str]]] = None,
-    initial_beliefs_alpha: Optional[np.ndarray] = None):
+    initial_beliefs_alpha: Optional[np.ndarray] = None,
+    rng: Optional[np.random.Generator] = None):
     """
     Create RSA speaker of specified level with explicit parameter validation.
     
@@ -2578,10 +2600,11 @@ def create_speaker(
     if level == 0:
         # Literal speaker - only needs world and optional initial beliefs
         return LiteralSpeaker(
-            world=world, 
-            initial_beliefs_theta=initial_beliefs_theta
+            world=world,
+            initial_beliefs_theta=initial_beliefs_theta,
+            rng=rng
         )
-        
+
     elif level == 1:
         # First-order pragmatic speaker - validate required parameters
         if omega is None:
@@ -2592,7 +2615,7 @@ def create_speaker(
             raise ValueError("update_internal parameter is required for level 1 speakers. Must be True or False.")
         if alpha is None:
             raise ValueError("alpha parameter is required for level 1 speakers. Must be a float or 'determ'.")
-            
+
         return PragmaticSpeaker_obs(
             world=world,
             omega=omega,
@@ -2600,9 +2623,10 @@ def create_speaker(
             update_internal=update_internal,
             alpha=alpha,
             beta=beta,
-            initial_beliefs_theta=initial_beliefs_theta
+            initial_beliefs_theta=initial_beliefs_theta,
+            rng=rng
         )
-        
+
     else:  # level >= 2
         # Higher-order pragmatic speaker - validate required parameters
         if omega is None:
@@ -2613,7 +2637,7 @@ def create_speaker(
             raise ValueError(f"update_internal parameter is required for level {level} speakers. Must be True or False.")
         if alpha is None:
             raise ValueError(f"alpha parameter is required for level {level} speakers. Must be a float or 'determ'.")
-            
+
         return PragmaticSpeaker_obs_2plus(
             world=world,
             level=level,
@@ -2625,7 +2649,8 @@ def create_speaker(
             initial_beliefs_theta=initial_beliefs_theta,
             initial_beliefs_psi=initial_beliefs_psi,
             alpha_vals=alpha_vals,
-            initial_beliefs_alpha=initial_beliefs_alpha
+            initial_beliefs_alpha=initial_beliefs_alpha,
+            rng=rng
         )
 
 
