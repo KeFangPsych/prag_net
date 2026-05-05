@@ -1,15 +1,7 @@
 """
-rsa_core.py
+rsa_optimal_exp_core.py
 
 Core RSA classes and numerical helper functions.
-
-Vendored from models/optimal_speaker_n1m5/rsa_core.py with one change: speakers
-accept an `rng` parameter (np.random.Generator) for reproducible utterance
-sampling. The original file uses the global np.random state; code that relied on
-np.random.seed(...) will not produce reproducible draws against this copy —
-pass rng=np.random.default_rng(seed) to the speaker explicitly. Internal
-sub-speakers held by pragmatic speakers always get a fresh default RNG, so the
-outer speaker's seed semantics are independent of recursion depth.
 """
 
 # =============================================================================
