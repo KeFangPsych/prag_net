@@ -90,6 +90,12 @@ def sample_observations(config: Dict[str, Any]) -> Tuple[pd.DataFrame, World]:
     if len(thetas) == 0:
         raise ValueError("thetas must be non-empty")
 
+    # World requires theta_values as np.ndarray; coerce here so callers can pass
+    # a Python list (e.g., from a JSON-deserialized meta.json or a config dict).
+    world_kwargs = dict(world_kwargs)
+    if "theta_values" in world_kwargs and not isinstance(world_kwargs["theta_values"], np.ndarray):
+        world_kwargs["theta_values"] = np.asarray(world_kwargs["theta_values"], dtype=float)
+
     world = World(**world_kwargs)
 
     # Strict theta validation: fail loudly rather than silently round to nearest.

@@ -106,7 +106,13 @@ def load_observations(in_dir: Path | str) -> Tuple[pd.DataFrame, World]:
     in_dir = Path(in_dir)
     meta = _read_meta(in_dir)
     obs_df = pd.read_pickle(in_dir / "observations.pkl")
-    world = World(**meta["world"])
+
+    # World requires theta_values as np.ndarray; meta.json stores it as a list
+    # (JSON has no native ndarray type), so coerce before instantiating.
+    world_kwargs = dict(meta["world"])
+    if "theta_values" in world_kwargs and not isinstance(world_kwargs["theta_values"], np.ndarray):
+        world_kwargs["theta_values"] = np.asarray(world_kwargs["theta_values"], dtype=float)
+    world = World(**world_kwargs)
     return obs_df, world
 
 
