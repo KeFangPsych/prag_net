@@ -73,8 +73,20 @@ EXPERIMENT_NAME = "n1m5_T15_obs5000_seed42"
 OUT_ROOT = THIS_FILE.parent / "raw_do_not_track"
 
 # ----- World ---------------------------------------------------------------
-WORLD = {"n": 1, "m": 5}
-THETAS = [round(0.1 * k, 1) for k in range(1, 10)]   # [0.1, 0.2, ..., 0.9]
+# theta_values is the FULL grid agents reason over (their belief / inference
+# support). We include the boundaries 0.0 and 1.0 so the listener doesn't
+# a-priori rule out a fully unsuccessful or fully successful generator.
+WORLD = {
+    "n": 1,
+    "m": 5,
+    "theta_values": [round(0.1 * k, 1) for k in range(11)],  # [0.0, 0.1, ..., 1.0]
+}
+
+# TRUE_THETAS is the (strictly smaller) set of true thetas at which we
+# *sample* observation sequences. The boundaries 0.0 and 1.0 are excluded so
+# observations come from non-degenerate distributions while remaining in the
+# support of the agents' beliefs.
+TRUE_THETAS = [round(0.1 * k, 1) for k in range(1, 10)]      # [0.1, 0.2, ..., 0.9]
 
 # ----- Sample sizes --------------------------------------------------------
 T = 15
@@ -148,7 +160,7 @@ def main(overwrite: bool = False) -> None:
 
     # ----- Stage 1: observations -----
     obs_meta = {
-        "world": WORLD, "thetas": THETAS,
+        "world": WORLD, "thetas": TRUE_THETAS,
         "n_obs_seq": N_OBS_SEQ, "T": T, "seed": OBS_SEED,
     }
     obs_pkl = OUT_ROOT / "observations.pkl"
