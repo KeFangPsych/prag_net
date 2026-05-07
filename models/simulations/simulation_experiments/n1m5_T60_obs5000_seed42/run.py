@@ -1,12 +1,12 @@
 """
-run.py — Driver for experiment "n1m5_T15_obs5000_seed42".
+run.py — Driver for experiment "n1m5_T60_obs5000_seed42".
 
 Output
 ------
 Sits next to this script in a `raw_do_not_track/` subdirectory so the
 experiment's code and data live side-by-side:
 
-    models/simulations/simulation_experiments/n1m5_T15_obs5000_seed42/
+    models/simulations/simulation_experiments/n1m5_T60_obs5000_seed42/
         run.py, io.py, ...
         raw_do_not_track/                  # gitignored via the project pattern
             meta.json
@@ -28,8 +28,8 @@ from disk for downstream stages). Pass --overwrite to redo everything.
 
 Usage
 -----
-    python models/simulations/simulation_experiments/n1m5_T15_obs5000_seed42/run.py
-    python models/simulations/simulation_experiments/n1m5_T15_obs5000_seed42/run.py --overwrite
+    python models/simulations/simulation_experiments/n1m5_T60_obs5000_seed42/run.py
+    python models/simulations/simulation_experiments/n1m5_T60_obs5000_seed42/run.py --overwrite
 """
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ from models.simulations.speakers.sample_utterances import sample_utterances  # n
 from models.simulations.listeners.compute_beliefs import compute_listener_beliefs  # noqa: E402
 
 # I/O helpers vendored alongside this experiment (see io.py docstring).
-from models.simulations.simulation_experiments.n1m5_T15_obs5000_seed42.io import (  # noqa: E402
+from models.simulations.simulation_experiments.n1m5_T60_obs5000_seed42.io import (  # noqa: E402
     save_observations,
     load_observations,
     save_utterances,
@@ -67,7 +67,7 @@ from models.simulations.simulation_experiments.n1m5_T15_obs5000_seed42.io import
 # run; nothing in the PIPELINE section needs to change for typical edits.
 
 # ----- Identity ------------------------------------------------------------
-EXPERIMENT_NAME = "n1m5_T15_obs5000_seed42"
+EXPERIMENT_NAME = "n1m5_T60_obs5000_seed42"
 # Outputs live alongside this script in raw_do_not_track/ so code and data for
 # one experiment stay together. raw_do_not_track is in the project .gitignore.
 OUT_ROOT = THIS_FILE.parent / "raw_do_not_track"
@@ -89,7 +89,7 @@ WORLD = {
 TRUE_THETAS = [round(0.1 * k, 1) for k in range(1, 10)]      # [0.1, 0.2, ..., 0.9]
 
 # ----- Sample sizes --------------------------------------------------------
-T = 15
+T = 60
 N_OBS_SEQ = 5000
 N_UTT_SEQ = 1
 
