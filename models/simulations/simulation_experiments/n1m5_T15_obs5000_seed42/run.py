@@ -3,18 +3,23 @@ run.py — Driver for experiment "n1m5_T15_obs5000_seed42".
 
 Output
 ------
-data/simulations/raw_do_not_track/n1m5_T15_obs5000_seed42/
-    meta.json
-    observations.pkl
-    <speaker>/
-        meta.json
-        utterances.pkl
-        <listener>/
-            meta.json
-            beliefs.pkl
+Sits next to this script in a `raw_do_not_track/` subdirectory so the
+experiment's code and data live side-by-side:
 
-The "raw_do_not_track" path matches the existing .gitignore convention so the
-data isn't committed.
+    models/simulations/simulation_experiments/n1m5_T15_obs5000_seed42/
+        run.py, io.py, ...
+        raw_do_not_track/                  # gitignored via the project pattern
+            meta.json
+            observations.pkl
+            <speaker>/
+                meta.json
+                utterances.pkl
+                <listener>/
+                    meta.json
+                    beliefs.pkl
+
+The "raw_do_not_track" name matches the existing .gitignore convention
+(**/raw_do_not_track/) so the data isn't committed.
 
 Idempotence
 -----------
@@ -63,7 +68,9 @@ from models.simulations.simulation_experiments.n1m5_T15_obs5000_seed42.io import
 
 # ----- Identity ------------------------------------------------------------
 EXPERIMENT_NAME = "n1m5_T15_obs5000_seed42"
-OUT_ROOT = REPO_ROOT / "data" / "simulations" / "raw_do_not_track" / EXPERIMENT_NAME
+# Outputs live alongside this script in raw_do_not_track/ so code and data for
+# one experiment stay together. raw_do_not_track is in the project .gitignore.
+OUT_ROOT = THIS_FILE.parent / "raw_do_not_track"
 
 # ----- World ---------------------------------------------------------------
 WORLD = {"n": 1, "m": 5}
