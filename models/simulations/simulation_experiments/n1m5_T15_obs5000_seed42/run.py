@@ -91,7 +91,7 @@ UTT_SEED_BASE = 1000   # per-speaker offset added on top, so utterance streams
 # beta is set explicitly to mirror the theoretical convention even when the
 # runtime ignores it (psi='inf' disregards beta).
 SPEAKERS = {
-    "inf_L1strat_a3_b1": {
+    "inf_L1strat_a3_b1_uiF": {
         "level": 1,
         "omega": "strat",
         "psi": "inf",
@@ -99,7 +99,7 @@ SPEAKERS = {
         "beta": 1.0,                  # pure-info convention; runtime ignores beta when psi='inf'
         "update_internal": False,
     },
-    "pers_plus_L1strat_a3_b0": {
+    "persp_L1strat_a3_b0_uiF": {       # persp = pers+   (persm would be pers-)
         "level": 1,
         "omega": "strat",
         "psi": "pers+",
@@ -115,17 +115,17 @@ SPEAKERS = {
 # which is what the pers+ internal model wants (and beta is irrelevant for
 # the inf internal model).
 LISTENERS = {
-    "literal_L0": {
+    "literal_L0": {                   # L0 has no `update_internal` parameter -> no _ui suffix
         "level": 0,
     },
-    "credulous_L1coop_a3": {
+    "credulous_L1coop_a3_uiF": {
         "level": 1,
         "omega": "coop",              # coop -> psi grid collapses to ['inf']
         "update_internal": False,
         "alpha": 3.0,
         "alpha_vals": [3.0],
     },
-    "vigilant_L1strat_a3": {
+    "vigilant_L1strat_a3_uiF": {
         "level": 1,
         "omega": "strat",             # strat -> psi grid is ['inf', 'pers+', 'pers-']
         "update_internal": False,
