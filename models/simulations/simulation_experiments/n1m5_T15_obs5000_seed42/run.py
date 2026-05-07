@@ -1,23 +1,6 @@
 """
 run.py — Driver for experiment "n1m5_T15_obs5000_seed42".
 
-Configuration
--------------
-World      : n=1, m=5
-Thetas     : 0.1, 0.2, ..., 0.9
-T          : 15
-n_obs_seq  : 5000
-n_utt_seq  : 1
-
-Speakers (level 1, strat, alpha=3.0, update_internal=False):
-    inf_L1strat_a3_b1        psi='inf',   beta=1.0   (theoretical pure-info)
-    pers_plus_L1strat_a3_b0  psi='pers+', beta=0.0   (pure persuasion)
-
-Listeners (update_internal=False; alpha=3.0, alpha_vals=[3.0]):
-    literal_L0               level 0
-    credulous_L1coop_a3      level 1, omega='coop'   (psi grid collapses to ['inf'])
-    vigilant_L1strat_a3      level 1, omega='strat'  (psi grid = ['inf','pers+','pers-'])
-
 Output
 ------
 data/simulations/raw_do_not_track/n1m5_T15_obs5000_seed42/
@@ -61,7 +44,9 @@ import numpy as np  # noqa: E402
 from models.simulations.world.sample_observations import sample_observations  # noqa: E402
 from models.simulations.speakers.sample_utterances import sample_utterances  # noqa: E402
 from models.simulations.listeners.compute_beliefs import compute_listener_beliefs  # noqa: E402
-from models.simulations.shared.io import (  # noqa: E402
+
+# I/O helpers vendored alongside this experiment (see io.py docstring).
+from models.simulations.simulation_experiments.n1m5_T15_obs5000_seed42.io import (  # noqa: E402
     save_observations,
     load_observations,
     save_utterances,
@@ -71,50 +56,84 @@ from models.simulations.shared.io import (  # noqa: E402
 
 
 # =============================================================================
-# Configuration
+#                          EXPERIMENT CONFIGURATION
 # =============================================================================
+# All knobs that define this experiment live below. Edit here to redefine the
+# run; nothing in the PIPELINE section needs to change for typical edits.
 
+# ----- Identity ------------------------------------------------------------
 EXPERIMENT_NAME = "n1m5_T15_obs5000_seed42"
+OUT_ROOT = REPO_ROOT / "data" / "simulations" / "raw_do_not_track" / EXPERIMENT_NAME
 
+# ----- World ---------------------------------------------------------------
 WORLD = {"n": 1, "m": 5}
-THETAS = [round(0.1 * k, 1) for k in range(1, 10)]  # [0.1, 0.2, ..., 0.9]
+THETAS = [round(0.1 * k, 1) for k in range(1, 10)]   # [0.1, 0.2, ..., 0.9]
+
+# ----- Sample sizes --------------------------------------------------------
 T = 15
 N_OBS_SEQ = 5000
 N_UTT_SEQ = 1
-OBS_SEED = 42
-UTT_SEED_BASE = 1000  # speaker_idx * step is added on top
 
+# ----- Seeds ---------------------------------------------------------------
+OBS_SEED = 42
+UTT_SEED_BASE = 1000   # per-speaker offset added on top, so utterance streams
+                       # are distinct across speakers but reproducible.
+
+# ----- Speakers ------------------------------------------------------------
+# Two level-1 speakers under omega='strat', alpha=3.0, update_internal=False.
+# beta is set explicitly to mirror the theoretical convention even when the
+# runtime ignores it (psi='inf' disregards beta).
 SPEAKERS = {
     "inf_L1strat_a3_b1": {
-        "level": 1, "omega": "strat", "psi": "inf",
-        "alpha": 3.0, "beta": 1.0, "update_internal": False,
+        "level": 1,
+        "omega": "strat",
+        "psi": "inf",
+        "alpha": 3.0,
+        "beta": 1.0,                  # pure-info convention; runtime ignores beta when psi='inf'
+        "update_internal": False,
     },
     "pers_plus_L1strat_a3_b0": {
-        "level": 1, "omega": "strat", "psi": "pers+",
-        "alpha": 3.0, "beta": 0.0, "update_internal": False,
+        "level": 1,
+        "omega": "strat",
+        "psi": "pers+",
+        "alpha": 3.0,
+        "beta": 0.0,                  # pure persuasion
+        "update_internal": False,
     },
 }
 
+# ----- Listeners -----------------------------------------------------------
+# alpha and alpha_vals match the speakers' alpha so internal speaker models
+# in the listener are correctly specified; beta defaults to 0 in rsa_core,
+# which is what the pers+ internal model wants (and beta is irrelevant for
+# the inf internal model).
 LISTENERS = {
     "literal_L0": {
         "level": 0,
     },
     "credulous_L1coop_a3": {
-        "level": 1, "omega": "coop", "update_internal": False,
-        "alpha": 3.0, "alpha_vals": [3.0],
+        "level": 1,
+        "omega": "coop",              # coop -> psi grid collapses to ['inf']
+        "update_internal": False,
+        "alpha": 3.0,
+        "alpha_vals": [3.0],
     },
     "vigilant_L1strat_a3": {
-        "level": 1, "omega": "strat", "update_internal": False,
-        "alpha": 3.0, "alpha_vals": [3.0],
+        "level": 1,
+        "omega": "strat",             # strat -> psi grid is ['inf', 'pers+', 'pers-']
+        "update_internal": False,
+        "alpha": 3.0,
+        "alpha_vals": [3.0],
     },
 }
 
-OUT_ROOT = REPO_ROOT / "data" / "simulations" / "raw_do_not_track" / EXPERIMENT_NAME
-
 
 # =============================================================================
-# Main
+#                                 PIPELINE
 # =============================================================================
+# The driver below shouldn't need editing for normal config changes. It calls
+# the three stages in order, persisting each stage's output before moving on,
+# and skips any stage whose output already exists unless --overwrite is set.
 
 def main(overwrite: bool = False) -> None:
     print(f"Output root: {OUT_ROOT}")

@@ -1,5 +1,11 @@
 """
-io.py — save/load helpers for the simulation pipeline.
+io.py — save/load helpers for THIS experiment.
+
+These helpers are vendored per-experiment rather than living in a shared
+module: experiments at different scales may need different storage strategies
+(pickle for small runs, chunked zarr / netCDF for large runs, parquet for
+tabular). Keeping the I/O alongside the experiment that uses it makes each
+experiment self-contained and free to specialize without affecting siblings.
 
 Layout
 ------
@@ -16,11 +22,13 @@ We deliberately do NOT pickle the World object on disk. World is reconstructed
 on load from meta.json["world"] — this keeps the saved data robust to changes
 in rsa_core (renaming attributes, adding precomputed tables, etc.).
 
-Format choice
--------------
-Pickle is used because the env doesn't have h5netcdf / pyarrow / zarr today.
-To upgrade later: replace pickle with `ds.to_netcdf` (Stage 2/3) and
-`obs_df.to_parquet` (Stage 1) — only two lines change per save/load pair.
+Format choice for this experiment
+---------------------------------
+Pickle is used because the env doesn't have h5netcdf / pyarrow / zarr today,
+and ~500 MB of pickled DataFrames / Datasets is fine. For a substantially
+larger experiment, fork this io.py and swap pickle for `ds.to_netcdf` (Stage
+2/3) and `obs_df.to_parquet` (Stage 1) — only two lines change per save/load
+pair.
 """
 from __future__ import annotations
 
