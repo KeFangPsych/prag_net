@@ -1,0 +1,185 @@
+"""
+run.py — Driver for experiment "n1m5_T15_obs5000_seed42".
+
+Configuration
+-------------
+World      : n=1, m=5
+Thetas     : 0.1, 0.2, ..., 0.9
+T          : 15
+n_obs_seq  : 5000
+n_utt_seq  : 1
+
+Speakers (level 1, strat, alpha=3.0, update_internal=False):
+    inf_L1strat_a3_b1        psi='inf',   beta=1.0   (theoretical pure-info)
+    pers_plus_L1strat_a3_b0  psi='pers+', beta=0.0   (pure persuasion)
+
+Listeners (update_internal=False; alpha=3.0, alpha_vals=[3.0]):
+    literal_L0               level 0
+    credulous_L1coop_a3      level 1, omega='coop'   (psi grid collapses to ['inf'])
+    vigilant_L1strat_a3      level 1, omega='strat'  (psi grid = ['inf','pers+','pers-'])
+
+Output
+------
+data/simulations/raw_do_not_track/n1m5_T15_obs5000_seed42/
+    meta.json
+    observations.pkl
+    <speaker>/
+        meta.json
+        utterances.pkl
+        <listener>/
+            meta.json
+            beliefs.pkl
+
+The "raw_do_not_track" path matches the existing .gitignore convention so the
+data isn't committed.
+
+Idempotence
+-----------
+By default, any stage whose output file already exists is skipped (and loaded
+from disk for downstream stages). Pass --overwrite to redo everything.
+
+Usage
+-----
+    python models/simulations/simulation_experiments/n1m5_T15_obs5000_seed42/run.py
+    python models/simulations/simulation_experiments/n1m5_T15_obs5000_seed42/run.py --overwrite
+"""
+from __future__ import annotations
+
+import sys
+import time
+from pathlib import Path
+
+# --- repo-root bootstrap so `from models.simulations...` works from any cwd ---
+THIS_FILE = Path(__file__).resolve()
+# run.py -> n1m5.../ -> simulation_experiments/ -> simulations/ -> models/ -> repo root
+REPO_ROOT = THIS_FILE.parents[4]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+import numpy as np  # noqa: E402
+
+from models.simulations.world.sample_observations import sample_observations  # noqa: E402
+from models.simulations.speakers.sample_utterances import sample_utterances  # noqa: E402
+from models.simulations.listeners.compute_beliefs import compute_listener_beliefs  # noqa: E402
+from models.simulations.shared.io import (  # noqa: E402
+    save_observations,
+    load_observations,
+    save_utterances,
+    load_utterances,
+    save_beliefs,
+)
+
+
+# =============================================================================
+# Configuration
+# =============================================================================
+
+EXPERIMENT_NAME = "n1m5_T15_obs5000_seed42"
+
+WORLD = {"n": 1, "m": 5}
+THETAS = [round(0.1 * k, 1) for k in range(1, 10)]  # [0.1, 0.2, ..., 0.9]
+T = 15
+N_OBS_SEQ = 5000
+N_UTT_SEQ = 1
+OBS_SEED = 42
+UTT_SEED_BASE = 1000  # speaker_idx * step is added on top
+
+SPEAKERS = {
+    "inf_L1strat_a3_b1": {
+        "level": 1, "omega": "strat", "psi": "inf",
+        "alpha": 3.0, "beta": 1.0, "update_internal": False,
+    },
+    "pers_plus_L1strat_a3_b0": {
+        "level": 1, "omega": "strat", "psi": "pers+",
+        "alpha": 3.0, "beta": 0.0, "update_internal": False,
+    },
+}
+
+LISTENERS = {
+    "literal_L0": {
+        "level": 0,
+    },
+    "credulous_L1coop_a3": {
+        "level": 1, "omega": "coop", "update_internal": False,
+        "alpha": 3.0, "alpha_vals": [3.0],
+    },
+    "vigilant_L1strat_a3": {
+        "level": 1, "omega": "strat", "update_internal": False,
+        "alpha": 3.0, "alpha_vals": [3.0],
+    },
+}
+
+OUT_ROOT = REPO_ROOT / "data" / "simulations" / "raw_do_not_track" / EXPERIMENT_NAME
+
+
+# =============================================================================
+# Main
+# =============================================================================
+
+def main(overwrite: bool = False) -> None:
+    print(f"Output root: {OUT_ROOT}")
+    OUT_ROOT.mkdir(parents=True, exist_ok=True)
+
+    # ----- Stage 1: observations -----
+    obs_meta = {
+        "world": WORLD, "thetas": THETAS,
+        "n_obs_seq": N_OBS_SEQ, "T": T, "seed": OBS_SEED,
+    }
+    obs_pkl = OUT_ROOT / "observations.pkl"
+    if obs_pkl.exists() and not overwrite:
+        print(f"[Stage 1] {obs_pkl.name} exists — loading.")
+        obs_df, world = load_observations(OUT_ROOT)
+        print(f"  {len(obs_df):,} rows")
+    else:
+        print("[Stage 1] Sampling observations...")
+        t0 = time.time()
+        obs_df, world = sample_observations(obs_meta)
+        print(f"  {len(obs_df):,} rows in {time.time()-t0:.1f}s")
+        save_observations(OUT_ROOT, obs_df, obs_meta)
+
+    # ----- Stage 2 + Stage 3 nested -----
+    for spk_idx, (spk_name, spk_cfg) in enumerate(SPEAKERS.items()):
+        spk_dir = OUT_ROOT / spk_name
+        utt_meta = {
+            "speaker": spk_cfg,
+            "n_utt_seq": N_UTT_SEQ,
+            "seed": UTT_SEED_BASE + spk_idx,
+        }
+        utt_pkl = spk_dir / "utterances.pkl"
+        if utt_pkl.exists() and not overwrite:
+            print(f"[Stage 2: {spk_name}] {utt_pkl.name} exists — loading.")
+            utt_ds = load_utterances(spk_dir)
+        else:
+            print(f"[Stage 2: {spk_name}] Sampling utterances...")
+            t0 = time.time()
+            utt_ds = sample_utterances(obs_df, world, utt_meta)
+            print(
+                f"  sizes={dict(utt_ds.sizes)} "
+                f"path={utt_ds.attrs['execution_path']} "
+                f"in {time.time()-t0:.1f}s"
+            )
+            save_utterances(spk_dir, utt_ds, utt_meta)
+
+        for lst_name, lst_cfg in LISTENERS.items():
+            lst_dir = spk_dir / lst_name
+            blf_meta = {"listener": lst_cfg}
+            blf_pkl = lst_dir / "beliefs.pkl"
+            if blf_pkl.exists() and not overwrite:
+                print(f"[Stage 3: {spk_name}/{lst_name}] {blf_pkl.name} exists — skipping.")
+                continue
+            print(f"[Stage 3: {spk_name}/{lst_name}] Computing beliefs...")
+            t0 = time.time()
+            belief_ds = compute_listener_beliefs(utt_ds, world, blf_meta)
+            print(
+                f"  sizes={dict(belief_ds.sizes)} "
+                f"path={belief_ds.attrs['execution_path']} "
+                f"in {time.time()-t0:.1f}s"
+            )
+            save_beliefs(lst_dir, belief_ds, blf_meta)
+
+    print(f"\nDone.\nOutput root: {OUT_ROOT}")
+
+
+if __name__ == "__main__":
+    overwrite = "--overwrite" in sys.argv
+    main(overwrite=overwrite)
