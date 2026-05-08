@@ -1,0 +1,319 @@
+column,dtype,n_rows,n_missing,pct_missing,n_unique,is_key,min,max,mean,example_values
+participant_id,object,109,0,0.0,109,True,,,,P002; P003; P004; P005; P006
+termination_reason,object,109,109,1.0,0,False,,,,
+inf_r1_rt_approx,float64,109,109,1.0,0,False,,,,
+persp_r1_rt_approx,float64,109,109,1.0,0,False,,,,
+persm_r1_rt_approx,float64,109,109,1.0,0,False,,,,
+inf_literal_alpha,object,109,109,1.0,0,False,,,,
+persp_literal_alpha,object,109,109,1.0,0,False,,,,
+persm_literal_alpha,object,109,109,1.0,0,False,,,,
+attention_block_1_stimulus_variant,float64,109,100,0.9174311926605505,4,False,0.0,4.0,2.111111111111111,
+attention_block_3_num_effective,float64,109,100,0.9174311926605505,4,False,0.0,5.0,2.3333333333333335,
+attention_block_1_num_effective,float64,109,100,0.9174311926605505,5,False,0.0,5.0,3.2222222222222223,
+attention_block_2_stimulus_variant,float64,109,100,0.9174311926605505,5,False,0.0,9.0,2.3333333333333335,
+attention_block_2_num_effective,float64,109,100,0.9174311926605505,6,False,0.0,5.0,2.4444444444444446,
+attention_block_3_stimulus_variant,float64,109,100,0.9174311926605505,6,False,0.0,8.0,3.2222222222222223,
+feedback_text,object,109,35,0.3211009174311927,64,False,,,,"The attention checks were very hard to distinguish since they were put in the same color boxes as the prompt, which was the same for each round. I think it should have been a bit more clear of an attention check. ; No; This was interesting. Even a small change in a description can cause perspective to change or tip slightly. Everything was clear. Thank you.; no issues; none"
+experiment_version,object,109,0,0.0,1,False,,,,1.0.0
+completion_status,object,109,0,0.0,1,False,,,,completed
+terminated_early,bool,109,0,0.0,1,False,0.0,0.0,0.0,
+n_speaker_trials,int64,109,0,0.0,1,False,30.0,30.0,30.0,
+inf_n_trials,int64,109,0,0.0,1,False,10.0,10.0,10.0,
+persp_n_trials,int64,109,0,0.0,1,False,10.0,10.0,10.0,
+persp_r1_num_effective,float64,109,0,0.0,1,False,0.0,0.0,0.0,
+persp_r1_variant,float64,109,0,0.0,1,False,0.0,0.0,0.0,
+persp_r1_positions,object,109,0,0.0,1,False,,,,[]
+persp_r5_num_effective,float64,109,0,0.0,1,False,1.0,1.0,1.0,
+persp_r7_num_effective,float64,109,0,0.0,1,False,1.0,1.0,1.0,
+persp_r8_num_effective,float64,109,0,0.0,1,False,2.0,2.0,2.0,
+persm_n_trials,int64,109,0,0.0,1,False,10.0,10.0,10.0,
+persm_r1_num_effective,float64,109,0,0.0,1,False,5.0,5.0,5.0,
+persm_r1_variant,float64,109,0,0.0,1,False,0.0,0.0,0.0,
+persm_r1_positions,object,109,0,0.0,1,False,,,,"[0,1,2,3,4]"
+persm_r2_num_effective,float64,109,0,0.0,1,False,3.0,3.0,3.0,
+persm_r3_num_effective,float64,109,0,0.0,1,False,5.0,5.0,5.0,
+persm_r3_variant,float64,109,0,0.0,1,False,0.0,0.0,0.0,
+persm_r3_positions,object,109,0,0.0,1,False,,,,"[0,1,2,3,4]"
+persm_r6_num_effective,float64,109,0,0.0,1,False,4.0,4.0,4.0,
+persm_r8_num_effective,float64,109,0,0.0,1,False,4.0,4.0,4.0,
+persm_r10_num_effective,float64,109,0,0.0,1,False,3.0,3.0,3.0,
+inf_is_complete,bool,109,0,0.0,1,False,1.0,1.0,1.0,
+persp_is_complete,bool,109,0,0.0,1,False,1.0,1.0,1.0,
+persm_is_complete,bool,109,0,0.0,1,False,1.0,1.0,1.0,
+_merge,category,109,0,0.0,1,False,,,,both
+study,object,109,0,0.0,2,False,,,,pilot; main
+attention_total_failures,int64,109,0,0.0,2,False,0.0,1.0,0.06422018348623854,
+attention_block_1_passed,object,109,0,0.0,2,False,,,,True; False
+attention_block_2_passed,object,109,0,0.0,2,False,,,,True; False
+attention_block_3_passed,object,109,0,0.0,2,False,,,,True; False
+comp1_some_correct,bool,109,0,0.0,2,False,0.0,1.0,0.3944954128440367,
+comp1_most_correct,bool,109,0,0.0,2,False,0.0,1.0,0.6605504587155964,
+comp2_1_correct,bool,109,0,0.0,2,False,0.0,1.0,0.9541284403669725,
+comp2_1_num_effective,int64,109,0,0.0,2,False,1.0,3.0,1.9724770642201834,
+comp2_1_statement,object,109,0,0.0,2,False,,,,The treatment was ineffective for all patients.; The treatment was ineffective for some patients.
+comp2_2_correct,bool,109,0,0.0,2,False,0.0,1.0,0.963302752293578,
+comp2_2_num_effective,int64,109,0,0.0,2,False,1.0,3.0,2.0275229357798166,
+comp2_2_statement,object,109,0,0.0,2,False,,,,The treatment was ineffective for some patients.; The treatment was ineffective for all patients.
+comp3_correct,bool,109,0,0.0,2,False,0.0,1.0,0.6146788990825688,
+inf_role_comp_correct,bool,109,0,0.0,2,False,0.0,1.0,0.926605504587156,
+persp_role_comp_correct,object,109,0,0.0,2,False,,,,True; False
+persm_role_comp_correct,object,109,0,0.0,2,False,,,,True; False
+inf_r1_num_effective,float64,109,0,0.0,2,False,0.0,4.0,2.018348623853211,
+inf_r1_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r2_num_effective,float64,109,0,0.0,2,False,2.0,5.0,3.5137614678899083,
+inf_r2_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r3_num_effective,float64,109,0,0.0,2,False,1.0,3.0,2.0091743119266057,
+inf_r3_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r3_quantifier,object,109,0,0.0,2,False,,,,Most; Some
+inf_r4_num_effective,float64,109,0,0.0,2,False,2.0,4.0,3.0091743119266057,
+inf_r4_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r4_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+inf_r5_num_effective,float64,109,0,0.0,2,False,1.0,5.0,3.018348623853211,
+inf_r5_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r6_num_effective,float64,109,0,0.0,2,False,2.0,4.0,3.0091743119266057,
+inf_r6_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r6_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+inf_r7_num_effective,float64,109,0,0.0,2,False,1.0,3.0,2.0091743119266057,
+inf_r7_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r7_quantifier,object,109,0,0.0,2,False,,,,Most; Some
+inf_r8_num_effective,float64,109,0,0.0,2,False,2.0,4.0,3.0091743119266057,
+inf_r8_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r8_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+inf_r9_num_effective,float64,109,0,0.0,2,False,2.0,3.0,2.4954128440366974,
+inf_r9_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+inf_r9_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+inf_r10_num_effective,float64,109,0,0.0,2,False,1.0,4.0,2.5137614678899083,
+inf_r10_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+inf_r10_quantifier,object,109,0,0.0,2,False,,,,Most; Some
+persp_r1_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persp_r2_num_effective,float64,109,0,0.0,2,False,1.0,2.0,1.4495412844036697,
+persp_r2_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persp_r2_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persp_r3_num_effective,float64,109,0,0.0,2,False,0.0,1.0,0.44954128440366975,
+persp_r3_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persp_r4_num_effective,float64,109,0,0.0,2,False,2.0,3.0,2.55045871559633,
+persp_r4_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persp_r4_quantifier,object,109,0,0.0,2,False,,,,Most; Some
+persp_r5_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persp_r5_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persp_r6_num_effective,float64,109,0,0.0,2,False,0.0,2.0,0.8990825688073395,
+persp_r6_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persp_r7_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persp_r7_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persp_r8_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persp_r8_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persp_r9_num_effective,float64,109,0,0.0,2,False,1.0,3.0,1.8990825688073394,
+persp_r9_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persp_r9_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persp_r10_num_effective,float64,109,0,0.0,2,False,1.0,2.0,1.5504587155963303,
+persp_r10_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persp_r10_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persm_r1_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persm_r2_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persm_r2_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persm_r3_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persm_r4_num_effective,float64,109,0,0.0,2,False,3.0,4.0,3.5137614678899083,
+persm_r4_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persm_r4_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persm_r5_num_effective,float64,109,0,0.0,2,False,2.0,5.0,3.541284403669725,
+persm_r5_predicate,object,109,0,0.0,2,False,,,,Effective; Ineffective
+persm_r6_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persm_r6_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persm_r7_num_effective,float64,109,0,0.0,2,False,2.0,3.0,2.4862385321100917,
+persm_r7_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persm_r7_quantifier,object,109,0,0.0,2,False,,,,Most; Some
+persm_r8_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persm_r8_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persm_r9_num_effective,float64,109,0,0.0,2,False,3.0,4.0,3.5137614678899083,
+persm_r9_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persm_r9_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+persm_r10_predicate,object,109,0,0.0,2,False,,,,Ineffective; Effective
+persm_r10_quantifier,object,109,0,0.0,2,False,,,,Some; Most
+inf_literal_ll,float64,109,0,0.0,2,False,-11.561487031584658,-11.273804959132878,-11.41896563789295,
+persp_literal_ll,float64,109,0,0.0,2,False,-11.849169104036438,-11.273804959132878,-11.590519167336668,
+persm_literal_ll,float64,109,0,0.0,2,False,-11.849169104036438,-11.561487031584658,-11.709286995413096,
+block_1_scenario,object,109,0,0.0,3,False,,,,pers_minus; informative; pers_plus
+block_2_scenario,object,109,0,0.0,3,False,,,,pers_plus; pers_minus; informative
+block_3_scenario,object,109,0,0.0,3,False,,,,informative; pers_plus; pers_minus
+inf_r2_quantifier,object,109,0,0.0,3,False,,,,Some; Most; All
+inf_r5_quantifier,object,109,0,0.0,3,False,,,,Most; All; Some
+persm_persp_F_alpha,float64,109,0,0.0,3,False,0.00100450845400799,3.688747995787334,0.03548013133398591,
+attention_block_2_required_description,object,109,0,0.0,4,False,,,,The treatment was effective for some patients.; The treatment was effective for no patients.; The treatment was ineffective for most patients.; The treatment was ineffective for some patients.
+comp1_some_response,object,109,0,0.0,4,False,,,,At least one and could be all.; At least two and could be all.; At least one but must not be all.; At least two but must not be all.
+comp1_most_response,object,109,0,0.0,4,False,,,,More than half and could be all.; More than 75% and could be all.; More than 75% but must not be all.; More than half but must not be all.
+inf_role_comp_selected,object,109,0,0.0,4,False,,,,Help the listener correctly identify which trial outcome I observed; Help the listener <strong>correctly identify</strong> which trial outcome I observed; Make the listener think the treatment is <strong>ineffective</strong>; Make the listener think the treatment is <strong>highly effective</strong>
+persp_role_comp_selected,object,109,0,0.0,4,False,,,,Make the listener rate the treatment as highly effective; Make the listener rate the treatment as <strong>highly effective</strong>; Help the listener <strong>correctly identify</strong> which trial outcome I observed; Make the listener rate the treatment as <strong>ineffective</strong>
+persm_role_comp_selected,object,109,0,0.0,4,False,,,,Make the listener rate the treatment as ineffective; Make the listener rate the treatment as <strong>ineffective</strong>; Help the listener <strong>correctly identify</strong> which trial outcome I observed; Make the listener rate the treatment as <strong>highly effective</strong>
+inf_r1_quantifier,object,109,0,0.0,4,False,,,,All; Most; No; Some
+persp_r1_quantifier,object,109,0,0.0,4,False,,,,Some; No; Most; All
+persp_r3_quantifier,object,109,0,0.0,4,False,,,,No; Some; All; Most
+persp_r6_quantifier,object,109,0,0.0,4,False,,,,Some; Most; All; No
+persm_r1_quantifier,object,109,0,0.0,4,False,,,,Some; No; All; Most
+persm_r3_quantifier,object,109,0,0.0,4,False,,,,Some; No; All; Most
+persm_r5_quantifier,object,109,0,0.0,4,False,,,,Some; Most; No; All
+attention_block_1_round,float64,109,0,0.0,5,False,5.0,9.0,6.798165137614679,
+attention_block_1_required_description,object,109,0,0.0,5,False,,,,The treatment was effective for most patients.; The treatment was effective for some patients.; The treatment was ineffective for some patients.; The treatment was ineffective for most patients.; The treatment was ineffective for all patients.
+attention_block_2_round,float64,109,0,0.0,5,False,5.0,9.0,6.825688073394495,
+attention_block_3_round,float64,109,0,0.0,5,False,5.0,9.0,6.954128440366972,
+inf_r1_variant,float64,109,0,0.0,5,False,0.0,4.0,0.8807339449541285,
+inf_r5_variant,float64,109,0,0.0,5,False,0.0,4.0,1.0275229357798166,
+inf_r10_variant,float64,109,0,0.0,5,False,0.0,4.0,2.036697247706422,
+persp_r3_variant,float64,109,0,0.0,5,False,0.0,4.0,0.8532110091743119,
+persp_r5_variant,float64,109,0,0.0,5,False,0.0,4.0,1.9724770642201834,
+persp_r5_positions,object,109,0,0.0,5,False,,,,[2]; [1]; [3]; [4]; [0]
+persp_r7_variant,float64,109,0,0.0,5,False,0.0,4.0,1.944954128440367,
+persp_r7_positions,object,109,0,0.0,5,False,,,,[3]; [2]; [0]; [1]; [4]
+persm_r6_variant,float64,109,0,0.0,5,False,0.0,4.0,2.220183486238532,
+persm_r6_positions,object,109,0,0.0,5,False,,,,"[0,1,2,3]; [0,1,2,4]; [0,1,3,4]; [1,2,3,4]; [0,2,3,4]"
+persm_r8_variant,float64,109,0,0.0,5,False,0.0,4.0,2.128440366972477,
+persm_r8_positions,object,109,0,0.0,5,False,,,,"[0,2,3,4]; [0,1,2,4]; [0,1,2,3]; [1,2,3,4]; [0,1,3,4]"
+block_order,object,109,0,0.0,6,False,,,,persm_persp_inf; inf_persm_persp; persm_inf_persp; persp_persm_inf; persp_inf_persm; inf_persp_persm
+attention_block_3_required_description,object,109,0,0.0,6,False,,,,The treatment was ineffective for most patients.; The treatment was ineffective for all patients.; The treatment was ineffective for some patients.; The treatment was effective for all patients.; The treatment was effective for some patients.; The treatment was ineffective for no patients.
+comp3_selected,object,109,0,0.0,6,False,,,,"[2,0]; [0,2]; [0]; [2]; [3]; [3,2]"
+inf_r1_positions,object,109,0,0.0,6,False,,,,"[]; [0,1,3,4]; [0,1,2,4]; [0,2,3,4]; [0,1,2,3]; [1,2,3,4]"
+inf_r5_positions,object,109,0,0.0,6,False,,,,"[3]; [2]; [0,1,2,3,4]; [4]; [0]; [1]"
+persp_r3_positions,object,109,0,0.0,6,False,,,,[]; [0]; [2]; [3]; [1]; [4]
+inf_r2_variant,float64,109,0,0.0,10,False,0.0,9.0,2.1009174311926606,
+inf_r3_variant,float64,109,0,0.0,10,False,0.0,9.0,3.2110091743119265,
+inf_r4_variant,float64,109,0,0.0,10,False,0.0,9.0,2.7889908256880735,
+inf_r6_variant,float64,109,0,0.0,10,False,0.0,9.0,2.9908256880733943,
+inf_r7_variant,float64,109,0,0.0,10,False,0.0,9.0,3.3944954128440368,
+inf_r8_variant,float64,109,0,0.0,10,False,0.0,9.0,3.1376146788990824,
+inf_r9_variant,float64,109,0,0.0,10,False,0.0,9.0,4.651376146788991,
+inf_r10_positions,object,109,0,0.0,10,False,,,,"[2]; [0]; [1,2,3,4]; [1]; [0,1,2,4]; [3]; [4]; [0,1,2,3]; [0,2,3,4]; [0,1,3,4]"
+persp_r2_variant,float64,109,0,0.0,10,False,0.0,9.0,3.0091743119266057,
+persp_r4_variant,float64,109,0,0.0,10,False,0.0,9.0,4.532110091743119,
+persp_r6_variant,float64,109,0,0.0,10,False,0.0,9.0,2.3577981651376145,
+persp_r8_variant,float64,109,0,0.0,10,False,0.0,9.0,4.706422018348624,
+persp_r8_positions,object,109,0,0.0,10,False,,,,"[1,3]; [3,4]; [2,4]; [2,3]; [1,4]; [0,4]; [0,1]; [0,3]; [1,2]; [0,2]"
+persp_r9_variant,float64,109,0,0.0,10,False,0.0,9.0,3.055045871559633,
+persp_r10_variant,float64,109,0,0.0,10,False,0.0,9.0,3.1559633027522938,
+persm_r2_variant,float64,109,0,0.0,10,False,0.0,9.0,4.844036697247707,
+persm_r2_positions,object,109,0,0.0,10,False,,,,"[1,3,4]; [2,3,4]; [0,2,4]; [0,2,3]; [0,1,4]; [1,2,4]; [1,2,3]; [0,1,2]; [0,3,4]; [0,1,3]"
+persm_r4_variant,float64,109,0,0.0,10,False,0.0,9.0,3.1009174311926606,
+persm_r5_variant,float64,109,0,0.0,10,False,0.0,9.0,2.0275229357798166,
+persm_r7_variant,float64,109,0,0.0,10,False,0.0,9.0,4.422018348623853,
+persm_r9_variant,float64,109,0,0.0,10,False,0.0,9.0,3.4403669724770642,
+persm_r10_variant,float64,109,0,0.0,10,False,0.0,9.0,4.825688073394495,
+persm_r10_positions,object,109,0,0.0,10,False,,,,"[0,2,3]; [0,1,4]; [0,1,2]; [2,3,4]; [1,2,3]; [1,3,4]; [0,2,4]; [0,3,4]; [0,1,3]; [1,2,4]"
+persp_persm_F_alpha,float64,109,0,0.0,10,False,0.00100450845400799,6.674575651589412,0.2784481834457613,
+persm_inf_F_alpha,float64,109,0,0.0,10,False,0.00100450845400799,4.910820080598129,0.1809402986586226,
+inf_r2_positions,object,109,0,0.0,11,False,,,,"[1,4]; [2,3]; [0,1,2,3,4]; [2,4]; [1,3]; [0,4]; [0,1]; [0,2]; [3,4]; [1,2]; [0,3]"
+persp_r6_positions,object,109,0,0.0,11,False,,,,"[]; [0,3]; [3,4]; [2,4]; [1,3]; [2,3]; [0,4]; [0,2]; [1,2]; [1,4]; [0,1]"
+persm_r5_positions,object,109,0,0.0,11,False,,,,"[0,1,2,3,4]; [0,1]; [2,3]; [0,4]; [0,3]; [3,4]; [1,4]; [1,3]; [0,2]; [2,4]; [1,2]"
+persp_persm_T_alpha,float64,109,0,0.0,13,False,0.00100450845400799,99.99999508460526,1.6726989503177803,
+persm_persp_T_alpha,float64,109,0,0.0,13,False,0.00100450845400799,9.816800954518477,0.24527275531367845,
+inf_r8_positions,object,109,0,0.0,14,False,,,,"[0,3]; [1,2]; [0,1,2,4]; [3,4]; [0,1]; [0,2,3,4]; [0,1,2,3]; [0,2]; [1,2,3,4]; [0,1,3,4]; [2,4]; [1,4]; [1,3]; [2,3]"
+inf_persp_F_alpha,object,109,0,0.0,14,False,,,,0.00100450845400799; 4.844410203612789; 4.724372028299369; 8.176284572383581; determ; 3.8410000456283786; 6.056276467329036; 2.741899164634834; 1.3341947570071147; 3.389352767653292; 4.265590990796421; 3.7488701898867567; 3.841000045638274; 9.69084803437322
+persp_inf_F_alpha,float64,109,0,0.0,14,False,0.00100450845400799,5.4432204923928165,0.4093688437665604,
+inf_r3_positions,object,109,0,0.0,15,False,,,,"[0]; [2,3,4]; [2]; [1]; [0,1,3]; [1,2,3]; [0,1,4]; [0,3,4]; [3]; [1,2,4]; [4]; [0,2,3]; [1,3,4]; [0,2,4]; [0,1,2]"
+inf_r4_positions,object,109,0,0.0,15,False,,,,"[0,2]; [2,4]; [0,1,2,4]; [1,2]; [1,3]; [0,1,2,3]; [0,1,3,4]; [0,2,3,4]; [0,4]; [1,4]; [0,1]; [1,2,3,4]; [0,3]; [3,4]; [2,3]"
+inf_r6_positions,object,109,0,0.0,15,False,,,,"[3,4]; [1,2]; [0,1,2,3]; [1,4]; [0,2]; [0,1,2,4]; [1,2,3,4]; [1,3]; [0,1]; [0,1,3,4]; [0,4]; [0,2,3,4]; [0,3]; [2,3]; [2,4]"
+inf_r7_positions,object,109,0,0.0,15,False,,,,"[3]; [0]; [1,2,3]; [0,2,3]; [1,3,4]; [0,1,3]; [2]; [4]; [0,2,4]; [0,1,2]; [1,2,4]; [1]; [2,3,4]; [0,1,4]; [0,3,4]"
+persp_r2_positions,object,109,0,0.0,15,False,,,,"[3]; [2]; [0,1]; [0,4]; [1,2]; [0]; [0,3]; [1,3]; [1,4]; [4]; [1]; [0,2]; [2,4]; [2,3]; [3,4]"
+persp_r9_positions,object,109,0,0.0,15,False,,,,"[4]; [2]; [1,2,3]; [1,3,4]; [0,2,3]; [0,1,3]; [0,1,2]; [0,1,4]; [0,2,4]; [0]; [3]; [2,3,4]; [0,3,4]; [1]; [1,2,4]"
+persp_r10_positions,object,109,0,0.0,15,False,,,,"[0,3]; [1,4]; [2]; [0]; [0,1]; [4]; [3]; [0,4]; [1,3]; [1]; [1,2]; [3,4]; [2,3]; [0,2]; [2,4]"
+persm_r4_positions,object,109,0,0.0,15,False,,,,"[0,1,3,4]; [1,2,3,4]; [0,1,2,4]; [0,3,4]; [2,3,4]; [0,1,4]; [0,1,2,3]; [0,2,3]; [1,3,4]; [0,2,3,4]; [0,2,4]; [1,2,3]; [1,2,4]; [0,1,3]; [0,1,2]"
+persm_r9_positions,object,109,0,0.0,15,False,,,,"[0,1,3,4]; [0,1,2,4]; [0,2,3,4]; [1,2,3]; [0,1,2,3]; [0,1,3]; [0,2,3]; [1,2,3,4]; [2,3,4]; [0,2,4]; [0,1,2]; [0,1,4]; [1,3,4]; [0,3,4]; [1,2,4]"
+inf_persp_T_alpha,object,109,0,0.0,15,False,,,,0.00100450845400799; 13.183135861006113; 18.396483916257537; 0.29562738720833154; 20.593857297190265; determ; 12.672774935430617; 20.01839452658797; 9.549985896456594; 5.928061119764994; 11.39689089824612; 15.501663779092834; 0.26354504550157776; 12.261055695892216; 99.9999921581977
+inf_r9_positions,object,109,0,0.0,19,False,,,,"[0,3,4]; [0,1,4]; [1,3]; [1,3,4]; [0,2]; [0,4]; [0,1]; [1,2]; [1,2,3]; [3,4]; [0,2,3]; [1,2,4]; [1,4]; [0,2,4]; [0,1,2]; [0,1,3]; [2,3]; [2,3,4]; [2,4]"
+persp_r4_positions,object,109,0,0.0,20,False,,,,"[1,2,4]; [0,1,3]; [0,2]; [0,1]; [1,4]; [0,4]; [1,2]; [0,1,4]; [2,4]; [0,3,4]; [2,3,4]; [1,2,3]; [1,3]; [1,3,4]; [2,3]; [0,3]; [3,4]; [0,2,3]; [0,2,4]; [0,1,2]"
+persm_r7_positions,object,109,0,0.0,20,False,,,,"[2,3]; [1,2]; [0,3,4]; [1,4]; [0,4]; [1,2,3]; [0,1,2]; [1,3]; [1,2,4]; [0,1,3]; [1,3,4]; [0,2]; [0,1,4]; [0,3]; [0,2,4]; [2,4]; [0,1]; [3,4]; [2,3,4]; [0,2,3]"
+persp_inf_T_alpha,object,109,0,0.0,20,False,,,,0.00100450845400799; 2.996604148491937; 0.10957322814048834; determ; 0.17479501335653708; 1.5643019277927643; 0.739157089926853; 0.9282271246050051; 0.9394776579371732; 0.9862094636914288; 1.2097021286350855; 0.5955064780007308; 1.2762290049428742; 0.5347617437878681; 5.023300648349953; 0.40446872052035854; 0.04185610825432158; 2.3952625411832837; 0.16522352146107966; 0.5449725019288443
+inf_inf_F_ll,float64,109,0,0.0,21,False,-11.275763960973425,-0.6931471805599453,-4.672448913357202,
+inf_inf_F_alpha,float64,109,0,0.0,22,False,0.00100450845400799,69.09880793317592,34.033221108833864,
+inf_persm_F_alpha,object,109,0,0.0,22,False,,,,3.117995282075071; determ; 0.00100450845400799; 3.1934862583679635; 4.993455599943693; 0.7574429262147316; 1.4016828338204863; 3.535918137681809; 3.9876212290073187; 2.8897400528471637; 2.267031401110771; 3.193486258350961; 1.9602470126834377; 1.9602470126804339; 4.872980605094414; 1.4918842037467506; 4.872980605118951; 2.494427138257943; 6.211469174708762; 3.5359181376740008; 2.81949762308594; 1.0307756766476381
+inf_inf_T_alpha,float64,109,0,0.0,23,False,0.00100450845400799,7.036404175053292,0.4733267539441528,
+persm_inf_T_alpha,object,109,0,0.0,23,False,,,,0.00100450845400799; determ; 0.48416037214560625; 4.789831628463035; 1.1988002798016504; 0.32295633280742436; 0.5765837270601032; 0.3322891023076158; 0.06190179855456321; 0.3219464712683671; 6.988449383249662; 4.219605204062997; 0.23740731771298385; 0.9796026362245788; 0.23898429697381632; 0.916631228117553; 4.700015553052561; 1.3416934468099877; 0.7403348384026561; 0.9498738056307057; 0.7342223253921039; 0.5383672653595591; 0.7991404016217268
+persm_inf_F_ll,float64,109,0,0.0,23,False,-11.853167126467543,-5.651073510788388,-11.573887402652154,
+inf_persm_T_alpha,object,109,0,0.0,26,False,,,,18.04930054081971; determ; 0.00100450845400799; 11.669867420282836; 13.64073466967148
+persp_inf_F_ll,float64,109,0,0.0,26,False,-11.853167126467543,-4.527161382890921,-11.159058447535193,
+inf_persp_F_ll,float64,109,0,0.0,34,False,-11.277815822997093,0.0,-9.541186995484889,
+inf_persm_F_ll,float64,109,0,0.0,37,False,-11.565702317351917,-0.6931471805599453,-9.908578648676494,
+inf_inf_T_ll,float64,109,0,0.0,39,False,-11.564299666550587,-6.35997341248136,-11.057239631215898,
+inf_persp_T_ll,float64,109,0,0.0,39,False,-11.558477913232224,0.0,-9.99364466013257,
+inf_persm_T_ll,float64,109,0,0.0,39,False,-11.56494814928803,-0.6931471805599453,-10.356443758674517,
+persp_persp_T_alpha,object,109,0,0.0,42,False,,,,3.8684355806493183; 9.889278725867667; determ; 26.488171284758675; 0.9727161264976589
+persp_persp_F_alpha,object,109,0,0.0,42,False,,,,2.8487108688518235; 4.92630381983292; determ; 5.1021919354884755; 2.8856948771389144
+persm_persm_F_alpha,object,109,0,0.0,43,False,,,,determ; determ; determ; determ; 0.35305200312122775
+persm_persm_T_alpha,object,109,0,0.0,45,False,,,,determ; determ; determ; determ; 0.21358758645323728
+persm_persp_F_ll,float64,109,0,0.0,46,False,-11.852123022666325,-9.533469522444092,-11.690086540187595,
+persm_persm_F_ll,float64,109,0,0.0,46,False,-11.852617255223707,0.0,-6.001000474837806,
+persp_persp_F_ll,float64,109,0,0.0,50,False,-11.8527392255974,0.0,-5.536835990573711,
+persp_persm_F_ll,float64,109,0,0.0,50,False,-11.852123022666326,-6.939804113364437,-11.426267499083046,
+persm_persm_T_ll,float64,109,0,0.0,51,False,-11.851067046717006,0.0,-6.045766211047,
+persm_inf_T_ll,float64,109,0,0.0,52,False,-11.85432483014549,-2.0794415416798357,-10.41146794222303,
+persm_persp_T_ll,float64,109,0,0.0,52,False,-11.850625466767708,-10.73644724640388,-11.692566788240322,
+persp_persp_T_ll,float64,109,0,0.0,53,False,-11.853593297313028,0.0,-5.756122927739964,
+persp_inf_T_ll,float64,109,0,0.0,54,False,-11.854964329540678,-2.0794415416798357,-10.486774341674753,
+persp_persm_T_ll,float64,109,0,0.0,54,False,-11.850703603276743,-5.65788555138859,-11.454898069791852,
+persp_r5_rt_approx,float64,109,0,0.0,107,False,4024.0,39511.0,10371.56880733945,
+comp1_most_rt,float64,109,0,0.0,108,False,1008.0,94915.0,13229.495412844037,
+inf_r3_rt_approx,float64,109,0,0.0,108,False,4247.0,41170.0,12658.018348623853,
+inf_r4_rt_approx,float64,109,0,0.0,108,False,4059.0,50144.0,11162.045871559632,
+inf_r7_rt_approx,float64,109,0,0.0,108,False,4309.0,66034.0,14692.990825688074,
+inf_r9_rt_approx,float64,109,0,0.0,108,False,4081.0,75201.0,13842.45871559633,
+persp_r2_rt_approx,float64,109,0,0.0,108,False,4716.0,52015.0,13601.311926605504,
+persp_r4_rt_approx,float64,109,0,0.0,108,False,4487.0,35586.0,10580.036697247706,
+persp_r6_rt_approx,float64,109,0,0.0,108,False,5009.0,51606.0,13333.844036697248,
+duration_minutes,float64,109,0,0.0,109,False,4.965616666666667,38.67665,12.342264525993883,
+total_time_elapsed_ms,int64,109,0,0.0,109,False,297930.0,2320588.0,740482.1834862386,
+attention_block_1_time_elapsed,float64,109,0,0.0,109,False,93248.0,1926955.0,381307.15596330276,
+attention_block_2_time_elapsed,float64,109,0,0.0,109,False,173496.0,2166102.0,542991.1009174312,
+attention_block_3_time_elapsed,float64,109,0,0.0,109,False,278073.0,2297236.0,689063.2660550459,
+comp1_some_rt,float64,109,0,0.0,109,False,2288.0,89327.0,16084.80733944954,
+comp2_1_time_elapsed,int64,109,0,0.0,109,False,23480.0,857314.0,162780.5504587156,
+comp2_2_time_elapsed,int64,109,0,0.0,109,False,25823.0,865518.0,170138.8623853211,
+comp3_time_elapsed,int64,109,0,0.0,109,False,31599.0,878608.0,187065.99082568806,
+inf_role_comp_time_elapsed,int64,109,0,0.0,109,False,81213.0,1984273.0,424880.56880733947,
+persp_role_comp_time_elapsed,float64,109,0,0.0,109,False,44529.0,1770680.0,429557.68807339447,
+persm_role_comp_time_elapsed,float64,109,0,0.0,109,False,42840.0,2210770.0,429863.752293578,
+inf_r1_time_elapsed,int64,109,0,0.0,109,False,98933.0,2032026.0,454126.0917431193,
+inf_r2_time_elapsed,int64,109,0,0.0,109,False,106576.0,2038679.0,468085.88073394494,
+inf_r2_rt_approx,int64,109,0,0.0,109,False,4768.0,86160.0,13959.788990825688,
+inf_r3_time_elapsed,float64,109,0,0.0,109,False,114560.0,2048315.0,480743.8990825688,
+inf_r4_time_elapsed,float64,109,0,0.0,109,False,119075.0,2062917.0,491905.9449541284,
+inf_r5_time_elapsed,float64,109,0,0.0,109,False,123478.0,2084323.0,501145.6422018349,
+inf_r5_rt_approx,float64,109,0,0.0,109,False,3174.0,30540.0,9239.697247706423,
+inf_r6_time_elapsed,float64,109,0,0.0,109,False,127282.0,2103651.0,513345.6788990826,
+inf_r6_rt_approx,float64,109,0,0.0,109,False,3804.0,38287.0,12200.036697247706,
+inf_r7_time_elapsed,float64,109,0,0.0,109,False,147084.0,2169685.0,528038.6697247706,
+inf_r8_time_elapsed,float64,109,0,0.0,109,False,156478.0,2176010.0,539566.0550458715,
+inf_r8_rt_approx,float64,109,0,0.0,109,False,4232.0,52813.0,11527.385321100917,
+inf_r9_time_elapsed,float64,109,0,0.0,109,False,161372.0,2191475.0,553408.5137614679,
+inf_r10_time_elapsed,float64,109,0,0.0,109,False,166176.0,2197192.0,563856.1376146789,
+inf_r10_rt_approx,float64,109,0,0.0,109,False,4116.0,31620.0,10447.62385321101,
+persp_r1_time_elapsed,float64,109,0,0.0,109,False,72409.0,1814013.0,461124.1651376147,
+persp_r2_time_elapsed,float64,109,0,0.0,109,False,86401.0,1831869.0,474725.4770642202,
+persp_r3_time_elapsed,float64,109,0,0.0,109,False,99465.0,1862327.0,486650.77981651376,
+persp_r3_rt_approx,float64,109,0,0.0,109,False,4656.0,65469.0,11925.302752293577,
+persp_r4_time_elapsed,float64,109,0,0.0,109,False,107209.0,1870099.0,497230.81651376147,
+persp_r5_time_elapsed,float64,109,0,0.0,109,False,121832.0,1886141.0,507602.38532110094,
+persp_r6_time_elapsed,float64,109,0,0.0,109,False,130809.0,1900126.0,520936.2293577982,
+persp_r7_time_elapsed,float64,109,0,0.0,109,False,163736.0,1907379.0,532855.9082568807,
+persp_r7_rt_approx,float64,109,0,0.0,109,False,3907.0,60956.0,11919.678899082568,
+persp_r8_time_elapsed,float64,109,0,0.0,109,False,181592.0,1914735.0,544229.5137614679,
+persp_r8_rt_approx,float64,109,0,0.0,109,False,4133.0,29109.0,11373.605504587156,
+persp_r9_time_elapsed,float64,109,0,0.0,109,False,187329.0,1956069.0,557216.6146788991,
+persp_r9_rt_approx,float64,109,0,0.0,109,False,3711.0,41334.0,12987.100917431193,
+persp_r10_time_elapsed,float64,109,0,0.0,109,False,193512.0,1965057.0,568755.4403669725,
+persp_r10_rt_approx,float64,109,0,0.0,109,False,3899.0,58938.0,11538.825688073395,
+persm_r1_time_elapsed,float64,109,0,0.0,109,False,60328.0,2230074.0,464148.45871559635,
+persm_r2_time_elapsed,float64,109,0,0.0,109,False,68808.0,2237503.0,478119.9816513761,
+persm_r2_rt_approx,float64,109,0,0.0,109,False,4772.0,40111.0,13971.522935779816,
+persm_r3_time_elapsed,float64,109,0,0.0,109,False,73160.0,2244699.0,490489.4495412844,
+persm_r3_rt_approx,float64,109,0,0.0,109,False,3833.0,29386.0,12369.467889908257,
+persm_r4_time_elapsed,float64,109,0,0.0,109,False,79568.0,2253288.0,501707.11926605506,
+persm_r4_rt_approx,float64,109,0,0.0,109,False,3745.0,31829.0,11217.669724770642,
+persm_r5_time_elapsed,float64,109,0,0.0,109,False,83376.0,2259069.0,512415.7706422018,
+persm_r5_rt_approx,float64,109,0,0.0,109,False,3808.0,39381.0,10708.651376146789,
+persm_r6_time_elapsed,float64,109,0,0.0,109,False,86984.0,2264443.0,525745.6972477065,
+persm_r6_rt_approx,float64,109,0,0.0,109,False,3608.0,44201.0,13329.926605504586,
+persm_r7_time_elapsed,float64,109,0,0.0,109,False,90416.0,2272103.0,538375.2018348624,
+persm_r7_rt_approx,float64,109,0,0.0,109,False,3432.0,50003.0,12629.504587155963,
+persm_r8_time_elapsed,float64,109,0,0.0,109,False,94520.0,2280683.0,552200.2752293578,
+persm_r8_rt_approx,float64,109,0,0.0,109,False,3895.0,54018.0,13825.073394495414,
+persm_r9_time_elapsed,float64,109,0,0.0,109,False,97568.0,2289200.0,563401.1559633027,
+persm_r9_rt_approx,float64,109,0,0.0,109,False,3048.0,50848.0,11200.880733944954,
+persm_r10_time_elapsed,float64,109,0,0.0,109,False,100824.0,2301297.0,574570.7247706422,
+persm_r10_rt_approx,float64,109,0,0.0,109,False,3256.0,35497.0,11169.56880733945,
