@@ -1,0 +1,5 @@
+condition,pair,pair_id,positive_utt,negative_utt,count_positive,count_negative,total,prop_positive,prop_negative
+inf,all effective vs. no ineffective,1,all effective,no ineffective,110,0,110,1.0,0.0
+inf,no effective vs. all ineffective,2,no effective,all ineffective,6,44,50,0.12,0.88
+persp,no effective vs. all ineffective,2,no effective,all ineffective,33,35,68,0.4852941176470588,0.5147058823529411
+persm,all effective vs. no ineffective,1,all effective,no ineffective,11,68,79,0.13924050632911392,0.8607594936708861

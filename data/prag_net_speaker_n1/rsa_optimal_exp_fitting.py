@@ -1,7 +1,7 @@
 """
 rsa_optimal_exp_fitting.py
 
-Fitting functions for the RSA optimal experiment model.
+Fitting functions for the RSA experiment model.
 """
 
 import warnings

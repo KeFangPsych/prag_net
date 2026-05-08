@@ -1936,7 +1936,7 @@ class PragmaticListener_obs_n:
                     log_P_u_given_theta_psi_alpha = log_M_product(
                         log_P_u_given_O_psi_alpha,
                         log_P_O_given_theta,
-                        precise= precision
+                        precise= USE_PRECISE_LOGSPACE
                     )
                     buf[i, j, :, :] = log_P_u_given_theta_psi_alpha
 
