@@ -1,0 +1,65 @@
+column,dtype,n_rows,n_missing,pct_missing,n_unique,is_key,min,max,mean,example_values
+participant_id,object,634,0,0.0,634,True,,,,P001; P002; P003; P004; P005
+datapipe_condition,float64,634,634,1.0,0,False,,,,
+cell_idx,float64,634,634,1.0,0,False,,,,
+r1_rt,float64,634,634,1.0,0,False,,,,
+r2_rt,float64,634,634,1.0,0,False,,,,
+r3_rt,float64,634,634,1.0,0,False,,,,
+r4_rt,float64,634,634,1.0,0,False,,,,
+r5_rt,float64,634,634,1.0,0,False,,,,
+termination_reason,object,634,609,0.9605678233438486,2,False,,,,attention_check_failed; inactivity_timeout
+open_speaker_strategy,object,634,436,0.6876971608832808,198,False,,,,"It was based on the wording they used; I wouldn't say I decided, but I assumed. If the treatments were described as effective for all or not effective for anyone I assumed it was a Scientist.; I put a positive spin on the term some as fact from the scientist; In the end I figured that the language they were using seemed to me to lean towards negativity rather being neutral or overly positive. Like instead of saying that the treatment was effective for most, they would say it was ineffective some. ; The way they use the wording"
+r1_speaker_type,object,634,426,0.6719242902208202,3,False,,,,anti; pro; neutral
+r2_speaker_type,object,634,426,0.6719242902208202,3,False,,,,neutral; pro; anti
+r3_speaker_type,object,634,426,0.6719242902208202,3,False,,,,neutral; pro; anti
+r4_speaker_type,object,634,426,0.6719242902208202,3,False,,,,neutral; anti; pro
+r5_speaker_type,object,634,426,0.6719242902208202,3,False,,,,neutral; anti; pro
+attention_speaker_type,object,634,426,0.6719242902208202,3,False,,,,anti; pro; neutral
+open_estimation_strategy,object,634,398,0.6277602523659306,236,False,,,,"Each one used the ""most"" word, so I just estimated a percentage in 20% increments; Because his description gave me information about how many patients the treatment worked for. I used the words like some most or all to narrow down how effective the treatment could be.; I made sure to read the speakers descriptions very carefully and answered based my answer on that.; For all 100% for none 0% so pretty east to match ; converted as a percentage re the info and likelyhood provided prior"
+open_feedback,object,634,369,0.582018927444795,184,False,,,,"The survey was easier to understand. no issues.; Everything was clear and precise, thanks!; no; Thanks tor the invite ; No further comments or feedback, thank you though!"
+competence_framing,object,634,25,0.03943217665615142,5,False,,,,goal_pursuit_effectiveness; helpfulness; communicator; informativeness; goal_accomplishment
+competence_score,float64,634,25,0.03943217665615142,88,False,0.0,100.0,66.03776683087028,
+attention_check_passed,object,634,3,0.00473186119873817,2,False,,,,True; False
+attention_effectiveness,float64,634,3,0.00473186119873817,15,False,0.0,100.0,98.4310618066561,
+r2_utterance_predicate,object,634,1,0.0015772870662460567,2,False,,,,Ineffective; Effective
+r3_utterance_predicate,object,634,1,0.0015772870662460567,2,False,,,,Effective; Ineffective
+r4_utterance_predicate,object,634,1,0.0015772870662460567,2,False,,,,Ineffective; Effective
+r5_utterance_predicate,object,634,1,0.0015772870662460567,2,False,,,,Effective; Ineffective
+r2_utterance_quantifier,object,634,1,0.0015772870662460567,3,False,,,,Some; No; All
+r3_utterance_quantifier,object,634,1,0.0015772870662460567,3,False,,,,Some; All; No
+r4_utterance_quantifier,object,634,1,0.0015772870662460567,3,False,,,,Some; No; All
+r5_utterance_quantifier,object,634,1,0.0015772870662460567,3,False,,,,Some; All; No
+r2_utterance_text,object,634,1,0.0015772870662460567,4,False,,,,The treatment was ineffective for some patients.; The treatment was ineffective for no patients.; The treatment was effective for some patients.; The treatment was ineffective for all patients.
+r3_utterance_text,object,634,1,0.0015772870662460567,4,False,,,,The treatment was effective for some patients.; The treatment was effective for all patients.; The treatment was ineffective for some patients.; The treatment was effective for no patients.
+r4_utterance_text,object,634,1,0.0015772870662460567,4,False,,,,The treatment was ineffective for some patients.; The treatment was ineffective for no patients.; The treatment was effective for some patients.; The treatment was ineffective for all patients.
+r5_utterance_text,object,634,1,0.0015772870662460567,4,False,,,,The treatment was effective for some patients.; The treatment was effective for all patients.; The treatment was ineffective for some patients.; The treatment was effective for no patients.
+r2_effectiveness,float64,634,1,0.0015772870662460567,21,False,0.0,100.0,44.1390205371248,
+r3_effectiveness,float64,634,1,0.0015772870662460567,21,False,0.0,100.0,47.654028436018955,
+r4_effectiveness,float64,634,1,0.0015772870662460567,21,False,0.0,100.0,47.10110584518168,
+r5_effectiveness,float64,634,1,0.0015772870662460567,21,False,0.0,100.0,49.60505529225908,
+experiment_version,object,634,0,0.0,1,False,,,,1.0.0
+terminated_early,bool,634,0,0.0,2,False,0.0,1.0,0.03943217665615142,
+measure_order,object,634,0,0.0,2,False,,,,speaker_type_first; effectiveness_first
+comp1_some_correct,bool,634,0,0.0,2,False,0.0,1.0,0.443217665615142,
+comp1_most_correct,bool,634,0,0.0,2,False,0.0,1.0,0.5425867507886435,
+comp2_correct,bool,634,0,0.0,2,False,0.0,1.0,0.9132492113564669,
+comp_multi_correct,bool,634,0,0.0,2,False,0.0,1.0,0.48580441640378547,
+comp3_correct,bool,634,0,0.0,2,False,0.0,1.0,0.7302839116719243,
+r1_utterance_predicate,object,634,0,0.0,2,False,,,,Ineffective; Effective
+r1_utterance_quantifier,object,634,0,0.0,2,False,,,,Most; Some
+n_rounds_completed,int64,634,0,0.0,2,False,1.0,5.0,4.993690851735016,
+completed_all_rounds,bool,634,0,0.0,2,False,0.0,1.0,0.998422712933754,
+saw_persuasive_reveal,bool,634,0,0.0,2,False,0.0,1.0,0.22555205047318613,
+completion_status,object,634,0,0.0,3,False,,,,completed; terminated_attention_check; terminated_inactivity
+speaker_condition,object,634,0,0.0,3,False,,,,pers_minus; informative; pers_plus
+listener_belief_condition,object,634,0,0.0,3,False,,,,vigilant; naturalistic; credulous
+sequence_idx,float64,634,0,0.0,3,False,0.0,2.0,0.8359621451104101,
+comp1_some_response,object,634,0,0.0,4,False,,,,At least one but must not be all.; At least one and could be all.; At least two and could be all.; At least two but must not be all.
+comp1_most_response,object,634,0,0.0,4,False,,,,More than 75% and could be all.; More than half and could be all.; More than 75% but must not be all.; More than half but must not be all.
+r1_utterance_text,object,634,0,0.0,4,False,,,,The treatment was ineffective for most patients.; The treatment was effective for most patients.; The treatment was effective for some patients.; The treatment was ineffective for some patients.
+n_comp_correct,int64,634,0,0.0,6,False,0.0,5.0,3.1151419558359623,
+comp_multi_selected,object,634,0,0.0,10,False,,,,"[""all""]; [""all"",""some""]; [""ineff_some"",""some""]; [""some"",""all""]; [""some""]; [""some"",""ineff_some""]; [""all"",""ineff_some""]; [""some"",""ineff_some"",""all""]; [""all"",""some"",""ineff_some""]; [""ineff_some""]"
+comp3_selected,object,634,0,0.0,16,False,,,,"[3,0,2]; [2,0]; [2,3,0]; [0,2]; [3]; [2]; [3,2,0]; [0,3,2]; [0,2,3]; [0]; [3,0]; [2,3]; [2,0,3]; [3,2]; [0,3]; []"
+r1_effectiveness,float64,634,0,0.0,20,False,0.0,100.0,51.14353312302839,
+total_duration_ms,int64,634,0,0.0,634,False,134542.0,3795399.0,501432.2444794953,
+total_duration_min,float64,634,0,0.0,634,False,2.242366666666667,63.25665,8.357204074658254,
